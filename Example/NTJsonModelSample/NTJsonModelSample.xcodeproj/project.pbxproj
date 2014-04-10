@@ -24,6 +24,8 @@
 		F0A5D26118F4DA3B006891E9 /* NTJsonProperty.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A5D26018F4DA3B006891E9 /* NTJsonProperty.m */; };
 		F0A5D26418F5DFBE006891E9 /* Account.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A5D26318F5DFBE006891E9 /* Account.m */; };
 		F0A5D26718F5F43F006891E9 /* NTJsonModelArray.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A5D26618F5F43F006891E9 /* NTJsonModelArray.m */; };
+		F0A5D26A18F6F833006891E9 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = F0A5D26818F6F833006891E9 /* LICENSE */; };
+		F0A5D26B18F6F833006891E9 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F0A5D26918F6F833006891E9 /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,6 +66,8 @@
 		F0A5D26318F5DFBE006891E9 /* Account.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Account.m; sourceTree = "<group>"; };
 		F0A5D26518F5F43F006891E9 /* NTJsonModelArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NTJsonModelArray.h; sourceTree = "<group>"; };
 		F0A5D26618F5F43F006891E9 /* NTJsonModelArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NTJsonModelArray.m; sourceTree = "<group>"; };
+		F0A5D26818F6F833006891E9 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = LICENSE; path = ../../LICENSE; sourceTree = "<group>"; };
+		F0A5D26918F6F833006891E9 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = README.md; path = ../../README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -165,6 +169,8 @@
 		F0A5D25418F4D41B006891E9 /* NTJsonModel */ = {
 			isa = PBXGroup;
 			children = (
+				F0A5D26818F6F833006891E9 /* LICENSE */,
+				F0A5D26918F6F833006891E9 /* README.md */,
 				F0A5D25818F4D479006891E9 /* NTJsonModel+Private.h */,
 				F0A5D25518F4D435006891E9 /* NTJsonModel.h */,
 				F0A5D25618F4D435006891E9 /* NTJsonModel.m */,
@@ -263,7 +269,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F0A5D26A18F6F833006891E9 /* LICENSE in Resources */,
 				F0A5D23018F4D410006891E9 /* InfoPlist.strings in Resources */,
+				F0A5D26B18F6F833006891E9 /* README.md in Resources */,
 				F0A5D23818F4D410006891E9 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -486,6 +494,7 @@
 				F0A5D25018F4D410006891E9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		F0A5D25118F4D410006891E9 /* Build configuration list for PBXNativeTarget "NTJsonModelSampleTests" */ = {
 			isa = XCConfigurationList;
@@ -494,6 +503,7 @@
 				F0A5D25318F4D410006891E9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
