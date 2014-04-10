@@ -7,153 +7,197 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F0A5D1E718F4CD1D006891E9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A5D1E618F4CD1D006891E9 /* Foundation.framework */; };
-		F0A5D1E918F4CD1D006891E9 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A5D1E818F4CD1D006891E9 /* CoreGraphics.framework */; };
-		F0A5D1EB18F4CD1D006891E9 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A5D1EA18F4CD1D006891E9 /* UIKit.framework */; };
-		F0A5D1F118F4CD1D006891E9 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F0A5D1EF18F4CD1D006891E9 /* InfoPlist.strings */; };
-		F0A5D1F318F4CD1D006891E9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A5D1F218F4CD1D006891E9 /* main.m */; };
-		F0A5D1F718F4CD1D006891E9 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A5D1F618F4CD1D006891E9 /* AppDelegate.m */; };
-		F0A5D1F918F4CD1D006891E9 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0A5D1F818F4CD1D006891E9 /* Images.xcassets */; };
-		F0A5D20018F4CD1D006891E9 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A5D1FF18F4CD1D006891E9 /* XCTest.framework */; };
-		F0A5D20118F4CD1D006891E9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A5D1E618F4CD1D006891E9 /* Foundation.framework */; };
-		F0A5D20218F4CD1D006891E9 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A5D1EA18F4CD1D006891E9 /* UIKit.framework */; };
-		F0A5D20A18F4CD1D006891E9 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F0A5D20818F4CD1D006891E9 /* InfoPlist.strings */; };
-		F0A5D20C18F4CD1D006891E9 /* NTJsonModelSampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A5D20B18F4CD1D006891E9 /* NTJsonModelSampleTests.m */; };
+		F0A5D22618F4D410006891E9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A5D22518F4D410006891E9 /* Foundation.framework */; };
+		F0A5D22818F4D410006891E9 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A5D22718F4D410006891E9 /* CoreGraphics.framework */; };
+		F0A5D22A18F4D410006891E9 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A5D22918F4D410006891E9 /* UIKit.framework */; };
+		F0A5D23018F4D410006891E9 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F0A5D22E18F4D410006891E9 /* InfoPlist.strings */; };
+		F0A5D23218F4D410006891E9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A5D23118F4D410006891E9 /* main.m */; };
+		F0A5D23618F4D410006891E9 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A5D23518F4D410006891E9 /* AppDelegate.m */; };
+		F0A5D23818F4D410006891E9 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0A5D23718F4D410006891E9 /* Images.xcassets */; };
+		F0A5D23F18F4D410006891E9 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A5D23E18F4D410006891E9 /* XCTest.framework */; };
+		F0A5D24018F4D410006891E9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A5D22518F4D410006891E9 /* Foundation.framework */; };
+		F0A5D24118F4D410006891E9 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A5D22918F4D410006891E9 /* UIKit.framework */; };
+		F0A5D24918F4D410006891E9 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F0A5D24718F4D410006891E9 /* InfoPlist.strings */; };
+		F0A5D24B18F4D410006891E9 /* NTJsonModelSampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A5D24A18F4D410006891E9 /* NTJsonModelSampleTests.m */; };
+		F0A5D25718F4D435006891E9 /* NTJsonModel.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A5D25618F4D435006891E9 /* NTJsonModel.m */; };
+		F0A5D25E18F4D887006891E9 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A5D25D18F4D887006891E9 /* User.m */; };
+		F0A5D26118F4DA3B006891E9 /* NTJsonProperty.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A5D26018F4DA3B006891E9 /* NTJsonProperty.m */; };
+		F0A5D26418F5DFBE006891E9 /* Account.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A5D26318F5DFBE006891E9 /* Account.m */; };
+		F0A5D26718F5F43F006891E9 /* NTJsonModelArray.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A5D26618F5F43F006891E9 /* NTJsonModelArray.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		F0A5D20318F4CD1D006891E9 /* PBXContainerItemProxy */ = {
+		F0A5D24218F4D410006891E9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = F0A5D1DB18F4CD1D006891E9 /* Project object */;
+			containerPortal = F0A5D21A18F4D410006891E9 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = F0A5D1E218F4CD1D006891E9;
+			remoteGlobalIDString = F0A5D22118F4D410006891E9;
 			remoteInfo = NTJsonModelSample;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		F0A5D1E318F4CD1D006891E9 /* NTJsonModelSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NTJsonModelSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		F0A5D1E618F4CD1D006891E9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		F0A5D1E818F4CD1D006891E9 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		F0A5D1EA18F4CD1D006891E9 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		F0A5D1EE18F4CD1D006891E9 /* NTJsonModelSample-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NTJsonModelSample-Info.plist"; sourceTree = "<group>"; };
-		F0A5D1F018F4CD1D006891E9 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		F0A5D1F218F4CD1D006891E9 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		F0A5D1F418F4CD1D006891E9 /* NTJsonModelSample-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NTJsonModelSample-Prefix.pch"; sourceTree = "<group>"; };
-		F0A5D1F518F4CD1D006891E9 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		F0A5D1F618F4CD1D006891E9 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		F0A5D1F818F4CD1D006891E9 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		F0A5D1FE18F4CD1D006891E9 /* NTJsonModelSampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NTJsonModelSampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		F0A5D1FF18F4CD1D006891E9 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		F0A5D20718F4CD1D006891E9 /* NTJsonModelSampleTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NTJsonModelSampleTests-Info.plist"; sourceTree = "<group>"; };
-		F0A5D20918F4CD1D006891E9 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		F0A5D20B18F4CD1D006891E9 /* NTJsonModelSampleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NTJsonModelSampleTests.m; sourceTree = "<group>"; };
+		F0A5D22218F4D410006891E9 /* NTJsonModelSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NTJsonModelSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F0A5D22518F4D410006891E9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		F0A5D22718F4D410006891E9 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		F0A5D22918F4D410006891E9 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		F0A5D22D18F4D410006891E9 /* NTJsonModelSample-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NTJsonModelSample-Info.plist"; sourceTree = "<group>"; };
+		F0A5D22F18F4D410006891E9 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F0A5D23118F4D410006891E9 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		F0A5D23318F4D410006891E9 /* NTJsonModelSample-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NTJsonModelSample-Prefix.pch"; sourceTree = "<group>"; };
+		F0A5D23418F4D410006891E9 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		F0A5D23518F4D410006891E9 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		F0A5D23718F4D410006891E9 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		F0A5D23D18F4D410006891E9 /* NTJsonModelSampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NTJsonModelSampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F0A5D23E18F4D410006891E9 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		F0A5D24618F4D410006891E9 /* NTJsonModelSampleTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NTJsonModelSampleTests-Info.plist"; sourceTree = "<group>"; };
+		F0A5D24818F4D410006891E9 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F0A5D24A18F4D410006891E9 /* NTJsonModelSampleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NTJsonModelSampleTests.m; sourceTree = "<group>"; };
+		F0A5D25518F4D435006891E9 /* NTJsonModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NTJsonModel.h; sourceTree = "<group>"; };
+		F0A5D25618F4D435006891E9 /* NTJsonModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NTJsonModel.m; sourceTree = "<group>"; };
+		F0A5D25818F4D479006891E9 /* NTJsonModel+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NTJsonModel+Private.h"; sourceTree = "<group>"; };
+		F0A5D25C18F4D887006891E9 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
+		F0A5D25D18F4D887006891E9 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
+		F0A5D25F18F4DA3B006891E9 /* NTJsonProperty.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NTJsonProperty.h; sourceTree = "<group>"; };
+		F0A5D26018F4DA3B006891E9 /* NTJsonProperty.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NTJsonProperty.m; sourceTree = "<group>"; };
+		F0A5D26218F5DFBE006891E9 /* Account.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Account.h; sourceTree = "<group>"; };
+		F0A5D26318F5DFBE006891E9 /* Account.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Account.m; sourceTree = "<group>"; };
+		F0A5D26518F5F43F006891E9 /* NTJsonModelArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NTJsonModelArray.h; sourceTree = "<group>"; };
+		F0A5D26618F5F43F006891E9 /* NTJsonModelArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NTJsonModelArray.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		F0A5D1E018F4CD1D006891E9 /* Frameworks */ = {
+		F0A5D21F18F4D410006891E9 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F0A5D1E918F4CD1D006891E9 /* CoreGraphics.framework in Frameworks */,
-				F0A5D1EB18F4CD1D006891E9 /* UIKit.framework in Frameworks */,
-				F0A5D1E718F4CD1D006891E9 /* Foundation.framework in Frameworks */,
+				F0A5D22818F4D410006891E9 /* CoreGraphics.framework in Frameworks */,
+				F0A5D22A18F4D410006891E9 /* UIKit.framework in Frameworks */,
+				F0A5D22618F4D410006891E9 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F0A5D1FB18F4CD1D006891E9 /* Frameworks */ = {
+		F0A5D23A18F4D410006891E9 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F0A5D20018F4CD1D006891E9 /* XCTest.framework in Frameworks */,
-				F0A5D20218F4CD1D006891E9 /* UIKit.framework in Frameworks */,
-				F0A5D20118F4CD1D006891E9 /* Foundation.framework in Frameworks */,
+				F0A5D23F18F4D410006891E9 /* XCTest.framework in Frameworks */,
+				F0A5D24118F4D410006891E9 /* UIKit.framework in Frameworks */,
+				F0A5D24018F4D410006891E9 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		F0A5D1DA18F4CD1D006891E9 = {
+		F0A5D21918F4D410006891E9 = {
 			isa = PBXGroup;
 			children = (
-				F0A5D1EC18F4CD1D006891E9 /* NTJsonModelSample */,
-				F0A5D20518F4CD1D006891E9 /* NTJsonModelSampleTests */,
-				F0A5D1E518F4CD1D006891E9 /* Frameworks */,
-				F0A5D1E418F4CD1D006891E9 /* Products */,
+				F0A5D22B18F4D410006891E9 /* NTJsonModelSample */,
+				F0A5D24418F4D410006891E9 /* NTJsonModelSampleTests */,
+				F0A5D22418F4D410006891E9 /* Frameworks */,
+				F0A5D22318F4D410006891E9 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		F0A5D1E418F4CD1D006891E9 /* Products */ = {
+		F0A5D22318F4D410006891E9 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F0A5D1E318F4CD1D006891E9 /* NTJsonModelSample.app */,
-				F0A5D1FE18F4CD1D006891E9 /* NTJsonModelSampleTests.xctest */,
+				F0A5D22218F4D410006891E9 /* NTJsonModelSample.app */,
+				F0A5D23D18F4D410006891E9 /* NTJsonModelSampleTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		F0A5D1E518F4CD1D006891E9 /* Frameworks */ = {
+		F0A5D22418F4D410006891E9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				F0A5D1E618F4CD1D006891E9 /* Foundation.framework */,
-				F0A5D1E818F4CD1D006891E9 /* CoreGraphics.framework */,
-				F0A5D1EA18F4CD1D006891E9 /* UIKit.framework */,
-				F0A5D1FF18F4CD1D006891E9 /* XCTest.framework */,
+				F0A5D22518F4D410006891E9 /* Foundation.framework */,
+				F0A5D22718F4D410006891E9 /* CoreGraphics.framework */,
+				F0A5D22918F4D410006891E9 /* UIKit.framework */,
+				F0A5D23E18F4D410006891E9 /* XCTest.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		F0A5D1EC18F4CD1D006891E9 /* NTJsonModelSample */ = {
+		F0A5D22B18F4D410006891E9 /* NTJsonModelSample */ = {
 			isa = PBXGroup;
 			children = (
-				F0A5D1F518F4CD1D006891E9 /* AppDelegate.h */,
-				F0A5D1F618F4CD1D006891E9 /* AppDelegate.m */,
-				F0A5D1F818F4CD1D006891E9 /* Images.xcassets */,
-				F0A5D1ED18F4CD1D006891E9 /* Supporting Files */,
+				F0A5D25418F4D41B006891E9 /* NTJsonModel */,
+				F0A5D25B18F4D866006891E9 /* Model */,
+				F0A5D23418F4D410006891E9 /* AppDelegate.h */,
+				F0A5D23518F4D410006891E9 /* AppDelegate.m */,
+				F0A5D23718F4D410006891E9 /* Images.xcassets */,
+				F0A5D22C18F4D410006891E9 /* Supporting Files */,
 			);
 			path = NTJsonModelSample;
 			sourceTree = "<group>";
 		};
-		F0A5D1ED18F4CD1D006891E9 /* Supporting Files */ = {
+		F0A5D22C18F4D410006891E9 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				F0A5D1EE18F4CD1D006891E9 /* NTJsonModelSample-Info.plist */,
-				F0A5D1EF18F4CD1D006891E9 /* InfoPlist.strings */,
-				F0A5D1F218F4CD1D006891E9 /* main.m */,
-				F0A5D1F418F4CD1D006891E9 /* NTJsonModelSample-Prefix.pch */,
+				F0A5D22D18F4D410006891E9 /* NTJsonModelSample-Info.plist */,
+				F0A5D22E18F4D410006891E9 /* InfoPlist.strings */,
+				F0A5D23118F4D410006891E9 /* main.m */,
+				F0A5D23318F4D410006891E9 /* NTJsonModelSample-Prefix.pch */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		F0A5D20518F4CD1D006891E9 /* NTJsonModelSampleTests */ = {
+		F0A5D24418F4D410006891E9 /* NTJsonModelSampleTests */ = {
 			isa = PBXGroup;
 			children = (
-				F0A5D20B18F4CD1D006891E9 /* NTJsonModelSampleTests.m */,
-				F0A5D20618F4CD1D006891E9 /* Supporting Files */,
+				F0A5D24A18F4D410006891E9 /* NTJsonModelSampleTests.m */,
+				F0A5D24518F4D410006891E9 /* Supporting Files */,
 			);
 			path = NTJsonModelSampleTests;
 			sourceTree = "<group>";
 		};
-		F0A5D20618F4CD1D006891E9 /* Supporting Files */ = {
+		F0A5D24518F4D410006891E9 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				F0A5D20718F4CD1D006891E9 /* NTJsonModelSampleTests-Info.plist */,
-				F0A5D20818F4CD1D006891E9 /* InfoPlist.strings */,
+				F0A5D24618F4D410006891E9 /* NTJsonModelSampleTests-Info.plist */,
+				F0A5D24718F4D410006891E9 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F0A5D25418F4D41B006891E9 /* NTJsonModel */ = {
+			isa = PBXGroup;
+			children = (
+				F0A5D25818F4D479006891E9 /* NTJsonModel+Private.h */,
+				F0A5D25518F4D435006891E9 /* NTJsonModel.h */,
+				F0A5D25618F4D435006891E9 /* NTJsonModel.m */,
+				F0A5D26518F5F43F006891E9 /* NTJsonModelArray.h */,
+				F0A5D26618F5F43F006891E9 /* NTJsonModelArray.m */,
+				F0A5D25F18F4DA3B006891E9 /* NTJsonProperty.h */,
+				F0A5D26018F4DA3B006891E9 /* NTJsonProperty.m */,
+			);
+			name = NTJsonModel;
+			path = ../../../Classes/ios;
+			sourceTree = "<group>";
+		};
+		F0A5D25B18F4D866006891E9 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				F0A5D25C18F4D887006891E9 /* User.h */,
+				F0A5D25D18F4D887006891E9 /* User.m */,
+				F0A5D26218F5DFBE006891E9 /* Account.h */,
+				F0A5D26318F5DFBE006891E9 /* Account.m */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		F0A5D1E218F4CD1D006891E9 /* NTJsonModelSample */ = {
+		F0A5D22118F4D410006891E9 /* NTJsonModelSample */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F0A5D20F18F4CD1D006891E9 /* Build configuration list for PBXNativeTarget "NTJsonModelSample" */;
+			buildConfigurationList = F0A5D24E18F4D410006891E9 /* Build configuration list for PBXNativeTarget "NTJsonModelSample" */;
 			buildPhases = (
-				F0A5D1DF18F4CD1D006891E9 /* Sources */,
-				F0A5D1E018F4CD1D006891E9 /* Frameworks */,
-				F0A5D1E118F4CD1D006891E9 /* Resources */,
+				F0A5D21E18F4D410006891E9 /* Sources */,
+				F0A5D21F18F4D410006891E9 /* Frameworks */,
+				F0A5D22018F4D410006891E9 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -161,120 +205,125 @@
 			);
 			name = NTJsonModelSample;
 			productName = NTJsonModelSample;
-			productReference = F0A5D1E318F4CD1D006891E9 /* NTJsonModelSample.app */;
+			productReference = F0A5D22218F4D410006891E9 /* NTJsonModelSample.app */;
 			productType = "com.apple.product-type.application";
 		};
-		F0A5D1FD18F4CD1D006891E9 /* NTJsonModelSampleTests */ = {
+		F0A5D23C18F4D410006891E9 /* NTJsonModelSampleTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F0A5D21218F4CD1D006891E9 /* Build configuration list for PBXNativeTarget "NTJsonModelSampleTests" */;
+			buildConfigurationList = F0A5D25118F4D410006891E9 /* Build configuration list for PBXNativeTarget "NTJsonModelSampleTests" */;
 			buildPhases = (
-				F0A5D1FA18F4CD1D006891E9 /* Sources */,
-				F0A5D1FB18F4CD1D006891E9 /* Frameworks */,
-				F0A5D1FC18F4CD1D006891E9 /* Resources */,
+				F0A5D23918F4D410006891E9 /* Sources */,
+				F0A5D23A18F4D410006891E9 /* Frameworks */,
+				F0A5D23B18F4D410006891E9 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				F0A5D20418F4CD1D006891E9 /* PBXTargetDependency */,
+				F0A5D24318F4D410006891E9 /* PBXTargetDependency */,
 			);
 			name = NTJsonModelSampleTests;
 			productName = NTJsonModelSampleTests;
-			productReference = F0A5D1FE18F4CD1D006891E9 /* NTJsonModelSampleTests.xctest */;
+			productReference = F0A5D23D18F4D410006891E9 /* NTJsonModelSampleTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		F0A5D1DB18F4CD1D006891E9 /* Project object */ = {
+		F0A5D21A18F4D410006891E9 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0510;
 				ORGANIZATIONNAME = NagelTech;
 				TargetAttributes = {
-					F0A5D1FD18F4CD1D006891E9 = {
-						TestTargetID = F0A5D1E218F4CD1D006891E9;
+					F0A5D23C18F4D410006891E9 = {
+						TestTargetID = F0A5D22118F4D410006891E9;
 					};
 				};
 			};
-			buildConfigurationList = F0A5D1DE18F4CD1D006891E9 /* Build configuration list for PBXProject "NTJsonModelSample" */;
+			buildConfigurationList = F0A5D21D18F4D410006891E9 /* Build configuration list for PBXProject "NTJsonModelSample" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 			);
-			mainGroup = F0A5D1DA18F4CD1D006891E9;
-			productRefGroup = F0A5D1E418F4CD1D006891E9 /* Products */;
+			mainGroup = F0A5D21918F4D410006891E9;
+			productRefGroup = F0A5D22318F4D410006891E9 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				F0A5D1E218F4CD1D006891E9 /* NTJsonModelSample */,
-				F0A5D1FD18F4CD1D006891E9 /* NTJsonModelSampleTests */,
+				F0A5D22118F4D410006891E9 /* NTJsonModelSample */,
+				F0A5D23C18F4D410006891E9 /* NTJsonModelSampleTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		F0A5D1E118F4CD1D006891E9 /* Resources */ = {
+		F0A5D22018F4D410006891E9 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F0A5D1F118F4CD1D006891E9 /* InfoPlist.strings in Resources */,
-				F0A5D1F918F4CD1D006891E9 /* Images.xcassets in Resources */,
+				F0A5D23018F4D410006891E9 /* InfoPlist.strings in Resources */,
+				F0A5D23818F4D410006891E9 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F0A5D1FC18F4CD1D006891E9 /* Resources */ = {
+		F0A5D23B18F4D410006891E9 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F0A5D20A18F4CD1D006891E9 /* InfoPlist.strings in Resources */,
+				F0A5D24918F4D410006891E9 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		F0A5D1DF18F4CD1D006891E9 /* Sources */ = {
+		F0A5D21E18F4D410006891E9 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F0A5D1F718F4CD1D006891E9 /* AppDelegate.m in Sources */,
-				F0A5D1F318F4CD1D006891E9 /* main.m in Sources */,
+				F0A5D25E18F4D887006891E9 /* User.m in Sources */,
+				F0A5D23618F4D410006891E9 /* AppDelegate.m in Sources */,
+				F0A5D25718F4D435006891E9 /* NTJsonModel.m in Sources */,
+				F0A5D26418F5DFBE006891E9 /* Account.m in Sources */,
+				F0A5D26718F5F43F006891E9 /* NTJsonModelArray.m in Sources */,
+				F0A5D23218F4D410006891E9 /* main.m in Sources */,
+				F0A5D26118F4DA3B006891E9 /* NTJsonProperty.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F0A5D1FA18F4CD1D006891E9 /* Sources */ = {
+		F0A5D23918F4D410006891E9 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F0A5D20C18F4CD1D006891E9 /* NTJsonModelSampleTests.m in Sources */,
+				F0A5D24B18F4D410006891E9 /* NTJsonModelSampleTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		F0A5D20418F4CD1D006891E9 /* PBXTargetDependency */ = {
+		F0A5D24318F4D410006891E9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = F0A5D1E218F4CD1D006891E9 /* NTJsonModelSample */;
-			targetProxy = F0A5D20318F4CD1D006891E9 /* PBXContainerItemProxy */;
+			target = F0A5D22118F4D410006891E9 /* NTJsonModelSample */;
+			targetProxy = F0A5D24218F4D410006891E9 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		F0A5D1EF18F4CD1D006891E9 /* InfoPlist.strings */ = {
+		F0A5D22E18F4D410006891E9 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				F0A5D1F018F4CD1D006891E9 /* en */,
+				F0A5D22F18F4D410006891E9 /* en */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
-		F0A5D20818F4CD1D006891E9 /* InfoPlist.strings */ = {
+		F0A5D24718F4D410006891E9 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				F0A5D20918F4CD1D006891E9 /* en */,
+				F0A5D24818F4D410006891E9 /* en */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -282,7 +331,7 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		F0A5D20D18F4CD1D006891E9 /* Debug */ = {
+		F0A5D24C18F4D410006891E9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -320,7 +369,7 @@
 			};
 			name = Debug;
 		};
-		F0A5D20E18F4CD1D006891E9 /* Release */ = {
+		F0A5D24D18F4D410006891E9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -352,7 +401,7 @@
 			};
 			name = Release;
 		};
-		F0A5D21018F4CD1D006891E9 /* Debug */ = {
+		F0A5D24F18F4D410006891E9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -365,7 +414,7 @@
 			};
 			name = Debug;
 		};
-		F0A5D21118F4CD1D006891E9 /* Release */ = {
+		F0A5D25018F4D410006891E9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -378,7 +427,7 @@
 			};
 			name = Release;
 		};
-		F0A5D21318F4CD1D006891E9 /* Debug */ = {
+		F0A5D25218F4D410006891E9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/NTJsonModelSample.app/NTJsonModelSample";
@@ -400,7 +449,7 @@
 			};
 			name = Debug;
 		};
-		F0A5D21418F4CD1D006891E9 /* Release */ = {
+		F0A5D25318F4D410006891E9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/NTJsonModelSample.app/NTJsonModelSample";
@@ -421,32 +470,32 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		F0A5D1DE18F4CD1D006891E9 /* Build configuration list for PBXProject "NTJsonModelSample" */ = {
+		F0A5D21D18F4D410006891E9 /* Build configuration list for PBXProject "NTJsonModelSample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				F0A5D20D18F4CD1D006891E9 /* Debug */,
-				F0A5D20E18F4CD1D006891E9 /* Release */,
+				F0A5D24C18F4D410006891E9 /* Debug */,
+				F0A5D24D18F4D410006891E9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F0A5D20F18F4CD1D006891E9 /* Build configuration list for PBXNativeTarget "NTJsonModelSample" */ = {
+		F0A5D24E18F4D410006891E9 /* Build configuration list for PBXNativeTarget "NTJsonModelSample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				F0A5D21018F4CD1D006891E9 /* Debug */,
-				F0A5D21118F4CD1D006891E9 /* Release */,
+				F0A5D24F18F4D410006891E9 /* Debug */,
+				F0A5D25018F4D410006891E9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 		};
-		F0A5D21218F4CD1D006891E9 /* Build configuration list for PBXNativeTarget "NTJsonModelSampleTests" */ = {
+		F0A5D25118F4D410006891E9 /* Build configuration list for PBXNativeTarget "NTJsonModelSampleTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				F0A5D21318F4CD1D006891E9 /* Debug */,
-				F0A5D21418F4CD1D006891E9 /* Release */,
+				F0A5D25218F4D410006891E9 /* Debug */,
+				F0A5D25318F4D410006891E9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = F0A5D1DB18F4CD1D006891E9 /* Project object */;
+	rootObject = F0A5D21A18F4D410006891E9 /* Project object */;
 }

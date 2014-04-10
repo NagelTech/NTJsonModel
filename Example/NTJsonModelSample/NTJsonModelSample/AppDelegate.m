@@ -8,6 +8,9 @@
 
 #import "AppDelegate.h"
 
+#import "User.h"
+
+
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -16,6 +19,84 @@
     // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
+    
+    
+    NSDictionary *json =
+    @{
+      @"id": @(12),
+      @"first_name": @"Ethan",
+      @"last_name": @"Nagel",
+      @"age": @(42),
+      
+      @"account":
+        @{
+              @"service": @"yahoo",
+              @"user_name": @"eanagel",
+        },
+      
+      @"accounts":
+          @[
+              @{
+                  @"service": @"gmail",
+                  @"user_name": @"eanagel",
+                },
+              @{
+                  @"service": @"MSN",
+                  @"user_name": @"mad_dog",
+                },
+              @{
+                  @"service": @"aol.com",
+                  @"user_name": @"jimmy",
+                },
+            ],
+      
+      };
+    
+    User *user = [User modelWithJson:json];
+    
+    for(Account *account in user.accounts)
+        NSLog(@"account: %@ - %@", account.service, account.username);
+    
+    Account *msn = user.accounts[1];
+    
+    msn.service = @"Mutated!";
+
+    for(Account *account in user.accounts)
+        NSLog(@"account: %@ - %@", account.service, account.username);
+
+/**
+    
+    NSLog(@"First Name: %@", user.firstName);
+    
+    NSLog(@"account.username = %@", user.account.username);
+    
+    // mutate
+    
+    Account *newAccount = [[Account alloc] init];
+    
+    newAccount.service = @"outlook.com";
+    newAccount.username = @"enagel@nageltech.com";
+    
+    user.account = newAccount;
+    
+    user.account.username = @"NEW USERNAME";
+    
+    NSLog(@"mutated account.username = %@", user.account.username);
+    
+    user.firstName = @"Nathan";
+    
+    NSLog(@"Mutated First Name: %@", user.firstName);
+    
+    NSLog(@"Age: %d", user.age);
+    
+    ++user.age;
+    
+    NSLog(@"Mutated age: %d", user.age);
+    
+    NSLog(@"account.username = %@", user.account.username);
+ 
+*/
+ 
     return YES;
 }
 
