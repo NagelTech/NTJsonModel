@@ -39,6 +39,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F016632318F7497500D202C7 /* NTJsonModelContainer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NTJsonModelContainer.h; sourceTree = "<group>"; };
 		F0A5D22218F4D410006891E9 /* NTJsonModelSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NTJsonModelSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0A5D22518F4D410006891E9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		F0A5D22718F4D410006891E9 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -178,6 +179,7 @@
 				F0A5D26618F5F43F006891E9 /* NTJsonModelArray.m */,
 				F0A5D25F18F4DA3B006891E9 /* NTJsonProperty.h */,
 				F0A5D26018F4DA3B006891E9 /* NTJsonProperty.m */,
+				F016632318F7497500D202C7 /* NTJsonModelContainer.h */,
 			);
 			name = NTJsonModel;
 			path = ../../../Classes/ios;

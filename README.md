@@ -20,4 +20,11 @@ Seems like this all makes sense, but there are some gotchas:
  
  - need to handle setting a "normal" array of object into an array (a transformation I suppose.)
  
- 
+ - Switch to "parent" model/array to make it easier to remove an item from it's parent. Introduce NTJsonModelContainer 
+   procotol to encapsulate the common functionality. Both NTJsonModel and NTJsonModlArray will conform to it.
+   
+ - Continuing on ideas for optimizing for read-only modes. Instances are created as immutable by default, there
+   is an explicit action to make mutable (mutableCopy.) In mutable mode, we can eliminate caching to simplify things.
+   This removes the requirement for the "rootModel" pointer and also will get us to one pointer for the dictionary 
+   (which is either mutable or not.) init creates mutable instances, also mutableModelWithJson:.
+   
