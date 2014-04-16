@@ -54,6 +54,8 @@
     
     User *user = [User modelWithJson:json];
     
+    user = [user mutableCopy];
+    
     for(Account *account in user.accounts)
         NSLog(@"account: %@ - %@", account.service, account.username);
     

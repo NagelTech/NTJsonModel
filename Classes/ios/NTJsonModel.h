@@ -12,25 +12,24 @@
 #import "NTJsonModelArray.h"
 
 
-@interface NTJsonModel : NSObject
+@interface NTJsonModel : NSObject <NSCopying, NSMutableCopying>
 
-@property (nonatomic,readonly) NTJsonModel *rootModel;
-@property (nonatomic) NSDictionary *json;
-@property (nonatomic) NSMutableDictionary *mutableJson;
+@property (nonatomic,readonly) NSDictionary *json;
+@property (nonatomic, readonly) NSMutableDictionary *mutableJson;       // private
+@property (nonatomic,readonly) BOOL isMutable;
 
--(id)init;
+-(id)init; // creates mutable instance
 -(id)initWithJson:(NSDictionary *)json;
+-(id)initWithMutableJson:(NSMutableDictionary *)mutableJson;
 +(instancetype)modelWithJson:(NSDictionary *)json;
-
--(id)initWithRootModel:(NTJsonModel *)rootModel json:(NSDictionary *)json;
--(id)initWithRootModel:(NTJsonModel *)rootModel mutableJson:(NSMutableDictionary *)mutableJson;
++(instancetype)modelWithMutableJson:(NSMutableDictionary *)mutableJson;
 
 +(NSArray *)propertyInfo;
 
--(void)becomeMutable;
-
--(void)setRootModel:(NTJsonModel *)rootModel json:(NSDictionary *)json mutableJson:(NSMutableDictionary *)mutableJson;
+-(id)copyWithZone:(NSZone *)zone;
+-(id)mutableCopyWithZone:(NSZone *)zone;
 
 @end
 
+id NTJsonModel_deepCopy(id json);
 id NTJsonModel_mutableDeepCopy(id json);

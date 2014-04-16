@@ -11,16 +11,17 @@
 
 @class NTJsonModel;
 
-@interface NTJsonModelArray : NSMutableArray
+@interface NTJsonModelArray : NSMutableArray <NSCopying, NSMutableCopying>
 
-@property (nonatomic) NTJsonModel *rootModel;
-@property (nonatomic) NSArray *jsonArray;
-@property (nonatomic) NSMutableArray *mutableJsonArray;
+@property (nonatomic, readonly) Class modelClass;
+@property (nonatomic, readonly) NSArray *jsonArray;
+@property (nonatomic, readonly) NSMutableArray *mutableJsonArray;
+@property (nonatomic, readonly) BOOL isMutable;
 
--(id)initWithRootModel:(NTJsonModel *)rootModel property:(NTJsonProperty *)property jsonArray:(NSArray *)jsonArray;
--(id)initWithRootModel:(NTJsonModel *)rootModel property:(NTJsonProperty *)property mutableJsonArray:(NSMutableArray *)mutableJsonArray;
+-(id)initWithModelClass:(Class)modelClass jsonArray:(NSArray *)jsonArray;
+-(id)initWithModelClass:(Class)modelClass mutableJsonArray:(NSArray *)mutableJsonArray;
 
--(void)setRootModel:(NTJsonModel *)rootModel jsonArray:(NSArray *)jsonArray mutableJsonArray:(NSMutableArray *)mutableJsonArray;
-
+-(id)copyWithZone:(NSZone *)zone;
+-(id)mutableCopyWithZone:(NSZone *)zone;
 
 @end

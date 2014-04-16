@@ -18,6 +18,6 @@
 @property (nonatomic) NSString *lastName;
 @property (nonatomic) int age;
 @property (nonatomic) Account *account;
-@property (nonatomic) NSMutableArray *accounts;
+@property (nonatomic) NTJsonModelArray *accounts;
 
 @end
