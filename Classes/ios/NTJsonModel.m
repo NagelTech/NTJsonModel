@@ -294,24 +294,21 @@ id NTJsonModel_deepCopy(id json)
     
     else if ( [value isKindOfClass:[NTJsonModel class]] )
     {
-        value = [value mutableCopy];
-        
         NTJsonModel *model = value;
         
-        self.mutableJson[property.jsonKeyPath] = model.mutableJson;
+        self.mutableJson[property.jsonKeyPath] = model.json;
     }
     
     else if ( [value isKindOfClass:[NTJsonModelArray class]] )
     {
-        NTJsonModelArray *modelArray = [value mutableCopy];
+        NTJsonModelArray *modelArray = value;
 
-        self.mutableJson[property.jsonKeyPath] = modelArray.mutableJsonArray;
+        self.mutableJson[property.jsonKeyPath] = modelArray.jsonArray;
     }
     
     else if ( [value isKindOfClass:[NSArray class]]
              || [value isKindOfClass:[NSDictionary class]] )
     {
-        value = NTJsonModel_mutableDeepCopy(value);
         self.mutableJson[property.jsonKeyPath] = value;
     }
     
