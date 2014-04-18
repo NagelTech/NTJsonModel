@@ -13,11 +13,13 @@ Seems like this all makes sense, but there are some gotchas:
 
  - Lots of work to do on transforming values still (only a couple type are supported and no transformations.)
  
- - Need to work out exactly how properties will be defined. (What is the mis between "magical"
- syntax and explicit declarations.)
+ - Need to work out exactly how properties will be defined. (What is the right mix between "magical"
+ syntax and explicit declarations?)
  
  - Need to detect when properties are defined without @dynamic - these will have properties and
  a backing store. throw exception.
+ 
+ - We can use an associated objects as our cache store.
  
 
 Done-ish

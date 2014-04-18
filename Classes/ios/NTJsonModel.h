@@ -10,6 +10,7 @@
 
 #import "NTJsonProperty.h"
 #import "NTJsonModelArray.h"
+#import "NTJsonPropertyConversion.h"
 
 
 @interface NTJsonModel : NSObject <NSCopying, NSMutableCopying>

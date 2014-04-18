@@ -225,6 +225,43 @@ id NTJsonModel_deepCopy(id json)
 }
 
 
+#pragma mark - caching
+
+
+-(id)getCacheValueForProperty:(NTJsonProperty *)property
+{
+    if ( property.shouldCache && _valueCache )
+    {
+        id cachedValue = _valueCache[property.name];
+        
+        if ( cachedValue )
+            return cachedValue;
+    }
+    
+    return nil;
+}
+
+
+-(void)setCacheValue:(id)value forProperty:(NTJsonProperty *)property
+{
+    if ( !property.shouldCache )
+        return ;
+    
+    if ( !value )
+    {
+        if ( _valueCache )
+            [_valueCache removeObjectForKey:property.name];
+    }
+    else
+    {
+        if ( !_valueCache )
+            _valueCache = [NSMutableDictionary dictionary];
+        
+        _valueCache[property.name] = value;
+    }
+}
+
+
 #pragma mark - get/set values
 
 
@@ -232,60 +269,62 @@ id NTJsonModel_deepCopy(id json)
 {
     // get from cache, if it is present...
     
-    if ( property.shouldCache && _valueCache )
-    {
-        id cachedValue = _valueCache[property.name];
-        
-        if ( cachedValue )
-            return cachedValue;   // that was easy!
-    }
+    id value = (property.shouldCache) ? [self getCacheValueForProperty:property] : nil;
+    
+    if ( value )
+        return value;
     
     // grab the value from our json...
     
     id jsonValue = [self.json objectForKey:property.jsonKeyPath];
     
     // transform it...
+    
+    switch (property.type)
+    {
+        case NTJsonPropertyTypeInt:
+        case NTJsonPropertyTypeBool:
+        case NTJsonPropertyTypeFloat:
+        case NTJsonPropertyTypeDouble:
+        case NTJsonPropertyTypeLongLong:
+        case NTJsonPropertyTypeString:
+            value = jsonValue;  // more validation/conversion happens in the thunks
+            break;
+            
+        case NTJsonPropertyTypeStringEnum:
+        {
+            NSString *enumValue = [property.enumValues member:jsonValue];
+            value = (enumValue) ? enumValue : jsonValue;
+            break;
+        }
+            
+        case NTJsonPropertyTypeModel:
+            if ( self.isMutable )
+                value = [[property.typeClass alloc] initWithMutableJson:jsonValue];
+            else
+                value = [[property.typeClass alloc] initWithJson:jsonValue];
+            break;
+            
+        case NTJsonPropertyTypeModelArray:
+            if ( self.isMutable )
+                value = [[NTJsonModelArray alloc] initWithModelClass:property.typeClass mutableJsonArray:jsonValue];
+            else
+                value = [[NTJsonModelArray alloc] initWithModelClass:property.typeClass jsonArray:jsonValue];
+            break ;
+            
+        case NTJsonPropertyTypeObject:
+            value = [property convertJsonToValue:jsonValue inModel:self];
+            break;
+            
+        case NTJsonPropertyTypeObjectArray:
+            value = [property convertJsonToValue:jsonValue inModel:self];
+            break;
+    }
 
-    id value = nil;
-
-    if ( property.type == NTJsonPropertyTypeModelArray )
-    {
-        if ( self.isMutable )
-            value = [[NTJsonModelArray alloc] initWithModelClass:property.typeClass mutableJsonArray:jsonValue];
-        else
-            value = [[NTJsonModelArray alloc] initWithModelClass:property.typeClass jsonArray:jsonValue];
-    }
-    
-    else if ( property.type == NTJsonPropertyTypeModel )
-    {
-        if ( self.isMutable )
-            value = [[property.typeClass alloc] initWithMutableJson:jsonValue];
-        else
-            value = [[property.typeClass alloc] initWithJson:jsonValue];
-    }
-    
-    else
-    {
-        value = jsonValue; // todo: coerce into correct type
-    }
-    
     // save in cache, if indicated...
     
     if ( property.shouldCache )
-    {
-        if ( !value )
-        {
-            if ( _valueCache )
-                [_valueCache removeObjectForKey:property.name];
-        }
-        else
-        {
-            if ( !_valueCache )
-                _valueCache = [NSMutableDictionary dictionary];
-            
-            _valueCache[property.name] = value;
-        }
-    }
+        [self setCacheValue:value forProperty:property];
     
     return value;
 }
@@ -306,6 +345,9 @@ id NTJsonModel_deepCopy(id json)
     
     if ( !value )
     {
+        if (property.shouldCache)
+            [self setCacheValue:nil forProperty:property];
+        
         [_json removeObjectForKey:property.jsonKeyPath];
         return ;
     }
@@ -313,40 +355,65 @@ id NTJsonModel_deepCopy(id json)
     // Convert to json...
     
     id jsonValue = nil;
+    Class expectedValueType = Nil;
     
-    if ( [value isKindOfClass:[NTJsonModel class]] )
+    switch (property.type)
     {
-        NTJsonModel *model = value;
-        
-        jsonValue = model.json;
-    }
-    
-    else if ( [value isKindOfClass:[NTJsonModelArray class]] )
-    {
-        NTJsonModelArray *modelArray = value;
+        case NTJsonPropertyTypeInt:
+        case NTJsonPropertyTypeBool:
+        case NTJsonPropertyTypeFloat:
+        case NTJsonPropertyTypeDouble:
+        case NTJsonPropertyTypeLongLong:
+            expectedValueType = [NSNumber class];
+            jsonValue = value;
+            break;
+            
+        case NTJsonPropertyTypeString:
+            expectedValueType = [NSString class];
+            jsonValue = value;
+            break;
 
-        jsonValue = modelArray.jsonArray;
+        case NTJsonPropertyTypeStringEnum:
+        {
+            expectedValueType = [NSString class];
+            NSString *enumValue = [property.enumValues member:value];
+            jsonValue = (enumValue) ? enumValue : value;
+            break;
+        }
+            
+        case NTJsonPropertyTypeModel:
+            expectedValueType = [NTJsonModel class];
+            jsonValue = [value respondsToSelector:@selector(json)] ? [value json] : nil;
+            break;
+            
+        case NTJsonPropertyTypeModelArray:
+            expectedValueType = [NTJsonModelArray class];
+            jsonValue = [value respondsToSelector:@selector(jsonArray)] ? [value jsonArray] : nil;
+            break ;
+
+            
+        case NTJsonPropertyTypeObject:
+            expectedValueType = property.typeClass;
+            jsonValue = [property convertValueToJson:value inModel:self];
+            // todo - conversion
+            break;
+            
+        case NTJsonPropertyTypeObjectArray:
+            expectedValueType = [NSArray class];
+            jsonValue = [property convertValueToJson:value inModel:self];
+            // to do - conversion
+            break;
     }
     
-    else if ( [value isKindOfClass:[NSArray class]]
-             || [value isKindOfClass:[NSDictionary class]] )
-    {
-        jsonValue = value;
-    }
+    // Validate we got the correct expected type...
     
-    else if ( [value isKindOfClass:[NSNumber class]]
-             || [value isKindOfClass:[NSString class]]
-             || value == [NSNull null] )
-    {
-        // todo: coerce value
-        
-        jsonValue = value;
-    }
+    if ( ![value isKindOfClass:expectedValueType] )
+        @throw [NSException exceptionWithName:@"InvalidType" reason:@"Invalid type when setting property" userInfo:nil];
     
-    else
-    {
-        // todo
-    }
+    // if we don't have a value now then we have a problem
+    
+    if ( !jsonValue )
+        @throw [NSException exceptionWithName:@"InvalidJsonObject" reason:@"Unable to convert property to JSON object" userInfo:nil];
     
     // actually set the json...
     
@@ -355,20 +422,7 @@ id NTJsonModel_deepCopy(id json)
     // cache the value, if indicated
     
     if ( property.shouldCache )
-    {
-        if ( !value )
-        {
-            if ( _valueCache )
-                [_valueCache removeObjectForKey:property.name];
-        }
-        else
-        {
-            if ( !_valueCache )
-                _valueCache = [NSMutableDictionary dictionary];
-            
-            _valueCache[property.name] = value;
-        }
-    }
+        [self setCacheValue:value forProperty:property];
 }
 
 
@@ -396,6 +450,27 @@ static id getPropertyValue_object(NTJsonModel *model, SEL _cmd)
 
 
 static void setPropertyValue_object(NTJsonModel *model, SEL _cmd, id value)
+{
+    NTJsonProperty *property = getPropertyForSelector([model class], _cmd);
+    
+    [model setValue:value forProperty:property];
+}
+
+
+static NSString *getPropertyValue_string(NTJsonModel *model, SEL _cmd)
+{
+    NTJsonProperty *property = getPropertyForSelector([model class], _cmd);
+    
+    id value = [model getValueForProperty:property];
+    
+    if ( ![value isKindOfClass:[NSString class]] && [value respondsToSelector:@selector(stringValue)] )
+        value = [value stringValue];
+    
+    return [value isKindOfClass:[NSString class]] ? value : nil;
+}
+
+
+static void setPropertyValue_string(NTJsonModel *model, SEL _cmd, NSString *value)
 {
     NTJsonProperty *property = getPropertyForSelector([model class], _cmd);
     
@@ -532,14 +607,14 @@ static void setPropertyValue_longLong(NTJsonModel *model, SEL _cmd, long long va
     NTJsonProperty *property = [self propertyInfoForName:name];
     
     if ( !property )
-        return [super resolveInstanceMethod:sel]; // not a property we know about, crap.
+        return [super resolveInstanceMethod:sel]; // not a property we know about.
     
     // Wire this guy up!
     
     setPropertyForSelector(self, sel, property);
     
     IMP imp;
-    const char *typeCode;
+    const char *typeCode = nil;
     
     switch(property.type)
     {
@@ -570,11 +645,14 @@ static void setPropertyValue_longLong(NTJsonModel *model, SEL _cmd, long long va
             
         case NTJsonPropertyTypeString:
         case NTJsonPropertyTypeStringEnum:
-            // todo - add special methods that will do standard conversions (stringValue)
+            imp = (isSet) ? (IMP)setPropertyValue_string : (IMP)getPropertyValue_string;
+            typeCode = @encode(NSString *);
+            break;
 
         case NTJsonPropertyTypeModel:
         case NTJsonPropertyTypeModelArray:
         case NTJsonPropertyTypeObject:
+        case NTJsonPropertyTypeObjectArray:
             imp = (isSet) ? (IMP)setPropertyValue_object : (IMP)getPropertyValue_object;
             typeCode = @encode(id);
             break;
