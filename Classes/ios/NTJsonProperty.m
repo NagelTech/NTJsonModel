@@ -9,6 +9,14 @@
 #import "NTJsonProperty.h"
 
 
+@interface NTJsonProperty ()
+{
+    id _defaultValue;
+}
+
+@end
+
+
 @implementation NTJsonProperty
 
 
@@ -51,7 +59,7 @@
 }
 
 
-+(instancetype)modelProperty:(NSString *)name class:(Class)class jsonKeyPath:(NSString *)jsonKeyPath isArray:(BOOL)isArray
++(instancetype)modelProperty:(NSString *)name class:(Class)class jsonKeyPath:(NSString *)jsonKeyPath
 {
     NTJsonProperty *property = [[NTJsonProperty alloc] init];
     
@@ -61,41 +69,76 @@
         property->_jsonKeyPath = jsonKeyPath;
         property->_type = NTJsonPropertyTypeModel;
         property->_typeClass = class;
-        property->_isArray = isArray;
     }
     
     return property;
 }
 
 
-+(instancetype)modelProperty:(NSString *)name class:(Class)class jsonKeyPath:(NSString *)jsonKeyPath
-{
-    return [self modelProperty:name class:class jsonKeyPath:jsonKeyPath isArray:NO];
-}
-
-
 +(instancetype)modelProperty:(NSString *)name class:(Class)class
 {
-    return [self modelProperty:name class:class jsonKeyPath:name isArray:NO];
+    return [self modelProperty:name class:class jsonKeyPath:name];
 }
 
 
 +(instancetype)modelArrayProperty:(NSString *)name class:(Class)class jsonKeyPath:(NSString *)jsonKeyPath
 {
-    return [self modelProperty:name class:class jsonKeyPath:jsonKeyPath isArray:YES];
+    NTJsonProperty *property = [[NTJsonProperty alloc] init];
+    
+    if ( property )
+    {
+        property->_name = name;
+        property->_jsonKeyPath = jsonKeyPath;
+        property->_type = NTJsonPropertyTypeModelArray;
+        property->_typeClass = class;
+    }
+    
+    return property;
 }
 
 
 +(instancetype)modelArrayProperty:(NSString *)name class:(Class)class
 {
-    return [self modelProperty:name class:class jsonKeyPath:name isArray:YES];
+    return [self modelArrayProperty:name class:class jsonKeyPath:name];
 }
 
 
 -(BOOL)shouldCache
 {
-    return (self.type == NTJsonPropertyTypeModel || self.isArray);
+    return (self.type == NTJsonPropertyTypeModel || self.type == NTJsonPropertyTypeModelArray);
 }
 
+
++(id)defaultValueForType:(NTJsonPropertyType)type
+{
+    switch (type)
+    {
+        case NTJsonPropertyTypeInt:
+            return @(0);
+            
+        case NTJsonPropertyTypeBool:
+            return @(NO);
+            
+        case NTJsonPropertyTypeFloat:
+            return @((float)0);
+            
+        case NTJsonPropertyTypeDouble:
+            return @((double)0);
+            
+        case NTJsonPropertyTypeLongLong:
+            return ((long long)0);
+            
+        default:
+            return nil;
+    }
+}
+
+-(id)defaultValue
+{
+    if ( !_defaultValue )
+        _defaultValue = [self.class defaultValueForType:self.type];
+    
+    return _defaultValue;
+}
 
 @end

@@ -25,6 +25,9 @@
 @implementation NTJsonModel
 
 
+#pragma mark - Constructors
+
+
 -(id)init
 {
     self = [super init];
@@ -85,10 +88,7 @@
 }
 
 
-+(NSArray *)propertyInfo
-{
-    return @[];
-}
+#pragma mark - Properties
 
 
 -(NSDictionary *)json
@@ -101,6 +101,9 @@
 {
     return (_isMutable) ? _json : nil;
 }
+
+
+#pragma mark - NSCopying & NSMutableCopying
 
 
 id NTJsonModel_mutableDeepCopy(id json)
@@ -201,6 +204,15 @@ id NTJsonModel_deepCopy(id json)
 }
 
 
+#pragma mark - Property Info management
+
+
++(NSArray *)propertyInfo
+{
+    return @[];
+}
+
+
 +(NTJsonProperty *)propertyInfoForName:(NSString *)name
 {
     for (NTJsonProperty *property in [self propertyInfo])
@@ -211,6 +223,9 @@ id NTJsonModel_deepCopy(id json)
     
     return nil;
 }
+
+
+#pragma mark - get/set values
 
 
 -(id)getValueForProperty:(NTJsonProperty *)property
@@ -229,11 +244,11 @@ id NTJsonModel_deepCopy(id json)
     
     id jsonValue = [self.json objectForKey:property.jsonKeyPath];
     
-    id value;
-    
     // transform it...
-    
-    if ( property.isArray && property.type == NTJsonPropertyTypeModel )
+
+    id value = nil;
+
+    if ( property.type == NTJsonPropertyTypeModelArray )
     {
         if ( self.isMutable )
             value = [[NTJsonModelArray alloc] initWithModelClass:property.typeClass mutableJsonArray:jsonValue];
@@ -287,29 +302,36 @@ id NTJsonModel_deepCopy(id json)
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Attempt to modify an immutable NTJsonModel instance" userInfo:nil];
     }
     
-    // set the value...
+    // if nil is passed in we simply remove the value
     
     if ( !value )
+    {
         [_json removeObjectForKey:property.jsonKeyPath];
+        return ;
+    }
+
+    // Convert to json...
     
-    else if ( [value isKindOfClass:[NTJsonModel class]] )
+    id jsonValue = nil;
+    
+    if ( [value isKindOfClass:[NTJsonModel class]] )
     {
         NTJsonModel *model = value;
         
-        self.mutableJson[property.jsonKeyPath] = model.json;
+        jsonValue = model.json;
     }
     
     else if ( [value isKindOfClass:[NTJsonModelArray class]] )
     {
         NTJsonModelArray *modelArray = value;
 
-        self.mutableJson[property.jsonKeyPath] = modelArray.jsonArray;
+        jsonValue = modelArray.jsonArray;
     }
     
     else if ( [value isKindOfClass:[NSArray class]]
              || [value isKindOfClass:[NSDictionary class]] )
     {
-        self.mutableJson[property.jsonKeyPath] = value;
+        jsonValue = value;
     }
     
     else if ( [value isKindOfClass:[NSNumber class]]
@@ -318,7 +340,7 @@ id NTJsonModel_deepCopy(id json)
     {
         // todo: coerce value
         
-        self.mutableJson[property.jsonKeyPath] = value;
+        jsonValue = value;
     }
     
     else
@@ -326,7 +348,11 @@ id NTJsonModel_deepCopy(id json)
         // todo
     }
     
-    // cache it, if indicated
+    // actually set the json...
+    
+    self.mutableJson[property.jsonKeyPath] = jsonValue;
+    
+    // cache the value, if indicated
     
     if ( property.shouldCache )
     {
@@ -346,12 +372,24 @@ id NTJsonModel_deepCopy(id json)
 }
 
 
-static NSMutableDictionary *propertyMap = nil;
+#pragma mark - get/set property IMP thunks
+
+
+static void setPropertyForSelector(Class class, SEL sel, NTJsonProperty *property)
+{
+    objc_setAssociatedObject(class, sel, property, OBJC_ASSOCIATION_RETAIN);
+}
+
+
+static NTJsonProperty *getPropertyForSelector(Class class, SEL sel)
+{
+    return objc_getAssociatedObject(class, sel);
+}
 
 
 static id getPropertyValue_object(NTJsonModel *model, SEL _cmd)
 {
-    NTJsonProperty *property = propertyMap[@((NSInteger)(void *)_cmd)];
+    NTJsonProperty *property = getPropertyForSelector([model class], _cmd);
     
     return [model getValueForProperty:property];
 }
@@ -359,7 +397,7 @@ static id getPropertyValue_object(NTJsonModel *model, SEL _cmd)
 
 static void setPropertyValue_object(NTJsonModel *model, SEL _cmd, id value)
 {
-    NTJsonProperty *property = propertyMap[@((NSInteger)(void *)_cmd)];
+    NTJsonProperty *property = getPropertyForSelector([model class], _cmd);
     
     [model setValue:value forProperty:property];
 }
@@ -367,9 +405,12 @@ static void setPropertyValue_object(NTJsonModel *model, SEL _cmd, id value)
 
 static int getPropertyValue_int(NTJsonModel *model, SEL _cmd)
 {
-    NTJsonProperty *property = propertyMap[@((NSInteger)(void *)_cmd)];
+    NTJsonProperty *property = getPropertyForSelector([model class], _cmd);
     
     NSNumber *value = [model getValueForProperty:property];
+    
+    if ( ![value respondsToSelector:@selector(intValue)] )
+        value = property.defaultValue;
     
     return [value intValue];
 }
@@ -377,10 +418,97 @@ static int getPropertyValue_int(NTJsonModel *model, SEL _cmd)
 
 static void setPropertyValue_int(NTJsonModel *model, SEL _cmd, int value)
 {
-    NTJsonProperty *property = propertyMap[@((NSInteger)(void *)_cmd)];
+    NTJsonProperty *property = getPropertyForSelector([model class], _cmd);
     
     [model setValue:@(value) forProperty:property];
 }
+
+
+static BOOL getPropertyValue_BOOL(NTJsonModel *model, SEL _cmd)
+{
+    NTJsonProperty *property = getPropertyForSelector([model class], _cmd);
+    
+    NSNumber *value = [model getValueForProperty:property];
+    
+    if ( ![value respondsToSelector:@selector(boolValue)] )
+        value = property.defaultValue;
+    
+    return [value boolValue];
+}
+
+
+static void setPropertyValue_BOOL(NTJsonModel *model, SEL _cmd, BOOL value)
+{
+    NTJsonProperty *property = getPropertyForSelector([model class], _cmd);
+    
+    [model setValue:@(value) forProperty:property];
+}
+
+
+static float getPropertyValue_float(NTJsonModel *model, SEL _cmd)
+{
+    NTJsonProperty *property = getPropertyForSelector([model class], _cmd);
+    
+    NSNumber *value = [model getValueForProperty:property];
+    
+    if ( ![value respondsToSelector:@selector(floatValue)] )
+        value = property.defaultValue;
+    
+    return [value floatValue];
+}
+
+
+static void setPropertyValue_float(NTJsonModel *model, SEL _cmd, float value)
+{
+    NTJsonProperty *property = getPropertyForSelector([model class], _cmd);
+    
+    [model setValue:@(value) forProperty:property];
+}
+
+
+static double getPropertyValue_double(NTJsonModel *model, SEL _cmd)
+{
+    NTJsonProperty *property = getPropertyForSelector([model class], _cmd);
+    
+    NSNumber *value = [model getValueForProperty:property];
+    
+    if ( ![value respondsToSelector:@selector(doubleValue)] )
+        value = property.defaultValue;
+
+    return [value doubleValue];
+}
+
+
+static void setPropertyValue_double(NTJsonModel *model, SEL _cmd, double value)
+{
+    NTJsonProperty *property = getPropertyForSelector([model class], _cmd);
+    
+    [model setValue:@(value) forProperty:property];
+}
+
+
+static long long getPropertyValue_longLong(NTJsonModel *model, SEL _cmd)
+{
+    NTJsonProperty *property = getPropertyForSelector([model class], _cmd);
+    
+    NSNumber *value = [model getValueForProperty:property];
+    
+    if ( ![value respondsToSelector:@selector(longLongValue)] )
+        value = property.defaultValue;
+    
+    return [value longLongValue];
+}
+
+
+static void setPropertyValue_longLong(NTJsonModel *model, SEL _cmd, long long value)
+{
+    NTJsonProperty *property = getPropertyForSelector([model class], _cmd);
+    
+    [model setValue:@(value) forProperty:property];
+}
+
+
+#pragma mark - dynamic method resolution
 
 
 +(BOOL)resolveInstanceMethod:(SEL)sel
@@ -408,36 +536,48 @@ static void setPropertyValue_int(NTJsonModel *model, SEL _cmd, int value)
     
     // Wire this guy up!
     
-    if ( !propertyMap )
-    {
-        propertyMap = [NSMutableDictionary dictionary];
-    }
-    
-    propertyMap[@((NSInteger)(void *)sel)] = property;
+    setPropertyForSelector(self, sel, property);
     
     IMP imp;
     const char *typeCode;
     
-    if ( property.isArray )
+    switch(property.type)
     {
-        imp = (isSet) ? (IMP)setPropertyValue_object : (IMP)getPropertyValue_object;
-        typeCode = @encode(id);
-    }
-    
-    else
-    {
-        switch(property.type)
-        {
-            case NTJsonPropertyTypeInt:
-                imp = (isSet) ? (IMP)setPropertyValue_int : (IMP)getPropertyValue_int;
-                typeCode = @encode(int);
-                break;
-                
-            default:
-                imp = (isSet) ? (IMP)setPropertyValue_object : (IMP)getPropertyValue_object;
-                typeCode = @encode(id);
-                break;
-        }
+        case NTJsonPropertyTypeInt:
+            imp = (isSet) ? (IMP)setPropertyValue_int : (IMP)getPropertyValue_int;
+            typeCode = @encode(int);
+            break;
+            
+        case NTJsonPropertyTypeBool:
+            imp = (isSet) ? (IMP)setPropertyValue_BOOL : (IMP)getPropertyValue_BOOL;
+            typeCode = @encode(BOOL);
+            break;
+            
+        case NTJsonPropertyTypeFloat:
+            imp = (isSet) ? (IMP)setPropertyValue_float : (IMP)getPropertyValue_float;
+            typeCode = @encode(float);
+            break;
+            
+        case NTJsonPropertyTypeDouble:
+            imp = (isSet) ? (IMP)setPropertyValue_double : (IMP)getPropertyValue_double;
+            typeCode = @encode(double);
+            break;
+            
+        case NTJsonPropertyTypeLongLong:
+            imp = (isSet) ? (IMP)setPropertyValue_longLong : (IMP)getPropertyValue_longLong;
+            typeCode = @encode(long long);
+            break;
+            
+        case NTJsonPropertyTypeString:
+        case NTJsonPropertyTypeStringEnum:
+            // todo - add special methods that will do standard conversions (stringValue)
+
+        case NTJsonPropertyTypeModel:
+        case NTJsonPropertyTypeModelArray:
+        case NTJsonPropertyTypeObject:
+            imp = (isSet) ? (IMP)setPropertyValue_object : (IMP)getPropertyValue_object;
+            typeCode = @encode(id);
+            break;
     }
     
     char types[80];
@@ -451,7 +591,6 @@ static void setPropertyValue_int(NTJsonModel *model, SEL _cmd, int value)
     
     return YES; // re-resolve
 }
-
 
 
 @end

@@ -25,9 +25,11 @@ typedef enum
     NTJsonPropertyTypeLongLong      = 6,
     
     NTJsonPropertyTypeModel         = 8,
+    NTJsonPropertyTypeModelArray    = 9,
     
-    NTJsonPropertyTypeObject        = 9,
     NTJsonPropertyTypeStringEnum    = 10,
+    
+    NTJsonPropertyTypeObject        = 11,   // a custom object of somekind
 } NTJsonPropertyType;
 
 
@@ -36,9 +38,9 @@ typedef enum
 @property (nonatomic,readonly) NSString *name;
 @property (nonatomic,readonly) NSString *jsonKeyPath;
 @property (nonatomic,readonly) NTJsonPropertyType type;
-@property (nonatomic,readonly) BOOL isArray;
 @property (nonatomic,readonly) Class typeClass;
 @property (nonatomic,readonly) NSSet *enumValues;
+@property (nonatomic,readonly) id defaultValue;
 
 @property (nonatomic,readonly) BOOL shouldCache;
 
