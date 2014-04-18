@@ -226,21 +226,73 @@ id NTJsonModel_deepCopy(id json)
 #pragma mark - Property Info management
 
 
+static const void *PROPERTY_INFO_MAP_ASSOC_KEY = "PROPERTY_INFO_MAP_ASSOC_KEY";
+static const void *SCANNING_PROPERTIES_ASSOC_KEY = "SCANNING_PROPERTIES_ASSOC_KEY";
+
+
 +(NSArray *)propertyInfo
 {
     return @[];
 }
 
 
-+(NTJsonProperty *)propertyInfoForName:(NSString *)name
++(BOOL)scanningProperties
 {
-    for (NTJsonProperty *property in [self propertyInfo])
+    NSObject *value = objc_getAssociatedObject(self, SCANNING_PROPERTIES_ASSOC_KEY);
+    
+    return (value) ? YES : NO;
+}
+
+
++(NSDictionary *)scanProperties
+{
+    objc_setAssociatedObject(self, SCANNING_PROPERTIES_ASSOC_KEY, [[NSObject alloc] init], OBJC_ASSOCIATION_RETAIN);
+    
+    NSMutableDictionary *propertyInfoMap = [NSMutableDictionary dictionary];
+    
+    for(NTJsonProperty *property in [self propertyInfo])
     {
-        if ( [property.name isEqualToString:name] )
-            return property;
+        propertyInfoMap[property.name] = property;
+        
+        // Make sure that no getter or setter methods already exist...
+        
+        if ( [self instancesRespondToSelector:NSSelectorFromString(property.name)] )
+            @throw [NSException exceptionWithName:@"PropertyDefined"
+                                           reason:[NSString stringWithFormat:@"NTJsonProperty %@.%@ has a getter, @dynamic missing?", NSStringFromClass(self), property.name]
+                                         userInfo:nil];
+        
+        
+        NSString *setter = [NSString stringWithFormat:@"set%@%@", [[property.name substringToIndex:1] uppercaseString], [property.name substringFromIndex:1]];
+        
+        if ( [self instancesRespondToSelector:NSSelectorFromString(setter)] )
+            @throw [NSException exceptionWithName:@"PropertyDefined"
+                                           reason:[NSString stringWithFormat:@"NTJsonProperty %@.%@ has a setter, @dynamic missing?", NSStringFromClass(self), property.name]
+                                         userInfo:nil];
     }
     
-    return nil;
+    objc_setAssociatedObject(self, SCANNING_PROPERTIES_ASSOC_KEY, nil, OBJC_ASSOCIATION_RETAIN);
+   
+    return [propertyInfoMap copy];
+}
+
+
++(NSDictionary *)propertyInfoMap
+{
+    NSDictionary *propertyInfoMap = objc_getAssociatedObject(self, PROPERTY_INFO_MAP_ASSOC_KEY);
+    
+    if ( !propertyInfoMap )
+    {
+        propertyInfoMap = [self scanProperties];
+        objc_setAssociatedObject(self, PROPERTY_INFO_MAP_ASSOC_KEY, propertyInfoMap, OBJC_ASSOCIATION_RETAIN);
+    }
+
+    return propertyInfoMap;
+}
+
+
++(NTJsonProperty *)propertyInfoForName:(NSString *)name
+{
+    return [self propertyInfoMap][name];
 }
 
 
@@ -596,6 +648,9 @@ static void setPropertyValue_longLong(NTJsonModel *model, SEL _cmd, long long va
 
 +(BOOL)resolveInstanceMethod:(SEL)sel
 {
+    if ( [self scanningProperties] )
+        return [super resolveInstanceMethod:sel];
+    
     NSString *selName = NSStringFromSelector(sel);
     
     BOOL isSet;

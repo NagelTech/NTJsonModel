@@ -10,5 +10,5 @@ Pod::Spec.new do |s|
   s.requires_arc        = true
 
   s.source_files        = 'classes/ios/*.{h,m}'
-  s.public_header_files = 'NTJsonModel.h', 'NTJsonProperty.h', 'NTJsonPropertyConversion.h'
+  s.public_header_files = 'NTJsonModel.h', 'NTJsonModelArray.h', 'NTJsonProperty.h', 'NTJsonPropertyConversion.h'
 end
