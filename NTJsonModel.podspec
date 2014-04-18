@@ -8,8 +8,7 @@ Pod::Spec.new do |s|
   s.platform            = :ios, '6.0'
   s.source              = { :git => "https://github.com/NagelTech/NTJsonModel.git", :tag => "0.10" }
   s.requires_arc        = true
-  s.libraries           = 'sqlite3'
 
-  s.source_files        = '*.{h,m}'
+  s.source_files        = 'classes/ios/*.{h,m}'
   s.public_header_files = 'NTJsonModel.h', 'NTJsonProperty.h', 'NTJsonPropertyConversion.h'
 end
