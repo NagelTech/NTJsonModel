@@ -9,14 +9,12 @@
 #import <Foundation/Foundation.h>
 
 #import "NTJsonProperty.h"
-#import "NTJsonModelArray.h"
 #import "NTJsonPropertyConversion.h"
 
 
 @interface NTJsonModel : NSObject <NSCopying, NSMutableCopying>
 
 @property (nonatomic,readonly) NSDictionary *json;
-@property (nonatomic, readonly) NSMutableDictionary *mutableJson;       // private
 @property (nonatomic,readonly) BOOL isMutable;
 
 -(id)init; // creates mutable instance
@@ -25,12 +23,12 @@
 +(instancetype)modelWithJson:(NSDictionary *)json;
 +(instancetype)modelWithMutableJson:(NSMutableDictionary *)mutableJson;
 
++(NSArray *)arrayWithJsonArray:(NSArray *)jsonArray;
++(NSMutableArray *)arrayWithMutableJsonArray:(NSMutableArray *)mutableJsonArray;
+
 +(NSArray *)propertyInfo;
 
 -(id)copyWithZone:(NSZone *)zone;
 -(id)mutableCopyWithZone:(NSZone *)zone;
 
 @end
-
-id NTJsonModel_deepCopy(id json);
-id NTJsonModel_mutableDeepCopy(id json);

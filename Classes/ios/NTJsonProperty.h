@@ -33,9 +33,6 @@ typedef enum
 @property (nonatomic,readonly) NTJsonPropertyType type;
 @property (nonatomic,readonly) Class typeClass;
 @property (nonatomic,readonly) NSSet *enumValues;
-@property (nonatomic,readonly) id defaultValue;
-
-@property (nonatomic,readonly) BOOL shouldCache;
 
 // basic types
 
@@ -79,10 +76,5 @@ typedef enum
 
 +(instancetype)objectArrayProperty:(NSString *)name class:(Class)class jsonKeyPath:(NSString *)jsonKeyPath;
 +(instancetype)objectArrayProperty:(NSString *)name class:(Class)class;
-
-// conversion
-
--(id)convertValueToJson:(id)object inModel:(NTJsonModel *)model;
--(id)convertJsonToValue:(id)json inModel:(NTJsonModel *)model;
 
 @end

@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 NagelTech. All rights reserved.
 //
 
-#import "NTJsonModel.h"
+#import "NTJsonModel+Private.h"
 
 
 @interface NTJsonModelArrayEmptyElement : NSObject

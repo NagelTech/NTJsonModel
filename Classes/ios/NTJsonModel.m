@@ -8,13 +8,11 @@
 
 #import <objc/runtime.h>
 
-#import "NTJsonModel.h"
+#import "NTJsonModel+Private.h"
 
 
 @interface NTJsonModel ()
 {
-    NSMutableDictionary *_valueCache;
-    
     id _json;
     BOOL _isMutable;
 }
@@ -85,6 +83,27 @@
         return nil;
     
     return [[self alloc] initWithMutableJson:mutableJson];
+}
+
+
+#pragma mark - Array Helpers
+
+
++(NSArray *)arrayWithJsonArray:(NSArray *)jsonArray
+{
+    if ( ![jsonArray isKindOfClass:[NSArray class]] )
+        return nil;
+    
+    return [[NTJsonModelArray alloc] initWithModelClass:self jsonArray:jsonArray];
+}
+
+
++(NSMutableArray *)arrayWithMutableJsonArray:(NSMutableArray *)mutableJsonArray
+{
+    if ( ![mutableJsonArray isKindOfClass:[NSArray class]] )
+        return nil;
+
+    return [[NTJsonModelArray alloc] initWithModelClass:self mutableJsonArray:mutableJsonArray];
 }
 
 
@@ -230,9 +249,9 @@ id NTJsonModel_deepCopy(id json)
 
 -(id)getCacheValueForProperty:(NTJsonProperty *)property
 {
-    if ( property.shouldCache && _valueCache )
+    if ( property.shouldCache )
     {
-        id cachedValue = _valueCache[property.name];
+        id cachedValue = objc_getAssociatedObject(self, (__bridge void *)property);
         
         if ( cachedValue )
             return cachedValue;
@@ -246,19 +265,8 @@ id NTJsonModel_deepCopy(id json)
 {
     if ( !property.shouldCache )
         return ;
-    
-    if ( !value )
-    {
-        if ( _valueCache )
-            [_valueCache removeObjectForKey:property.name];
-    }
-    else
-    {
-        if ( !_valueCache )
-            _valueCache = [NSMutableDictionary dictionary];
-        
-        _valueCache[property.name] = value;
-    }
+
+    objc_setAssociatedObject(self, (__bridge void *)property, value, OBJC_ASSOCIATION_RETAIN);
 }
 
 

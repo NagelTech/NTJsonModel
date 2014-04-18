@@ -6,9 +6,7 @@
 //  Copyright (c) 2014 NagelTech. All rights reserved.
 //
 
-#import "NTJsonProperty.h"
-#import "NTJsonPropertyConversion.h"
-#import "NTJsonModel.h"
+#import "NTJsonModel+Private.h"
 
 
 @interface NTJsonProperty ()
@@ -22,8 +20,7 @@
 @implementation NTJsonProperty
 
 
-#pragma mark - Internal setters
-
+#pragma mark - Internal initializers
 
 
 +(instancetype)property:(NSString *)name type:(NTJsonPropertyType)type jsonKeyPath:(NSString *)jsonKeyPath
@@ -73,8 +70,6 @@
 }
 
 
-
-
 #pragma mark - Basic Types
 
 
@@ -114,7 +109,6 @@
 }
 
 
-
 +(instancetype)floatProperty:(NSString *)name jsonKeyPath:(NSString *)jsonKeyPath;
 {
     return [self property:name type:NTJsonPropertyTypeFloat jsonKeyPath:jsonKeyPath];
@@ -127,7 +121,6 @@
 }
 
 
-
 +(instancetype)doubleProperty:(NSString *)name jsonKeyPath:(NSString *)jsonKeyPath;
 {
     return [self property:name type:NTJsonPropertyTypeDouble jsonKeyPath:jsonKeyPath];
@@ -138,7 +131,6 @@
 {
     return [self property:name type:NTJsonPropertyTypeDouble jsonKeyPath:name];
 }
-
 
 
 +(instancetype)longLongProperty:(NSString *)name jsonKeyPath:(NSString *)jsonKeyPath;
