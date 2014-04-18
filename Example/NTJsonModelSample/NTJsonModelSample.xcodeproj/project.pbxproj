@@ -26,6 +26,7 @@
 		F0A5D26718F5F43F006891E9 /* NTJsonModelArray.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A5D26618F5F43F006891E9 /* NTJsonModelArray.m */; };
 		F0A5D26A18F6F833006891E9 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = F0A5D26818F6F833006891E9 /* LICENSE */; };
 		F0A5D26B18F6F833006891E9 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F0A5D26918F6F833006891E9 /* README.md */; };
+		F0F395CE1901C1CC007985CD /* NTJsonModel.podspec in Resources */ = {isa = PBXBuildFile; fileRef = F0F395CD1901C1CC007985CD /* NTJsonModel.podspec */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,6 +72,7 @@
 		F0F395C5190185CF007985CD /* NTJsonPropertyConversion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NTJsonPropertyConversion.h; sourceTree = "<group>"; };
 		F0F395C719019786007985CD /* NTJsonModelArray+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NTJsonModelArray+Private.h"; sourceTree = "<group>"; };
 		F0F395CA1901BCF3007985CD /* NTJsonProperty+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NTJsonProperty+Private.h"; sourceTree = "<group>"; };
+		F0F395CD1901C1CC007985CD /* NTJsonModel.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = NTJsonModel.podspec; path = ../../NTJsonModel.podspec; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -176,6 +178,7 @@
 				F0A5D25818F4D479006891E9 /* NTJsonModel+Private.h */,
 				F0A5D25518F4D435006891E9 /* NTJsonModel.h */,
 				F0A5D25618F4D435006891E9 /* NTJsonModel.m */,
+				F0F395CD1901C1CC007985CD /* NTJsonModel.podspec */,
 				F0F395C719019786007985CD /* NTJsonModelArray+Private.h */,
 				F0A5D26518F5F43F006891E9 /* NTJsonModelArray.h */,
 				F0A5D26618F5F43F006891E9 /* NTJsonModelArray.m */,
@@ -278,6 +281,7 @@
 				F0A5D26A18F6F833006891E9 /* LICENSE in Resources */,
 				F0A5D23018F4D410006891E9 /* InfoPlist.strings in Resources */,
 				F0A5D26B18F6F833006891E9 /* README.md in Resources */,
+				F0F395CE1901C1CC007985CD /* NTJsonModel.podspec in Resources */,
 				F0A5D23818F4D410006891E9 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
