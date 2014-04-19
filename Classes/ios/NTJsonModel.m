@@ -236,42 +236,13 @@ static const void *SCANNING_PROPERTIES_ASSOC_KEY = "SCANNING_PROPERTIES_ASSOC_KE
 }
 
 
-+(BOOL)scanningProperties
-{
-    NSObject *value = objc_getAssociatedObject(self, SCANNING_PROPERTIES_ASSOC_KEY);
-    
-    return (value) ? YES : NO;
-}
-
-
 +(NSDictionary *)scanProperties
 {
-    objc_setAssociatedObject(self, SCANNING_PROPERTIES_ASSOC_KEY, [[NSObject alloc] init], OBJC_ASSOCIATION_RETAIN);
-    
     NSMutableDictionary *propertyInfoMap = [NSMutableDictionary dictionary];
     
     for(NTJsonProperty *property in [self propertyInfo])
-    {
         propertyInfoMap[property.name] = property;
-        
-        // Make sure that no getter or setter methods already exist...
-        
-        if ( [self instancesRespondToSelector:NSSelectorFromString(property.name)] )
-            @throw [NSException exceptionWithName:@"PropertyDefined"
-                                           reason:[NSString stringWithFormat:@"NTJsonProperty %@.%@ has a getter, @dynamic missing?", NSStringFromClass(self), property.name]
-                                         userInfo:nil];
-        
-        
-        NSString *setter = [NSString stringWithFormat:@"set%@%@", [[property.name substringToIndex:1] uppercaseString], [property.name substringFromIndex:1]];
-        
-        if ( [self instancesRespondToSelector:NSSelectorFromString(setter)] )
-            @throw [NSException exceptionWithName:@"PropertyDefined"
-                                           reason:[NSString stringWithFormat:@"NTJsonProperty %@.%@ has a setter, @dynamic missing?", NSStringFromClass(self), property.name]
-                                         userInfo:nil];
-    }
     
-    objc_setAssociatedObject(self, SCANNING_PROPERTIES_ASSOC_KEY, nil, OBJC_ASSOCIATION_RETAIN);
-   
     return [propertyInfoMap copy];
 }
 
@@ -648,9 +619,6 @@ static void setPropertyValue_longLong(NTJsonModel *model, SEL _cmd, long long va
 
 +(BOOL)resolveInstanceMethod:(SEL)sel
 {
-    if ( [self scanningProperties] )
-        return [super resolveInstanceMethod:sel];
-    
     NSString *selName = NSStringFromSelector(sel);
     
     BOOL isSet;

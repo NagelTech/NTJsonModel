@@ -27,6 +27,7 @@
 		F0A5D26A18F6F833006891E9 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = F0A5D26818F6F833006891E9 /* LICENSE */; };
 		F0A5D26B18F6F833006891E9 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F0A5D26918F6F833006891E9 /* README.md */; };
 		F0F395CE1901C1CC007985CD /* NTJsonModel.podspec in Resources */ = {isa = PBXBuildFile; fileRef = F0F395CD1901C1CC007985CD /* NTJsonModel.podspec */; };
+		F0F395D41902D2C9007985CD /* NTJsonModel+NativeConversions.m in Sources */ = {isa = PBXBuildFile; fileRef = F0F395D31902D2C9007985CD /* NTJsonModel+NativeConversions.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,6 +74,8 @@
 		F0F395C719019786007985CD /* NTJsonModelArray+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NTJsonModelArray+Private.h"; sourceTree = "<group>"; };
 		F0F395CA1901BCF3007985CD /* NTJsonProperty+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NTJsonProperty+Private.h"; sourceTree = "<group>"; };
 		F0F395CD1901C1CC007985CD /* NTJsonModel.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = NTJsonModel.podspec; path = ../../NTJsonModel.podspec; sourceTree = "<group>"; };
+		F0F395D21902D2C9007985CD /* NTJsonModel+NativeConversions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NTJsonModel+NativeConversions.h"; sourceTree = "<group>"; };
+		F0F395D31902D2C9007985CD /* NTJsonModel+NativeConversions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NTJsonModel+NativeConversions.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -175,6 +178,8 @@
 			isa = PBXGroup;
 			children = (
 				F0A5D26818F6F833006891E9 /* LICENSE */,
+				F0F395D21902D2C9007985CD /* NTJsonModel+NativeConversions.h */,
+				F0F395D31902D2C9007985CD /* NTJsonModel+NativeConversions.m */,
 				F0A5D25818F4D479006891E9 /* NTJsonModel+Private.h */,
 				F0A5D25518F4D435006891E9 /* NTJsonModel.h */,
 				F0A5D25618F4D435006891E9 /* NTJsonModel.m */,
@@ -303,6 +308,7 @@
 			files = (
 				F0A5D25E18F4D887006891E9 /* User.m in Sources */,
 				F0A5D23618F4D410006891E9 /* AppDelegate.m in Sources */,
+				F0F395D41902D2C9007985CD /* NTJsonModel+NativeConversions.m in Sources */,
 				F0A5D25718F4D435006891E9 /* NTJsonModel.m in Sources */,
 				F0A5D26418F5DFBE006891E9 /* Account.m in Sources */,
 				F0A5D26718F5F43F006891E9 /* NTJsonModelArray.m in Sources */,

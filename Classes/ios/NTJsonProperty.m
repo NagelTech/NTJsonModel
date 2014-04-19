@@ -267,7 +267,7 @@
     if ( self.type != NTJsonPropertyTypeObject && self.type != NTJsonPropertyTypeObjectArray )
         @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"convertJsonToValue:inModel only supports Objects and ObjectArrays cuurrently." userInfo:nil];
     
-    if ( ![self.typeClass instancesRespondToSelector:@selector(convertJsonToValue:)] )
+    if ( ![self.typeClass respondsToSelector:@selector(convertJsonToValue:)] )
         @throw [NSException exceptionWithName:@"UnableToConvert" reason:@"Unable to convert Json to value 0 convertJsonToValue: not implemented" userInfo:nil];
     
     if ( self.type == NTJsonPropertyTypeObject )
@@ -295,7 +295,6 @@
 }
 
 
-
 -(id)convertValueToJson:(id)value inModel:(NTJsonModel *)model
 {
     // todo: support builtin types (NSNumber, etc)
@@ -303,7 +302,7 @@
     if ( self.type != NTJsonPropertyTypeObject && self.type != NTJsonPropertyTypeObjectArray )
         @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"convertValueToJson:inModel only supports Objects and ObjectArrays cuurrently." userInfo:nil];
     
-    if ( ![self.typeClass instancesRespondToSelector:@selector(convertValueToJson:)] )
+    if ( ![self.typeClass respondsToSelector:@selector(convertValueToJson:)] )
         @throw [NSException exceptionWithName:@"UnableToConvert" reason:@"Unable to convert Json to value 0 convertValueToJson: not implemented" userInfo:nil];
     
     if ( self.type == NTJsonPropertyTypeObject )
@@ -330,5 +329,6 @@
     return nil; // we shouldn't get here
 
 }
+
 
 @end
