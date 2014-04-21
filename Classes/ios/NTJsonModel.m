@@ -23,7 +23,10 @@
 @implementation NTJsonModel
 
 
-#pragma mark - One time initialization
+#pragma mark - One-time initialization
+
+
+static char PROPERTY_INFO_MAP_ASSOC_KEY;
 
 
 +(BOOL)addImpsForProperty:(NTJsonProperty *)property
@@ -215,7 +218,7 @@
         @throw [NSException exceptionWithName:@"NTJsonModelErrors" reason:[NSString stringWithFormat:@"Errors encountered initializing properties for NTJsonModel class %@, see log for more information.", NSStringFromClass(self)] userInfo:nil];
     }
 
-    objc_setAssociatedObject(self, PROPERTY_INFO_MAP_ASSOC_KEY, [propertyInfoMap copy], OBJC_ASSOCIATION_RETAIN);
+    objc_setAssociatedObject(self, &PROPERTY_INFO_MAP_ASSOC_KEY, [propertyInfoMap copy], OBJC_ASSOCIATION_RETAIN);
 }
 
 
@@ -422,9 +425,6 @@ id NTJsonModel_deepCopy(id json)
 #pragma mark - Property Info management
 
 
-static const void *PROPERTY_INFO_MAP_ASSOC_KEY = "PROPERTY_INFO_MAP_ASSOC_KEY";
-
-
 +(NSArray *)propertyInfo
 {
     return @[];
@@ -433,7 +433,7 @@ static const void *PROPERTY_INFO_MAP_ASSOC_KEY = "PROPERTY_INFO_MAP_ASSOC_KEY";
 
 +(NSDictionary *)propertyInfoMap
 {
-    return objc_getAssociatedObject(self, PROPERTY_INFO_MAP_ASSOC_KEY);
+    return objc_getAssociatedObject(self, &PROPERTY_INFO_MAP_ASSOC_KEY);
 }
 
 
@@ -631,219 +631,6 @@ static const void *PROPERTY_INFO_MAP_ASSOC_KEY = "PROPERTY_INFO_MAP_ASSOC_KEY";
     if ( property.shouldCache )
         [self setCacheValue:value forProperty:property];
 }
-
-/*
-#pragma mark - dynamic method resolution
-
-
-+(BOOL)resolveInstanceMethod:(SEL)sel
-{
-    NSString *selName = NSStringFromSelector(sel);
-    
-    BOOL isSet;
-    NSString *name;
-    
-    if ( [selName hasPrefix:@"set"] )
-    {
-        isSet = YES;
-        name = [[[selName substringWithRange:NSMakeRange(3, 1)] lowercaseString] stringByAppendingString:[selName substringWithRange:NSMakeRange(4, selName.length-5)]];
-    }
-    else
-    {
-        isSet = NO;
-        name = selName;
-    }
-    
-    NTJsonProperty *property = [self propertyInfoForName:name];
-    
-    if ( !property )
-        return [super resolveInstanceMethod:sel]; // not a property we know about.
-    
-    // Wire this guy up!
-    
-    id impBlock;
-    const char *typeCode = nil;
-    
-    switch(property.type)
-    {
-        case NTJsonPropertyTypeInt:
-            typeCode = @encode(int);
-            if ( isSet )
-            {
-                impBlock = ^(NTJsonModel *model, int value)
-                {
-                    [model setValue:@(value) forProperty:property];
-                };
-            }
-            else
-            {
-                impBlock = ^int(NTJsonModel *model)
-                {
-                    NSNumber *value = [model getValueForProperty:property];
-                    
-                    if ( ![value respondsToSelector:@selector(intValue)] )
-                        value = property.defaultValue;
-                    
-                    return [value intValue];
-                };
-            }
-            break;
-            
-        case NTJsonPropertyTypeBool:
-            typeCode = @encode(BOOL);
-            if ( isSet )
-            {
-                impBlock = ^(NTJsonModel *model, BOOL value)
-                {
-                    [model setValue:@(value) forProperty:property];
-                };
-            }
-            else
-            {
-                impBlock = ^BOOL(NTJsonModel *model)
-                {
-                    NSNumber *value = [model getValueForProperty:property];
-                    
-                    if ( ![value respondsToSelector:@selector(boolValue)] )
-                        value = property.defaultValue;
-                    
-                    return [value boolValue];
-                };
-            }
-            break;
-            
-        case NTJsonPropertyTypeFloat:
-            typeCode = @encode(float);
-            if ( isSet )
-            {
-                impBlock = ^(NTJsonModel *model, float value)
-                {
-                    [model setValue:@(value) forProperty:property];
-                };
-            }
-            else
-            {
-                impBlock = ^float(NTJsonModel *model)
-                {
-                    NSNumber *value = [model getValueForProperty:property];
-                    
-                    if ( ![value respondsToSelector:@selector(floatValue)] )
-                        value = property.defaultValue;
-                    
-                    return [value floatValue];
-                };
-            }
-            break;
-            
-        case NTJsonPropertyTypeDouble:
-            typeCode = @encode(double);
-            if ( isSet )
-            {
-                impBlock = ^(NTJsonModel *model, double value)
-                {
-                    [model setValue:@(value) forProperty:property];
-                };
-            }
-            else
-            {
-                impBlock = ^double(NTJsonModel *model)
-                {
-                    NSNumber *value = [model getValueForProperty:property];
-                    
-                    if ( ![value respondsToSelector:@selector(doubleValue)] )
-                        value = property.defaultValue;
-                    
-                    return [value doubleValue];
-                };
-            }
-            break;
-            
-        case NTJsonPropertyTypeLongLong:
-            typeCode = @encode(long long);
-            if ( isSet )
-            {
-                impBlock = ^(NTJsonModel *model, long long value)
-                {
-                    [model setValue:@(value) forProperty:property];
-                };
-            }
-            else
-            {
-                impBlock = ^long long(NTJsonModel *model)
-                {
-                    NSNumber *value = [model getValueForProperty:property];
-                    
-                    if ( ![value respondsToSelector:@selector(longLongValue)] )
-                        value = property.defaultValue;
-                    
-                    return [value longLongValue];
-                };
-            }
-                
-            break;
-            
-        case NTJsonPropertyTypeString:
-        case NTJsonPropertyTypeStringEnum:
-            typeCode = @encode(NSString *);
-            if ( isSet )
-            {
-                impBlock = ^void(NTJsonModel *model, NSString *value)
-                {
-                    [model setValue:value forProperty:property];
-                };
-            }
-            else
-            {
-                impBlock = ^NSString *(NTJsonModel *model)
-                {
-                    id value = [model getValueForProperty:property];
-                    
-                    if ( ![value isKindOfClass:[NSString class]] && [value respondsToSelector:@selector(stringValue)] )
-                        value = [value stringValue];
-                    
-                    return [value isKindOfClass:[NSString class]] ? value : nil;
-                };
-            }
-            break;
-
-        case NTJsonPropertyTypeModel:
-        case NTJsonPropertyTypeModelArray:
-        case NTJsonPropertyTypeObject:
-        case NTJsonPropertyTypeObjectArray:
-            typeCode = @encode(id);
-            if ( isSet )
-            {
-                impBlock = ^(NTJsonModel *model, id value)
-                {
-                    [model setValue:value forProperty:property];
-                };
-            }
-            else
-            {
-                impBlock = ^id(NTJsonModel *model)
-                {
-                    return [model getValueForProperty:property];
-                };
-            }
-            break;
-    }
-    
-    char types[80];
-    
-    if ( isSet )
-        sprintf(types, "v:@:%s", typeCode);
-    else
-        sprintf(types, "%s@:", typeCode);
-    
-    IMP imp = imp_implementationWithBlock(impBlock);
-    
-    class_addMethod(self, sel, imp, types);
-    
-    return YES; // re-resolve
-}
- 
- 
-*/
 
 
 @end
