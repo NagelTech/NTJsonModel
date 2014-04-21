@@ -23,6 +23,202 @@
 @implementation NTJsonModel
 
 
+#pragma mark - One time initialization
+
+
++(BOOL)addImpsForProperty:(NTJsonProperty *)property
+{
+    id getBlock;
+    id setBlock;
+    const char *typeCode = nil;
+    
+    switch(property.type)
+    {
+        case NTJsonPropertyTypeInt:
+        {
+            typeCode = @encode(int);
+            setBlock = ^(NTJsonModel *model, int value)
+            {
+                [model setValue:@(value) forProperty:property];
+            };
+            getBlock = ^int(NTJsonModel *model)
+            {
+                NSNumber *value = [model getValueForProperty:property];
+                
+                if ( ![value respondsToSelector:@selector(intValue)] )
+                    value = property.defaultValue;
+                
+                return [value intValue];
+            };
+            break;
+        }
+            
+        case NTJsonPropertyTypeBool:
+        {
+            typeCode = @encode(BOOL);
+            setBlock = ^(NTJsonModel *model, BOOL value)
+            {
+                [model setValue:@(value) forProperty:property];
+            };
+            getBlock = ^BOOL(NTJsonModel *model)
+            {
+                NSNumber *value = [model getValueForProperty:property];
+                
+                if ( ![value respondsToSelector:@selector(boolValue)] )
+                    value = property.defaultValue;
+                
+                return [value boolValue];
+            };
+            break;
+        }
+            
+        case NTJsonPropertyTypeFloat:
+        {
+            typeCode = @encode(float);
+            setBlock = ^(NTJsonModel *model, float value)
+            {
+                [model setValue:@(value) forProperty:property];
+            };
+            getBlock = ^float(NTJsonModel *model)
+            {
+                NSNumber *value = [model getValueForProperty:property];
+                
+                if ( ![value respondsToSelector:@selector(floatValue)] )
+                    value = property.defaultValue;
+                
+                return [value floatValue];
+            };
+            break;
+        }
+            
+        case NTJsonPropertyTypeDouble:
+        {
+            typeCode = @encode(double);
+            setBlock = ^(NTJsonModel *model, double value)
+            {
+                [model setValue:@(value) forProperty:property];
+            };
+            getBlock = ^double(NTJsonModel *model)
+            {
+                NSNumber *value = [model getValueForProperty:property];
+                
+                if ( ![value respondsToSelector:@selector(doubleValue)] )
+                    value = property.defaultValue;
+                
+                return [value doubleValue];
+            };
+            break;
+        }
+            
+        case NTJsonPropertyTypeLongLong:
+        {
+            typeCode = @encode(long long);
+            setBlock = ^(NTJsonModel *model, long long value)
+            {
+                [model setValue:@(value) forProperty:property];
+            };
+            getBlock = ^long long(NTJsonModel *model)
+            {
+                NSNumber *value = [model getValueForProperty:property];
+                
+                if ( ![value respondsToSelector:@selector(longLongValue)] )
+                    value = property.defaultValue;
+                
+                return [value longLongValue];
+            };
+            break;
+        }
+            
+        case NTJsonPropertyTypeString:
+        case NTJsonPropertyTypeStringEnum:
+        {
+            typeCode = @encode(NSString *);
+            setBlock = ^void(NTJsonModel *model, NSString *value)
+            {
+                [model setValue:value forProperty:property];
+            };
+            getBlock = ^NSString *(NTJsonModel *model)
+            {
+                id value = [model getValueForProperty:property];
+                
+                if ( ![value isKindOfClass:[NSString class]] && [value respondsToSelector:@selector(stringValue)] )
+                    value = [value stringValue];
+                
+                return [value isKindOfClass:[NSString class]] ? value : nil;
+            };
+            break;
+        }
+            
+        case NTJsonPropertyTypeModel:
+        case NTJsonPropertyTypeModelArray:
+        case NTJsonPropertyTypeObject:
+        case NTJsonPropertyTypeObjectArray:
+        {
+            typeCode = @encode(id);
+            setBlock = ^(NTJsonModel *model, id value)
+            {
+                [model setValue:value forProperty:property];
+            };
+            getBlock = ^id(NTJsonModel *model)
+            {
+                return [model getValueForProperty:property];
+            };
+            break;
+        }
+            
+        default:
+            @throw [NSException exceptionWithName:@"UnexpectedPropertyType" reason:[NSString stringWithFormat:@"Unexpected property type for %@.%@", NSStringFromClass(self), property.name] userInfo:nil];
+    }
+    
+    char setTypes[80];
+    char getTypes[80];
+    
+    sprintf(setTypes, "v:@:%s", typeCode);
+    sprintf(getTypes, "%s@:", typeCode);
+    
+    IMP setImp = imp_implementationWithBlock(setBlock);
+    IMP getImp = imp_implementationWithBlock(getBlock);
+    
+    SEL setSel = NSSelectorFromString([NSString stringWithFormat:@"set%@%@:", [[property.name substringToIndex:1] uppercaseString], [property.name substringFromIndex:1]]);
+    SEL getSel = NSSelectorFromString(property.name);;
+    
+    IMP getPrevImp = class_replaceMethod(self, getSel, getImp, getTypes);
+    IMP setPrevImp = class_replaceMethod(self, setSel, setImp, setTypes);
+    
+    if ( getPrevImp || setPrevImp )
+    {
+        NSLog(@"Error: an existing implementation of an NTJsonModel property %@.%@ was found. Missing @dynamic?", NSStringFromClass(self), property.name);
+        
+        return NO; // Warnings
+    }
+    
+    return YES; // success
+}
+
+
++(void)initialize
+{
+    if ( [self propertyInfoMap] )
+        return ; // already initiailized
+
+    NSMutableDictionary *propertyInfoMap = [NSMutableDictionary dictionary];
+    BOOL success = YES;
+    
+    for(NTJsonProperty *property in [self propertyInfo])
+    {
+        success = success && [self addImpsForProperty:property];
+        propertyInfoMap[property.name] = property;
+    }
+    
+    if ( !success )
+    {
+        @throw [NSException exceptionWithName:@"NTJsonModelErrors" reason:[NSString stringWithFormat:@"Errors encountered initializing properties for NTJsonModel class %@, see log for more information.", NSStringFromClass(self)] userInfo:nil];
+    }
+
+    objc_setAssociatedObject(self, PROPERTY_INFO_MAP_ASSOC_KEY, [propertyInfoMap copy], OBJC_ASSOCIATION_RETAIN);
+}
+
+
 #pragma mark - Constructors
 
 
@@ -227,7 +423,6 @@ id NTJsonModel_deepCopy(id json)
 
 
 static const void *PROPERTY_INFO_MAP_ASSOC_KEY = "PROPERTY_INFO_MAP_ASSOC_KEY";
-static const void *SCANNING_PROPERTIES_ASSOC_KEY = "SCANNING_PROPERTIES_ASSOC_KEY";
 
 
 +(NSArray *)propertyInfo
@@ -236,28 +431,9 @@ static const void *SCANNING_PROPERTIES_ASSOC_KEY = "SCANNING_PROPERTIES_ASSOC_KE
 }
 
 
-+(NSDictionary *)scanProperties
-{
-    NSMutableDictionary *propertyInfoMap = [NSMutableDictionary dictionary];
-    
-    for(NTJsonProperty *property in [self propertyInfo])
-        propertyInfoMap[property.name] = property;
-    
-    return [propertyInfoMap copy];
-}
-
-
 +(NSDictionary *)propertyInfoMap
 {
-    NSDictionary *propertyInfoMap = objc_getAssociatedObject(self, PROPERTY_INFO_MAP_ASSOC_KEY);
-    
-    if ( !propertyInfoMap )
-    {
-        propertyInfoMap = [self scanProperties];
-        objc_setAssociatedObject(self, PROPERTY_INFO_MAP_ASSOC_KEY, propertyInfoMap, OBJC_ASSOCIATION_RETAIN);
-    }
-
-    return propertyInfoMap;
+    return objc_getAssociatedObject(self, PROPERTY_INFO_MAP_ASSOC_KEY);
 }
 
 
@@ -456,7 +632,7 @@ static const void *SCANNING_PROPERTIES_ASSOC_KEY = "SCANNING_PROPERTIES_ASSOC_KE
         [self setCacheValue:value forProperty:property];
 }
 
-
+/*
 #pragma mark - dynamic method resolution
 
 
@@ -665,6 +841,9 @@ static const void *SCANNING_PROPERTIES_ASSOC_KEY = "SCANNING_PROPERTIES_ASSOC_KE
     
     return YES; // re-resolve
 }
+ 
+ 
+*/
 
 
 @end
