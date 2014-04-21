@@ -11,10 +11,11 @@
 #import "NTJsonModel+Private.h"
 
 
-@interface NTJsonModel ()
+@interface NTJsonModel () <NTJsonModelContainer>
 {
     id _json;
     BOOL _isMutable;
+    id<NTJsonModelContainer> __weak _parentJsonContainer;
 }
 
 @end
@@ -321,6 +322,18 @@ static char PROPERTY_INFO_MAP_ASSOC_KEY;
 }
 
 
+-(id<NTJsonModelContainer>)parentJsonContainer
+{
+    return _parentJsonContainer;
+}
+
+
+-(void)setParentJsonContainer:(id<NTJsonModelContainer>)parentJsonContainer
+{
+    _parentJsonContainer = parentJsonContainer;
+}
+
+
 #pragma mark - NSCopying & NSMutableCopying
 
 
@@ -422,6 +435,49 @@ id NTJsonModel_deepCopy(id json)
 }
 
 
+#pragma mark - becomeMutable
+
+
+-(void)setMutableJson:(NSMutableDictionary *)mutableJson        // recursive
+{
+    _json = mutableJson;
+    _isMutable = YES;
+    
+    for(NTJsonProperty *property in self.class.propertyInfoMap.allValues)
+    {
+        if ( !property.shouldCache )
+            continue;
+        
+        id cacheValue = [self getCacheValueForProperty:property];
+        
+        if ( !cacheValue )
+            continue;
+        
+        id jsonValue = [self.json objectForKey:property.jsonKeyPath];
+
+        [cacheValue setMutableJson:jsonValue];
+    }
+}
+
+
+-(void)becomeMutable
+{
+    if ( self.isMutable )
+        return ;
+    
+    if ( self.parentJsonContainer )
+    {
+        // we are not the root object, forward the request on...
+        [self.parentJsonContainer becomeMutable];
+        return ;
+    }
+    
+    // we are the root, so we actually have work to do...
+    
+    [self setMutableJson:NTJsonModel_mutableDeepCopy(_json)];  // recursive
+}
+
+
 #pragma mark - Property Info management
 
 
@@ -464,8 +520,20 @@ id NTJsonModel_deepCopy(id json)
 {
     if ( !property.shouldCache )
         return ;
-
+    
+    // If there is currently a container in this slot, clear it...
+    
+    id cachedValue = objc_getAssociatedObject(self, (__bridge void *)property);
+    
+    if ( [cachedValue conformsToProtocol:@protocol(NTJsonModelContainer)] )
+        [cachedValue setParentJsonContainer:nil];
+    
     objc_setAssociatedObject(self, (__bridge void *)property, value, OBJC_ASSOCIATION_RETAIN);
+    
+    // Assign the container parent (if valid)...
+    
+    if ( [value conformsToProtocol:@protocol(NTJsonModelContainer)] )
+        [value setParentJsonContainer:self];
 }
 
 
@@ -495,8 +563,10 @@ id NTJsonModel_deepCopy(id json)
         case NTJsonPropertyTypeDouble:
         case NTJsonPropertyTypeLongLong:
         case NTJsonPropertyTypeString:
+        {
             value = jsonValue;  // more validation/conversion happens in the thunks
             break;
+        }
             
         case NTJsonPropertyTypeStringEnum:
         {
@@ -506,26 +576,35 @@ id NTJsonModel_deepCopy(id json)
         }
             
         case NTJsonPropertyTypeModel:
+        {
             if ( self.isMutable )
                 value = [[property.typeClass alloc] initWithMutableJson:jsonValue];
             else
                 value = [[property.typeClass alloc] initWithJson:jsonValue];
+
             break;
+        }
             
         case NTJsonPropertyTypeModelArray:
+        {
             if ( self.isMutable )
                 value = [[NTJsonModelArray alloc] initWithModelClass:property.typeClass mutableJsonArray:jsonValue];
             else
                 value = [[NTJsonModelArray alloc] initWithModelClass:property.typeClass jsonArray:jsonValue];
             break ;
+        }
             
         case NTJsonPropertyTypeObject:
+        {
             value = [property convertJsonToValue:jsonValue inModel:self];
             break;
+        }
             
         case NTJsonPropertyTypeObjectArray:
+        {
             value = [property convertJsonToValue:jsonValue inModel:self];
             break;
+        }
     }
 
     // save in cache, if indicated...
@@ -544,9 +623,7 @@ id NTJsonModel_deepCopy(id json)
     // make sure we are mutable...
     
     if ( !self.isMutable )
-    {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Attempt to modify an immutable NTJsonModel instance" userInfo:nil];
-    }
+        [self becomeMutable];
     
     // if nil is passed in we simply remove the value
     
@@ -616,6 +693,11 @@ id NTJsonModel_deepCopy(id json)
     
     if ( ![value isKindOfClass:expectedValueType] )
         @throw [NSException exceptionWithName:@"InvalidType" reason:@"Invalid type when setting property" userInfo:nil];
+    
+    // validate this object is not associated with another parent already...
+    
+    if ( [value conformsToProtocol:@protocol(NTJsonModelContainer)] && [value parentJsonContainer] )
+        @throw [NSException exceptionWithName:@"MultipleParents" reason:@"Cannot add item to NTJsonModel because it is alrready a member of another object." userInfo:nil];
     
     // if we don't have a value now then we have a problem
     

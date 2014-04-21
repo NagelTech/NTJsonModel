@@ -22,6 +22,7 @@
     Class _modelClass;
     id _jsonArray;
     BOOL _isMutable;
+    id<NTJsonModelContainer> __weak _parentJsonContainer;
     
     NSMutableArray *_valueCache;
 }
@@ -50,6 +51,9 @@
 
 
 @implementation NTJsonModelArray
+
+
+#pragma mark - Initialization
 
 
 -(id)initWithModelClass:(Class)modelClass jsonArray:(NSArray *)jsonArray
@@ -84,6 +88,9 @@
 }
 
 
+#pragma mark - Properties
+
+
 -(NSArray *)jsonArray
 {
     return _jsonArray;
@@ -96,10 +103,19 @@
 }
 
 
--(NSUInteger)count
+-(id<NTJsonModelContainer>)parentJsonContainer
 {
-    return self.jsonArray.count;
+    return _parentJsonContainer;
 }
+
+
+-(void)setParentJsonContainer:(id<NTJsonModelContainer>)parentJsonContainer
+{
+    _parentJsonContainer = parentJsonContainer;
+}
+
+
+#pragma mark - cache support
 
 
 -(id)cachedObjectAtIndex:(NSUInteger)index
@@ -126,6 +142,9 @@
 }
 
 
+#pragma mark - NSCopying, NSMutableCopying
+
+
 -(id)copyWithZone:(NSZone *)zone
 {
     NSArray *jsonArray = (self.isMutable) ? NTJsonModel_deepCopy(self.mutableJsonArray) : self.jsonArray;
@@ -139,6 +158,56 @@
     NSMutableArray *mutableJsonArray = NTJsonModel_mutableDeepCopy(self.jsonArray);
     
     return [[NTJsonModelArray alloc] initWithModelClass:_modelClass mutableJsonArray:mutableJsonArray];
+}
+
+
+
+#pragma mark - becomeMutable
+
+
+-(void)setMutableJson:(id)mutableJson // recursive
+{
+    _jsonArray = mutableJson;
+    _isMutable = YES;
+    
+    if ( _valueCache )
+    {
+        for(int index=0; index<_valueCache.count; index++)
+        {
+            id<NTJsonModelContainer> cachedValue = _valueCache[index];
+            
+            if ( cachedValue == [NTJsonModelArrayEmptyElement emptyElement] )
+                continue;    // empty
+            
+            id value = _jsonArray[index];
+            
+            [cachedValue setMutableJson:value];
+        }
+    }
+}
+
+
+-(void)becomeMutable
+{
+    if ( self.isMutable )
+        return ;
+    
+    if ( self.parentJsonContainer )
+    {
+        [self.parentJsonContainer becomeMutable];
+        return ;
+    }
+    
+    [self setMutableJson:NTJsonModel_mutableDeepCopy(_jsonArray)];
+}
+
+
+#pragma mark - NSArray overrides
+
+
+-(NSUInteger)count
+{
+    return self.jsonArray.count;
 }
 
 
@@ -165,6 +234,8 @@
     else
         value = [[_modelClass alloc] initWithJson:jsonValue];
     
+    [value setParentJsonContainer:self];
+    
     // cache...
     
     [self ensureCacheSize:index+1];
@@ -174,12 +245,15 @@
 }
 
 
+#pragma mark - NAMutableArray overrides
+
+
 -(void)insertObject:(id)value atIndex:(NSUInteger)index
 {
     // todo: check nil
     
     if ( !self.isMutable )
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Attempt to modify an immutable NTJsonModel array" userInfo:nil];
+        [self becomeMutable];
     
     if ( value != [NSNull null] && ![value isKindOfClass:self.modelClass] )
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Attempt to insert invalid class type into NTJsonModel array" userInfo:nil];
@@ -188,8 +262,13 @@
     
     NTJsonModel *model = value;
     
+    if ( model.parentJsonContainer )
+        @throw [NSException exceptionWithName:@"MultipleParents" reason:@"Cannot add item to NTJsonModelArray because it is already a member of another object." userInfo:nil];
+    
     if ( !model.isMutable )
-        model = [model mutableCopy];
+        [model becomeMutable];
+    
+    [model setParentJsonContainer:self];
     
     // Cache...
     
@@ -205,10 +284,17 @@
 -(void)removeObjectAtIndex:(NSUInteger)index
 {
     if ( !self.isMutable )
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Attempt to modify an Immutable NTJsonModel Array" userInfo:nil];
+        [self becomeMutable];
 
     if ( _valueCache && _valueCache.count >= index )
+    {
+        NTJsonModel *cachedValue = _valueCache[index];
+        
+        if ( [cachedValue conformsToProtocol:@protocol(NTJsonModelContainer)] )
+            [cachedValue setParentJsonContainer:nil];
+        
         [_valueCache removeObjectAtIndex:index];
+    }
     
     [self.mutableJsonArray removeObjectAtIndex:index];
 }
@@ -217,9 +303,9 @@
 -(void)replaceObjectAtIndex:(NSUInteger)index withObject:(id)value
 {
     // todo: check nil
-    
+
     if ( !self.isMutable )
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Attempt to modify an Immutable NTJsonModel Array" userInfo:nil];
+        [self becomeMutable];
     
     if ( value != [NSNull null] && ![value isKindOfClass:self.modelClass] )
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Attempt to insert invalid class type into NTJsonModel Array" userInfo:nil];
@@ -228,12 +314,23 @@
     
     NTJsonModel *model = value;
     
+    if ( model.parentJsonContainer )
+        @throw [NSException exceptionWithName:@"MultipleParents" reason:@"Cannot add item to NTJsonModelArray because it is already a member of another object." userInfo:nil];
+    
     if ( !model.isMutable )
-        model = [model mutableCopy];
+        [model becomeMutable];
+    
+    [model setParentJsonContainer:self];
     
     // Cache...
     
     [self ensureCacheSize:index+1];
+    
+    NTJsonModel *cachedValue = _valueCache[index];
+    
+    if ( [cachedValue conformsToProtocol:@protocol(NTJsonModelContainer)] )
+        [cachedValue setParentJsonContainer:nil];
+    
     [_valueCache replaceObjectAtIndex:index withObject:model];
     
     // Store...
