@@ -10,14 +10,14 @@
 
 @interface NTJsonProperty (Private)
 
+@property (nonatomic,readwrite) Class modelClass;
 @property (nonatomic,readonly) id defaultValue;
 @property (nonatomic,readonly) BOOL shouldCache;
 
-
 // conversion
 
--(id)convertValueToJson:(id)object inModel:(NTJsonModel *)model;
--(id)convertJsonToValue:(id)json inModel:(NTJsonModel *)model;
+-(id)convertValueToJson:(id)object;
+-(id)convertJsonToValue:(id)json;
 
 
 @end

@@ -27,7 +27,7 @@
 #pragma mark - One-time initialization
 
 
-static char PROPERTY_INFO_MAP_ASSOC_KEY;
+static char ALL_PROPERTY_INFO_ASSOC_KEY;
 
 
 +(BOOL)addImpsForProperty:(NTJsonProperty *)property
@@ -200,18 +200,56 @@ static char PROPERTY_INFO_MAP_ASSOC_KEY;
 }
 
 
+static BOOL classImplementsSelector(Class class, SEL sel)
+{
+    unsigned int numMethods;
+    Method *methods = class_copyMethodList(object_getClass(class), &numMethods);
+    
+    BOOL found = NO;
+    
+    for(int index=0; index<numMethods; index++)
+    {
+        SEL methodSelector = method_getName(methods[index]);
+        
+        if ( methodSelector == sel )
+        {
+            found = YES;
+            break;
+        }
+    }
+    
+    free(methods);
+    
+    return found;
+}
+
+
 +(void)initialize
 {
-    if ( [self propertyInfoMap] )
+    if ( self == [NTJsonModel class] )
+        return ; // nothing to initialize for ourselves...
+    
+    if ( [self jsonAllPropertyInfo] )
         return ; // already initiailized
 
-    NSMutableDictionary *propertyInfoMap = [NSMutableDictionary dictionary];
+    NSMutableDictionary *jsonAllPropertyInfo = [NSMutableDictionary dictionary];
     BOOL success = YES;
     
-    for(NTJsonProperty *property in [self propertyInfo])
+    // start with properties from our superclass...
+    
+    if ( self.superclass != [NTJsonModel class] )
+        [jsonAllPropertyInfo addEntriesFromDictionary:[self.superclass jsonAllPropertyInfo]];
+    
+    // Add our properties and create the implementations for them...
+    
+    if ( classImplementsSelector(self, @selector(jsonPropertyInfo)) )
     {
-        success = success && [self addImpsForProperty:property];
-        propertyInfoMap[property.name] = property;
+        for(NTJsonProperty *property in [self jsonPropertyInfo])
+        {
+            property.modelClass = self;
+            success = success && [self addImpsForProperty:property];
+            jsonAllPropertyInfo[property.name] = property;
+        }
     }
     
     if ( !success )
@@ -219,7 +257,7 @@ static char PROPERTY_INFO_MAP_ASSOC_KEY;
         @throw [NSException exceptionWithName:@"NTJsonModelErrors" reason:[NSString stringWithFormat:@"Errors encountered initializing properties for NTJsonModel class %@, see log for more information.", NSStringFromClass(self)] userInfo:nil];
     }
 
-    objc_setAssociatedObject(self, &PROPERTY_INFO_MAP_ASSOC_KEY, [propertyInfoMap copy], OBJC_ASSOCIATION_RETAIN);
+    objc_setAssociatedObject(self, &ALL_PROPERTY_INFO_ASSOC_KEY, [jsonAllPropertyInfo copy], OBJC_ASSOCIATION_RETAIN);
 }
 
 
@@ -443,7 +481,7 @@ id NTJsonModel_deepCopy(id json)
     _json = mutableJson;
     _isMutable = YES;
     
-    for(NTJsonProperty *property in self.class.propertyInfoMap.allValues)
+    for(NTJsonProperty *property in self.class.jsonAllPropertyInfo.allValues)
     {
         if ( !property.shouldCache )
             continue;
@@ -481,21 +519,15 @@ id NTJsonModel_deepCopy(id json)
 #pragma mark - Property Info management
 
 
-+(NSArray *)propertyInfo
++(NSArray *)jsonPropertyInfo
 {
     return @[];
 }
 
 
-+(NSDictionary *)propertyInfoMap
++(NSDictionary *)jsonAllPropertyInfo
 {
-    return objc_getAssociatedObject(self, &PROPERTY_INFO_MAP_ASSOC_KEY);
-}
-
-
-+(NTJsonProperty *)propertyInfoForName:(NSString *)name
-{
-    return [self propertyInfoMap][name];
+    return objc_getAssociatedObject(self, &ALL_PROPERTY_INFO_ASSOC_KEY);
 }
 
 
@@ -596,13 +628,13 @@ id NTJsonModel_deepCopy(id json)
             
         case NTJsonPropertyTypeObject:
         {
-            value = [property convertJsonToValue:jsonValue inModel:self];
+            value = [property convertJsonToValue:jsonValue];
             break;
         }
             
         case NTJsonPropertyTypeObjectArray:
         {
-            value = [property convertJsonToValue:jsonValue inModel:self];
+            // todo: use ModelArray
             break;
         }
     }
@@ -678,13 +710,10 @@ id NTJsonModel_deepCopy(id json)
             
         case NTJsonPropertyTypeObject:
             expectedValueType = property.typeClass;
-            jsonValue = [property convertValueToJson:value inModel:self];
-            // todo - conversion
+            jsonValue = [property convertValueToJson:value];
             break;
             
         case NTJsonPropertyTypeObjectArray:
-            expectedValueType = [NSArray class];
-            jsonValue = [property convertValueToJson:value inModel:self];
             // to do - conversion
             break;
     }

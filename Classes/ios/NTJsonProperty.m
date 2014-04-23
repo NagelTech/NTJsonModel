@@ -11,7 +11,15 @@
 
 @interface NTJsonProperty ()
 {
+    Class _modelClass;
+    
     id _defaultValue;
+
+    id _convertValueToJsonTarget;
+    SEL _convertValueToJsonSelector;
+
+    id _convertJsonToValueTarget;
+    SEL _convertJsonToValueSelector;
 }
 
 @end
@@ -260,74 +268,102 @@
 }
 
 
--(id)convertJsonToValue:(id)json inModel:(NTJsonModel *)model
+-(Class)modelClass
 {
-    // todo: support builtin types (NSNumber, etc)
-
-    if ( self.type != NTJsonPropertyTypeObject && self.type != NTJsonPropertyTypeObjectArray )
-        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"convertJsonToValue:inModel only supports Objects and ObjectArrays cuurrently." userInfo:nil];
-    
-    if ( ![self.typeClass respondsToSelector:@selector(convertJsonToValue:)] )
-        @throw [NSException exceptionWithName:@"UnableToConvert" reason:@"Unable to convert Json to value 0 convertJsonToValue: not implemented" userInfo:nil];
-    
-    if ( self.type == NTJsonPropertyTypeObject )
-        return [self.typeClass convertJsonToValue:json];
-    
-    else if ( self.type == NTJsonPropertyTypeObjectArray )
-    {
-        if ( ![json isKindOfClass:[NSArray class]] )
-            return nil;  // not something we can actually convert.
-        
-        NSMutableArray *array = [NSMutableArray arrayWithCapacity:[json count]];
-        
-        for(id jsonItem in json)
-        {
-            id valueItem = [self.typeClass convertJsonToValue:jsonItem];
-            
-            if (valueItem)
-                [array addObject:valueItem];
-        }
-        
-        return (model.isMutable) ? array : [array copy];
-    }
-    
-    return nil; // we shouldn't get here
+    return _modelClass;
 }
 
 
--(id)convertValueToJson:(id)value inModel:(NTJsonModel *)model
+-(void)setModelClass:(Class)modelClass
 {
-    // todo: support builtin types (NSNumber, etc)
+    _modelClass = modelClass;
+}
+
+
+#pragma mark - Conversion support
+
+
+
+-(BOOL)probeConverterToValue:(BOOL)toValue Target:(id)target selector:(SEL)selector
+{
+    if ( ![target respondsToSelector:selector] )
+        return NO;
     
-    if ( self.type != NTJsonPropertyTypeObject && self.type != NTJsonPropertyTypeObjectArray )
-        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"convertValueToJson:inModel only supports Objects and ObjectArrays cuurrently." userInfo:nil];
-    
-    if ( ![self.typeClass respondsToSelector:@selector(convertValueToJson:)] )
-        @throw [NSException exceptionWithName:@"UnableToConvert" reason:@"Unable to convert Json to value 0 convertValueToJson: not implemented" userInfo:nil];
-    
-    if ( self.type == NTJsonPropertyTypeObject )
-        return [self.typeClass convertValueToJson:value];
-    
-    else if ( self.type == NTJsonPropertyTypeObjectArray )
+    if ( toValue )
     {
-        if ( ![value isKindOfClass:[NSArray class]] )
-            return nil;  // not something we can actually convert.
-        
-        NSMutableArray *array = [NSMutableArray arrayWithCapacity:[value count]];
-        
-        for(id valueItem in value)
-        {
-            id jsonItem = [self.typeClass convertValueToJson:valueItem];
-            
-            if (jsonItem)
-                [array addObject:jsonItem];
-        }
-        
-        return (model.isMutable) ? array : [array copy];
+        _convertJsonToValueTarget = target;
+        _convertJsonToValueSelector = selector;
     }
     
-    return nil; // we shouldn't get here
+    else // toJson
+    {
+        _convertValueToJsonTarget = target;
+        _convertValueToJsonSelector = selector;
+    }
+    
+    return YES;
+}
 
+
+-(id)convertJsonToValue:(id)json
+{
+    if ( self.type != NTJsonPropertyTypeObject && self.type != NTJsonPropertyTypeObjectArray )
+        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"convertJsonToValue: only supports Objects currently." userInfo:nil];
+    
+    if ( !_convertJsonToValueSelector )
+    {
+        NSString *convertJsonToProperty = [NSString stringWithFormat:@"convertJsonTo%@%@:", [[self.name substringToIndex:1] uppercaseString], [self.name substringFromIndex:1]];
+        NSString *convertJsonToClass = [NSString stringWithFormat:@"convertJsonTo%@:", NSStringFromClass(self.typeClass)];
+        
+        BOOL found = [self probeConverterToValue:YES Target:self.modelClass selector:NSSelectorFromString(convertJsonToProperty)];
+        
+        if ( !found )
+            found = [self probeConverterToValue:YES Target:self.modelClass selector:NSSelectorFromString(convertJsonToClass)];
+        
+        if ( !found )
+            found = [self probeConverterToValue:YES Target:self.typeClass selector:@selector(convertJsonToValue:)];
+        
+        if ( !found )
+            @throw [NSException exceptionWithName:@"UnableToConvert" reason:[NSString stringWithFormat:@"Unable to find a JsonToValue converter for %@.%@ of type %@. Tried %@ +%@, %@ +%@ and %@ +convertJsonToValue:",  NSStringFromClass(self.modelClass), self.name, NSStringFromClass(self.typeClass), NSStringFromClass(self.modelClass), convertJsonToProperty, NSStringFromClass(self.modelClass), convertJsonToClass, NSStringFromClass(self.modelClass)] userInfo:nil];
+    }
+
+    // somehow this is the "safe" way to call performSelector using ARC. Ironic? Yep!
+    // http://stackoverflow.com/questions/7017281/performselector-may-cause-a-leak-because-its-selector-is-unknown
+    
+    id (*method)(id self, SEL _cmd, id json) = (void *)[_convertJsonToValueTarget methodForSelector:_convertJsonToValueSelector];
+    
+    return method(_convertJsonToValueTarget, _convertJsonToValueSelector, json);
+}
+
+
+-(id)convertValueToJson:(id)value
+{
+    if ( self.type != NTJsonPropertyTypeObject && self.type != NTJsonPropertyTypeObjectArray )
+        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"convertValueToJson: only supports Objects currently." userInfo:nil];
+    
+    if ( !_convertValueToJsonSelector )
+    {
+        NSString *convertPropertyToJson = [NSString stringWithFormat:@"convert%@%@ToJson:", [[self.name substringToIndex:1] uppercaseString], [self.name substringFromIndex:1]];
+        NSString *convertClassToJson = [NSString stringWithFormat:@"convert%@ToJson:", NSStringFromClass(self.typeClass)];
+        
+        BOOL found = [self probeConverterToValue:NO Target:self.modelClass selector:NSSelectorFromString(convertPropertyToJson)];
+        
+        if ( !found )
+            found = [self probeConverterToValue:NO Target:self.modelClass selector:NSSelectorFromString(convertClassToJson)];
+        
+        if ( !found )
+            found = [self probeConverterToValue:NO Target:self.typeClass selector:@selector(convertValueToJson:)];
+        
+        if ( !found )
+            @throw [NSException exceptionWithName:@"UnableToConvert" reason:[NSString stringWithFormat:@"Unable to find a ValueToJson converter for %@.%@ of type %@. Tried %@ +%@, %@ +%@ and %@ +convertValueToJson:",  NSStringFromClass(self.modelClass), self.name, NSStringFromClass(self.typeClass), NSStringFromClass(self.modelClass), convertPropertyToJson, NSStringFromClass(self.modelClass), convertClassToJson, NSStringFromClass(self.modelClass)] userInfo:nil];
+    }
+    
+    // somehow this is the "safe" way to call performSelector using ARC. Ironic? Yep!
+    // http://stackoverflow.com/questions/7017281/performselector-may-cause-a-leak-because-its-selector-is-unknown
+    
+    id (*method)(id self, SEL _cmd, id json) = (void *)[_convertValueToJsonTarget methodForSelector:_convertValueToJsonSelector];
+    
+    return method(_convertValueToJsonTarget, _convertValueToJsonSelector, value);
 }
 
 

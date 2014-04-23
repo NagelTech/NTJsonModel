@@ -27,7 +27,7 @@
 +(NSArray *)arrayWithJsonArray:(NSArray *)jsonArray;
 +(NSMutableArray *)arrayWithMutableJsonArray:(NSMutableArray *)mutableJsonArray;
 
-+(NSArray *)propertyInfo;
++(NSArray *)jsonPropertyInfo;
 
 -(id)copyWithZone:(NSZone *)zone;
 -(id)mutableCopyWithZone:(NSZone *)zone;

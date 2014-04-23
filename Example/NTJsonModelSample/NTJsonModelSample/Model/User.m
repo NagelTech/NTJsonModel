@@ -20,17 +20,16 @@
 @dynamic accounts;
 
 
-+(NSArray *)propertyInfo
++(NSArray *)jsonPropertyInfo
 {
-    return [[super propertyInfo] arrayByAddingObjectsFromArray:@
-            [
+    return @[
              [NTJsonProperty stringProperty:@"id"],
              [NTJsonProperty stringProperty:@"firstName" jsonKeyPath:@"first_name"],
              [NTJsonProperty stringProperty:@"lastName" jsonKeyPath:@"last_name"],
              [NTJsonProperty intProperty:@"age"],
              [NTJsonProperty modelProperty:@"account" class:[Account class]],
              [NTJsonProperty modelArrayProperty:@"accounts" class:[Account class]],
-            ]];
+            ];
 }
 
 
