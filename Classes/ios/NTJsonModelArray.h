@@ -20,4 +20,6 @@
 -(id)copyWithZone:(NSZone *)zone;
 -(id)mutableCopyWithZone:(NSZone *)zone;
 
+-(void)becomeMutable;
+
 @end

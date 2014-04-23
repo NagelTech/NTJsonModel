@@ -6,15 +6,16 @@
 //  Copyright (c) 2014 NagelTech. All rights reserved.
 //
 
+#import "NTJsonModelContainer.h"
 #import "NTJsonModel.h"
 
 #import "NTJsonModelArray+Private.h"
 #import "NTJsonProperty+Private.h"
 
 
-@interface NTJsonModel (Private)
+@interface NTJsonModel (Private) <NTJsonModelContainer>
 
-@property (nonatomic, readonly) NSMutableDictionary *mutableJson;
+@property (nonatomic,readwrite) NSMutableDictionary *mutableJson;
 
 @end
 

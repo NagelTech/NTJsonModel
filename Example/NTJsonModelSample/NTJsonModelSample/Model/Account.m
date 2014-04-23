@@ -15,14 +15,13 @@
 @dynamic service;
 @dynamic username;
 
-+(NSArray *)propertyInfo
++(NSArray *)jsonPropertyInfo
 {
-    return [[super propertyInfo] arrayByAddingObjectsFromArray:@
-            [
+    return @[
              [NTJsonProperty stringProperty:@"id"],
              [NTJsonProperty stringProperty:@"service"],
              [NTJsonProperty stringProperty:@"username" jsonKeyPath:@"user_name"],
-            ]];
+            ];
 }
 
 

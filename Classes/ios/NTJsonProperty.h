@@ -28,6 +28,7 @@ typedef enum
 
 @interface NTJsonProperty : NSObject
 
+@property (nonatomic,readonly) Class modelClass;
 @property (nonatomic,readonly) NSString *name;
 @property (nonatomic,readonly) NSString *jsonKeyPath;
 @property (nonatomic,readonly) NTJsonPropertyType type;
@@ -74,7 +75,9 @@ typedef enum
 +(instancetype)objectProperty:(NSString *)name class:(Class)class jsonKeyPath:(NSString *)jsonKeyPath;
 +(instancetype)objectProperty:(NSString *)name class:(Class)class;
 
+/* Not currently supported
 +(instancetype)objectArrayProperty:(NSString *)name class:(Class)class jsonKeyPath:(NSString *)jsonKeyPath;
 +(instancetype)objectArrayProperty:(NSString *)name class:(Class)class;
+*/
 
 @end

@@ -11,10 +11,11 @@
 #import "NTJsonModel+Private.h"
 
 
-@interface NTJsonModel ()
+@interface NTJsonModel () <NTJsonModelContainer>
 {
     id _json;
     BOOL _isMutable;
+    id<NTJsonModelContainer> __weak _parentJsonContainer;
 }
 
 @end
@@ -26,7 +27,7 @@
 #pragma mark - One-time initialization
 
 
-static char PROPERTY_INFO_MAP_ASSOC_KEY;
+static char ALL_PROPERTY_INFO_ASSOC_KEY;
 
 
 +(BOOL)addImpsForProperty:(NTJsonProperty *)property
@@ -199,18 +200,56 @@ static char PROPERTY_INFO_MAP_ASSOC_KEY;
 }
 
 
+static BOOL classImplementsSelector(Class class, SEL sel)
+{
+    unsigned int numMethods;
+    Method *methods = class_copyMethodList(object_getClass(class), &numMethods);
+    
+    BOOL found = NO;
+    
+    for(int index=0; index<numMethods; index++)
+    {
+        SEL methodSelector = method_getName(methods[index]);
+        
+        if ( methodSelector == sel )
+        {
+            found = YES;
+            break;
+        }
+    }
+    
+    free(methods);
+    
+    return found;
+}
+
+
 +(void)initialize
 {
-    if ( [self propertyInfoMap] )
+    if ( self == [NTJsonModel class] )
+        return ; // nothing to initialize for ourselves...
+    
+    if ( [self jsonAllPropertyInfo] )
         return ; // already initiailized
 
-    NSMutableDictionary *propertyInfoMap = [NSMutableDictionary dictionary];
+    NSMutableDictionary *jsonAllPropertyInfo = [NSMutableDictionary dictionary];
     BOOL success = YES;
     
-    for(NTJsonProperty *property in [self propertyInfo])
+    // start with properties from our superclass...
+    
+    if ( self.superclass != [NTJsonModel class] )
+        [jsonAllPropertyInfo addEntriesFromDictionary:[self.superclass jsonAllPropertyInfo]];
+    
+    // Add our properties and create the implementations for them...
+    
+    if ( classImplementsSelector(self, @selector(jsonPropertyInfo)) )
     {
-        success = success && [self addImpsForProperty:property];
-        propertyInfoMap[property.name] = property;
+        for(NTJsonProperty *property in [self jsonPropertyInfo])
+        {
+            property.modelClass = self;
+            success = success && [self addImpsForProperty:property];
+            jsonAllPropertyInfo[property.name] = property;
+        }
     }
     
     if ( !success )
@@ -218,7 +257,7 @@ static char PROPERTY_INFO_MAP_ASSOC_KEY;
         @throw [NSException exceptionWithName:@"NTJsonModelErrors" reason:[NSString stringWithFormat:@"Errors encountered initializing properties for NTJsonModel class %@, see log for more information.", NSStringFromClass(self)] userInfo:nil];
     }
 
-    objc_setAssociatedObject(self, &PROPERTY_INFO_MAP_ASSOC_KEY, [propertyInfoMap copy], OBJC_ASSOCIATION_RETAIN);
+    objc_setAssociatedObject(self, &ALL_PROPERTY_INFO_ASSOC_KEY, [jsonAllPropertyInfo copy], OBJC_ASSOCIATION_RETAIN);
 }
 
 
@@ -318,6 +357,18 @@ static char PROPERTY_INFO_MAP_ASSOC_KEY;
 -(NSMutableDictionary *)mutableJson
 {
     return (_isMutable) ? _json : nil;
+}
+
+
+-(id<NTJsonModelContainer>)parentJsonContainer
+{
+    return _parentJsonContainer;
+}
+
+
+-(void)setParentJsonContainer:(id<NTJsonModelContainer>)parentJsonContainer
+{
+    _parentJsonContainer = parentJsonContainer;
 }
 
 
@@ -422,24 +473,61 @@ id NTJsonModel_deepCopy(id json)
 }
 
 
+#pragma mark - becomeMutable
+
+
+-(void)setMutableJson:(NSMutableDictionary *)mutableJson        // recursive
+{
+    _json = mutableJson;
+    _isMutable = YES;
+    
+    for(NTJsonProperty *property in self.class.jsonAllPropertyInfo.allValues)
+    {
+        if ( !property.shouldCache )
+            continue;
+        
+        id cacheValue = [self getCacheValueForProperty:property];
+        
+        if ( !cacheValue )
+            continue;
+        
+        id jsonValue = [self.json objectForKey:property.jsonKeyPath];
+
+        [cacheValue setMutableJson:jsonValue];
+    }
+}
+
+
+-(void)becomeMutable
+{
+    if ( self.isMutable )
+        return ;
+    
+    if ( self.parentJsonContainer )
+    {
+        // we are not the root object, forward the request on...
+        [self.parentJsonContainer becomeMutable];
+        return ;
+    }
+    
+    // we are the root, so we actually have work to do...
+    
+    [self setMutableJson:NTJsonModel_mutableDeepCopy(_json)];  // recursive
+}
+
+
 #pragma mark - Property Info management
 
 
-+(NSArray *)propertyInfo
++(NSArray *)jsonPropertyInfo
 {
     return @[];
 }
 
 
-+(NSDictionary *)propertyInfoMap
++(NSDictionary *)jsonAllPropertyInfo
 {
-    return objc_getAssociatedObject(self, &PROPERTY_INFO_MAP_ASSOC_KEY);
-}
-
-
-+(NTJsonProperty *)propertyInfoForName:(NSString *)name
-{
-    return [self propertyInfoMap][name];
+    return objc_getAssociatedObject(self, &ALL_PROPERTY_INFO_ASSOC_KEY);
 }
 
 
@@ -464,8 +552,20 @@ id NTJsonModel_deepCopy(id json)
 {
     if ( !property.shouldCache )
         return ;
-
+    
+    // If there is currently a container in this slot, clear it...
+    
+    id cachedValue = objc_getAssociatedObject(self, (__bridge void *)property);
+    
+    if ( [cachedValue conformsToProtocol:@protocol(NTJsonModelContainer)] )
+        [cachedValue setParentJsonContainer:nil];
+    
     objc_setAssociatedObject(self, (__bridge void *)property, value, OBJC_ASSOCIATION_RETAIN);
+    
+    // Assign the container parent (if valid)...
+    
+    if ( [value conformsToProtocol:@protocol(NTJsonModelContainer)] )
+        [value setParentJsonContainer:self];
 }
 
 
@@ -495,8 +595,10 @@ id NTJsonModel_deepCopy(id json)
         case NTJsonPropertyTypeDouble:
         case NTJsonPropertyTypeLongLong:
         case NTJsonPropertyTypeString:
+        {
             value = jsonValue;  // more validation/conversion happens in the thunks
             break;
+        }
             
         case NTJsonPropertyTypeStringEnum:
         {
@@ -506,26 +608,35 @@ id NTJsonModel_deepCopy(id json)
         }
             
         case NTJsonPropertyTypeModel:
+        {
             if ( self.isMutable )
                 value = [[property.typeClass alloc] initWithMutableJson:jsonValue];
             else
                 value = [[property.typeClass alloc] initWithJson:jsonValue];
+
             break;
+        }
             
         case NTJsonPropertyTypeModelArray:
+        {
             if ( self.isMutable )
                 value = [[NTJsonModelArray alloc] initWithModelClass:property.typeClass mutableJsonArray:jsonValue];
             else
                 value = [[NTJsonModelArray alloc] initWithModelClass:property.typeClass jsonArray:jsonValue];
             break ;
+        }
             
         case NTJsonPropertyTypeObject:
-            value = [property convertJsonToValue:jsonValue inModel:self];
+        {
+            value = [property convertJsonToValue:jsonValue];
             break;
+        }
             
         case NTJsonPropertyTypeObjectArray:
-            value = [property convertJsonToValue:jsonValue inModel:self];
+        {
+            // todo: use ModelArray
             break;
+        }
     }
 
     // save in cache, if indicated...
@@ -544,9 +655,7 @@ id NTJsonModel_deepCopy(id json)
     // make sure we are mutable...
     
     if ( !self.isMutable )
-    {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Attempt to modify an immutable NTJsonModel instance" userInfo:nil];
-    }
+        [self becomeMutable];
     
     // if nil is passed in we simply remove the value
     
@@ -601,13 +710,10 @@ id NTJsonModel_deepCopy(id json)
             
         case NTJsonPropertyTypeObject:
             expectedValueType = property.typeClass;
-            jsonValue = [property convertValueToJson:value inModel:self];
-            // todo - conversion
+            jsonValue = [property convertValueToJson:value];
             break;
             
         case NTJsonPropertyTypeObjectArray:
-            expectedValueType = [NSArray class];
-            jsonValue = [property convertValueToJson:value inModel:self];
             // to do - conversion
             break;
     }
@@ -616,6 +722,11 @@ id NTJsonModel_deepCopy(id json)
     
     if ( ![value isKindOfClass:expectedValueType] )
         @throw [NSException exceptionWithName:@"InvalidType" reason:@"Invalid type when setting property" userInfo:nil];
+    
+    // validate this object is not associated with another parent already...
+    
+    if ( [value conformsToProtocol:@protocol(NTJsonModelContainer)] && [value parentJsonContainer] )
+        @throw [NSException exceptionWithName:@"MultipleParents" reason:@"Cannot add item to NTJsonModel because it is alrready a member of another object." userInfo:nil];
     
     // if we don't have a value now then we have a problem
     
