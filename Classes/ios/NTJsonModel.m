@@ -491,9 +491,12 @@ id NTJsonModel_deepCopy(id json)
         if ( !cacheValue )
             continue;
         
-        id jsonValue = [self.json objectForKey:property.jsonKeyPath];
-
-        [cacheValue setMutableJson:jsonValue];
+        if ( [cacheValue conformsToProtocol:@protocol(NTJsonModelContainer)] )
+        {
+            // Models are remapped so they point to the new JSON
+            id jsonValue = [self.json objectForKey:property.jsonKeyPath];
+            [cacheValue setMutableJson:jsonValue];
+        }
     }
 }
 
@@ -641,7 +644,7 @@ id NTJsonModel_deepCopy(id json)
 
     // save in cache, if indicated...
     
-    if ( property.shouldCache )
+    if ( property.shouldCache && value != jsonValue )
         [self setCacheValue:value forProperty:property];
     
     return value;
@@ -739,7 +742,7 @@ id NTJsonModel_deepCopy(id json)
     
     // cache the value, if indicated
     
-    if ( property.shouldCache )
+    if ( property.shouldCache && value != jsonValue )
         [self setCacheValue:value forProperty:property];
 }
 
