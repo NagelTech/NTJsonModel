@@ -238,8 +238,8 @@
     
     // cache...
     
-    [self ensureCacheSize:index+1];
-    [_valueCache objectAtIndex:index];
+    [self ensureCacheSize:index];
+    _valueCache[index] = value;
     
     return value;
 }
