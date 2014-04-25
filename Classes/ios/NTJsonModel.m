@@ -612,7 +612,9 @@ id NTJsonModel_deepCopy(id json)
             
         case NTJsonPropertyTypeModel:
         {
-            if ( self.isMutable )
+            if ( !jsonValue )
+                value = nil;
+            else if ( self.isMutable )
                 value = [[property.typeClass alloc] initWithMutableJson:jsonValue];
             else
                 value = [[property.typeClass alloc] initWithJson:jsonValue];
@@ -622,7 +624,9 @@ id NTJsonModel_deepCopy(id json)
             
         case NTJsonPropertyTypeModelArray:
         {
-            if ( self.isMutable )
+            if ( !jsonValue )
+                jsonValue = nil;
+            else if ( self.isMutable )
                 value = [[NTJsonModelArray alloc] initWithModelClass:property.typeClass mutableJsonArray:jsonValue];
             else
                 value = [[NTJsonModelArray alloc] initWithModelClass:property.typeClass jsonArray:jsonValue];
@@ -728,8 +732,16 @@ id NTJsonModel_deepCopy(id json)
     
     // validate this object is not associated with another parent already...
     
-    if ( [value conformsToProtocol:@protocol(NTJsonModelContainer)] && [value parentJsonContainer] )
-        @throw [NSException exceptionWithName:@"MultipleParents" reason:@"Cannot add item to NTJsonModel because it is alrready a member of another object." userInfo:nil];
+    if ( [value conformsToProtocol:@protocol(NTJsonModelContainer)] )
+    {
+        id<NTJsonModelContainer> container = value;
+        
+        if ( container.parentJsonContainer )
+            @throw [NSException exceptionWithName:@"MultipleParents" reason:@"Cannot add item to NTJsonModel because it is alrready a member of another object." userInfo:nil];
+        
+        if ( !container.isMutable )
+            [container becomeMutable];
+    }
     
     // if we don't have a value now then we have a problem
     
