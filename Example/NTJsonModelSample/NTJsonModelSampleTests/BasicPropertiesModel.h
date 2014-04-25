@@ -22,6 +22,8 @@
 
 @property (nonatomic) BasicPropertiesModel *childModel;
 
+@property (nonatomic) NTJsonModelArray *modelArray;
+
 @end
 
 

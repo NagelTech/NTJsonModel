@@ -19,6 +19,7 @@
 @dynamic colorProp;
 @dynamic color2Prop;
 @dynamic childModel;
+@dynamic modelArray;
 
 
 +(NSArray *)jsonPropertyInfo
@@ -32,6 +33,7 @@
              [NTJsonProperty objectProperty:@"colorProp" class:[UIColor class]],
              [NTJsonProperty objectProperty:@"color2Prop" class:[UIColor class]],
              [NTJsonProperty modelProperty:@"childModel" class:[BasicPropertiesModel class]],
+             [NTJsonProperty modelArrayProperty:@"modelArray" class:[BasicPropertiesModel class]],
              ];
 }
 

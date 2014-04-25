@@ -11,6 +11,7 @@
 		F062848F1909EE5800A93DF7 /* BasicPropertiesModel.m in Sources */ = {isa = PBXBuildFile; fileRef = F062848E1909EE5800A93DF7 /* BasicPropertiesModel.m */; };
 		F0628491190A119500A93DF7 /* TestConversion.m in Sources */ = {isa = PBXBuildFile; fileRef = F0628490190A119500A93DF7 /* TestConversion.m */; };
 		F0628493190ABD1A00A93DF7 /* TestChildModels.m in Sources */ = {isa = PBXBuildFile; fileRef = F0628492190ABD1A00A93DF7 /* TestChildModels.m */; };
+		F0628497190AD13F00A93DF7 /* TestModelArrays.m in Sources */ = {isa = PBXBuildFile; fileRef = F0628496190AD13F00A93DF7 /* TestModelArrays.m */; };
 		F0A5D22618F4D410006891E9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A5D22518F4D410006891E9 /* Foundation.framework */; };
 		F0A5D22818F4D410006891E9 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A5D22718F4D410006891E9 /* CoreGraphics.framework */; };
 		F0A5D22A18F4D410006891E9 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A5D22918F4D410006891E9 /* UIKit.framework */; };
@@ -49,6 +50,7 @@
 		F062848E1909EE5800A93DF7 /* BasicPropertiesModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BasicPropertiesModel.m; sourceTree = "<group>"; };
 		F0628490190A119500A93DF7 /* TestConversion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestConversion.m; sourceTree = "<group>"; };
 		F0628492190ABD1A00A93DF7 /* TestChildModels.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestChildModels.m; sourceTree = "<group>"; };
+		F0628496190AD13F00A93DF7 /* TestModelArrays.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestModelArrays.m; sourceTree = "<group>"; };
 		F0A5D22218F4D410006891E9 /* NTJsonModelSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NTJsonModelSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0A5D22518F4D410006891E9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		F0A5D22718F4D410006891E9 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -173,6 +175,7 @@
 				F062848B1909EDC100A93DF7 /* TestBasicProperties.m */,
 				F0628492190ABD1A00A93DF7 /* TestChildModels.m */,
 				F0628490190A119500A93DF7 /* TestConversion.m */,
+				F0628496190AD13F00A93DF7 /* TestModelArrays.m */,
 			);
 			path = NTJsonModelSampleTests;
 			sourceTree = "<group>";
@@ -337,6 +340,7 @@
 				F0628493190ABD1A00A93DF7 /* TestChildModels.m in Sources */,
 				F0628491190A119500A93DF7 /* TestConversion.m in Sources */,
 				F062848C1909EDC100A93DF7 /* TestBasicProperties.m in Sources */,
+				F0628497190AD13F00A93DF7 /* TestModelArrays.m in Sources */,
 				F062848F1909EE5800A93DF7 /* BasicPropertiesModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
