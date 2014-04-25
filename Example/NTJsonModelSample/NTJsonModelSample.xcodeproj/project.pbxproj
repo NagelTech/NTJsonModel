@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F062848C1909EDC100A93DF7 /* TestBasicProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F062848B1909EDC100A93DF7 /* TestBasicProperties.m */; };
+		F062848F1909EE5800A93DF7 /* BasicPropertiesModel.m in Sources */ = {isa = PBXBuildFile; fileRef = F062848E1909EE5800A93DF7 /* BasicPropertiesModel.m */; };
+		F0628491190A119500A93DF7 /* TestConversion.m in Sources */ = {isa = PBXBuildFile; fileRef = F0628490190A119500A93DF7 /* TestConversion.m */; };
 		F0A5D22618F4D410006891E9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A5D22518F4D410006891E9 /* Foundation.framework */; };
 		F0A5D22818F4D410006891E9 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A5D22718F4D410006891E9 /* CoreGraphics.framework */; };
 		F0A5D22A18F4D410006891E9 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A5D22918F4D410006891E9 /* UIKit.framework */; };
@@ -18,7 +21,6 @@
 		F0A5D24018F4D410006891E9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A5D22518F4D410006891E9 /* Foundation.framework */; };
 		F0A5D24118F4D410006891E9 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A5D22918F4D410006891E9 /* UIKit.framework */; };
 		F0A5D24918F4D410006891E9 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F0A5D24718F4D410006891E9 /* InfoPlist.strings */; };
-		F0A5D24B18F4D410006891E9 /* NTJsonModelSampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A5D24A18F4D410006891E9 /* NTJsonModelSampleTests.m */; };
 		F0A5D25718F4D435006891E9 /* NTJsonModel.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A5D25618F4D435006891E9 /* NTJsonModel.m */; };
 		F0A5D25E18F4D887006891E9 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A5D25D18F4D887006891E9 /* User.m */; };
 		F0A5D26118F4DA3B006891E9 /* NTJsonProperty.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A5D26018F4DA3B006891E9 /* NTJsonProperty.m */; };
@@ -41,6 +43,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F062848B1909EDC100A93DF7 /* TestBasicProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestBasicProperties.m; sourceTree = "<group>"; };
+		F062848D1909EE5800A93DF7 /* BasicPropertiesModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BasicPropertiesModel.h; sourceTree = "<group>"; };
+		F062848E1909EE5800A93DF7 /* BasicPropertiesModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BasicPropertiesModel.m; sourceTree = "<group>"; };
+		F0628490190A119500A93DF7 /* TestConversion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestConversion.m; sourceTree = "<group>"; };
 		F0A5D22218F4D410006891E9 /* NTJsonModelSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NTJsonModelSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0A5D22518F4D410006891E9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		F0A5D22718F4D410006891E9 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -56,7 +62,6 @@
 		F0A5D23E18F4D410006891E9 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		F0A5D24618F4D410006891E9 /* NTJsonModelSampleTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NTJsonModelSampleTests-Info.plist"; sourceTree = "<group>"; };
 		F0A5D24818F4D410006891E9 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		F0A5D24A18F4D410006891E9 /* NTJsonModelSampleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NTJsonModelSampleTests.m; sourceTree = "<group>"; };
 		F0A5D25518F4D435006891E9 /* NTJsonModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NTJsonModel.h; sourceTree = "<group>"; };
 		F0A5D25618F4D435006891E9 /* NTJsonModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NTJsonModel.m; sourceTree = "<group>"; };
 		F0A5D25818F4D479006891E9 /* NTJsonModel+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NTJsonModel+Private.h"; sourceTree = "<group>"; };
@@ -160,8 +165,11 @@
 		F0A5D24418F4D410006891E9 /* NTJsonModelSampleTests */ = {
 			isa = PBXGroup;
 			children = (
-				F0A5D24A18F4D410006891E9 /* NTJsonModelSampleTests.m */,
+				F062848D1909EE5800A93DF7 /* BasicPropertiesModel.h */,
+				F062848E1909EE5800A93DF7 /* BasicPropertiesModel.m */,
 				F0A5D24518F4D410006891E9 /* Supporting Files */,
+				F062848B1909EDC100A93DF7 /* TestBasicProperties.m */,
+				F0628490190A119500A93DF7 /* TestConversion.m */,
 			);
 			path = NTJsonModelSampleTests;
 			sourceTree = "<group>";
@@ -323,7 +331,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F0A5D24B18F4D410006891E9 /* NTJsonModelSampleTests.m in Sources */,
+				F0628491190A119500A93DF7 /* TestConversion.m in Sources */,
+				F062848C1909EDC100A93DF7 /* TestBasicProperties.m in Sources */,
+				F062848F1909EE5800A93DF7 /* BasicPropertiesModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
