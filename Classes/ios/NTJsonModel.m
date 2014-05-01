@@ -24,10 +24,11 @@
 @implementation NTJsonModel
 
 
-#pragma mark - One-time initialization
-
-
 static char ALL_PROPERTY_INFO_ASSOC_KEY;
+static char DEFAULT_JSON_ASSOC_KEY;
+
+
+#pragma mark - One-time initialization
 
 
 +(BOOL)addImpsForProperty:(NTJsonProperty *)property
@@ -531,6 +532,53 @@ id NTJsonModel_deepCopy(id json)
 +(NSDictionary *)jsonAllPropertyInfo
 {
     return objc_getAssociatedObject(self, &ALL_PROPERTY_INFO_ASSOC_KEY);
+}
+
+
+#pragma mark - default json
+
+
++(NSDictionary *)_defaultJsonWithParentClasses:(NSSet *)parentClasses
+{
+    parentClasses = (parentClasses) ? [parentClasses setByAddingObject:[self class]] : [NSSet setWithObject:[self class]];
+    
+    NSMutableDictionary *defaults = [NSMutableDictionary dictionary];
+    
+    for(NTJsonProperty *prop in [self jsonAllPropertyInfo].allValues)
+    {
+        id defaultValue;
+        
+        if ( prop.type == NTJsonPropertyTypeModel ) // recursive here...
+        {
+            if ( [parentClasses containsObject:[self class]] ) // prevent infinite recursion if self referential
+                defaultValue = nil;
+            else
+                defaultValue = [self _defaultJsonWithParentClasses:parentClasses];
+        }
+        
+        else
+            defaultValue = prop.defaultValue;
+        
+        if ( defaultValue )
+            [defaults NTJsonModel_setObject:defaultValue forKeyPath:prop.jsonKeyPath];
+    }
+    
+    return (defaults.count) ? defaults : nil;
+}
+
+
++(NSDictionary *)defaultJson
+{
+    NSDictionary *defaultJson = objc_getAssociatedObject(self, &DEFAULT_JSON_ASSOC_KEY);
+    
+    if ( !defaultJson )
+    {
+        defaultJson = NTJsonModel_deepCopy([self _defaultJsonWithParentClasses:nil]) ?: (id)[NSNull null];
+        
+        objc_setAssociatedObject(self, &DEFAULT_JSON_ASSOC_KEY, defaultJson, OBJC_ASSOCIATION_RETAIN);
+    }
+    
+    return (defaultJson == (id)[NSNull null]) ? nil : defaultJson;
 }
 
 

@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 NagelTech. All rights reserved.
 //
 
+#import "NSMutableDictionary+NTJsonModelPrivate.h"
 #import "NTJsonModelContainer.h"
 #import "NTJsonModel.h"
 

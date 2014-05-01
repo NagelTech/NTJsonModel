@@ -24,6 +24,8 @@
 
 @property (nonatomic) NTJsonModelArray *modelArray;
 
+@property (nonatomic) int nestedValue;
+
 @end
 
 

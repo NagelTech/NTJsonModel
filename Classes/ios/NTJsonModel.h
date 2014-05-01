@@ -29,6 +29,8 @@
 
 +(NSArray *)jsonPropertyInfo;
 
++(NSDictionary *)defaultJson;
+
 -(id)copyWithZone:(NSZone *)zone;
 -(id)mutableCopyWithZone:(NSZone *)zone;
 
