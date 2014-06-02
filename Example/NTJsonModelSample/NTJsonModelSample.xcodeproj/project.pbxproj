@@ -47,6 +47,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F000A25A1939517E00E3257D /* NTJsonPropertyInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NTJsonPropertyInfo.h; sourceTree = "<group>"; };
 		F062848B1909EDC100A93DF7 /* TestBasicProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestBasicProperties.m; sourceTree = "<group>"; };
 		F062848D1909EE5800A93DF7 /* BasicPropertiesModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BasicPropertiesModel.h; sourceTree = "<group>"; };
 		F062848E1909EE5800A93DF7 /* BasicPropertiesModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BasicPropertiesModel.m; sourceTree = "<group>"; };
@@ -215,6 +216,7 @@
 				F0A5D25F18F4DA3B006891E9 /* NTJsonProperty.h */,
 				F0A5D26018F4DA3B006891E9 /* NTJsonProperty.m */,
 				F0F395C5190185CF007985CD /* NTJsonPropertyConversion.h */,
+				F000A25A1939517E00E3257D /* NTJsonPropertyInfo.h */,
 				F0A5D26918F6F833006891E9 /* README.md */,
 			);
 			name = NTJsonModel;

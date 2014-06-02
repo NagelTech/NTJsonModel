@@ -232,7 +232,27 @@ static BOOL classImplementsSelector(Class class, SEL sel)
     
     if ( [self jsonAllPropertyInfo] )
         return ; // already initiailized
+    
+    // TEST START
+    
+    
+    unsigned int numProperties;
+    objc_property_t *objc_properties = class_copyPropertyList(self, &numProperties);
+    
+    for(unsigned int index=0; index<numProperties; index++)
+    {
+        objc_property_t objc_property = objc_properties[index];
 
+        NTJsonProperty *prop = [NTJsonProperty propertyWithClass:self objcProperty:objc_property];
+        
+        NSLog(@"%@", prop);
+    }
+    
+    free(objc_properties);
+    
+    // TEST END
+
+    
     NSMutableDictionary *jsonAllPropertyInfo = [NSMutableDictionary dictionary];
     BOOL success = YES;
     

@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 NagelTech. All rights reserved.
 //
 
+#import <objc/runtime.h>
+
 #import "NTJsonProperty.h"
 
 @interface NTJsonProperty (Private)
@@ -18,6 +20,8 @@
 
 -(id)convertValueToJson:(id)object;
 -(id)convertJsonToValue:(id)json;
+
++(instancetype)propertyWithClass:(Class)class objcProperty:(objc_property_t)objcProperty;
 
 
 @end

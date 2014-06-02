@@ -222,6 +222,153 @@
 }
 
 
+#pragma mark - New style initializer
+
+static NSString *ObjcAttributeType = @"T";
+static NSString *ObjcAttributeReadonly = @"R";
+static NSString *ObjcAttributeCopy = @"C";
+static NSString *ObjcAttributeRetain = @"&";
+static NSString *ObjcAttributeNonatomic = @"N";
+static NSString *ObjcAttributeCustomGetter = @"G";
+static NSString *ObjcAttributeCustomSetter = @"S";
+static NSString *ObjcAttributeDynamic = @"D";
+static NSString *ObjcAttributeWeak = @"D";
+static NSString *ObjcAttributeIvar = @"V";
+
+
+
++(NSDictionary *)attributesForObjcProperty:(objc_property_t)objcProperty
+{
+    NSArray *attributePairs = [@(property_getAttributes(objcProperty)) componentsSeparatedByString:@","];
+    
+    NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithCapacity:attributePairs.count];
+    
+    for(NSString *attributePair in attributePairs)
+        attributes[[attributePair substringToIndex:1]] = [attributePair substringFromIndex:1];
+
+    return [attributes copy];
+}
+
+
+/*
+ 
+ NTJsonPropertyTypeModel         = 7,
+ NTJsonPropertyTypeModelArray    = 8,
+ NTJsonPropertyTypeStringEnum    = 9,
+ NTJsonPropertyTypeObject        = 10,   // a custom object of some kind (eg NSDate)
+ NTJsonPropertyTypeObjectArray   = 11,   // an array of custom objects
+
+ */
+
+
++(instancetype)propertyWithClass:(Class)class objcProperty:(objc_property_t)objcProperty
+{
+    NSDictionary *attributes = [self attributesForObjcProperty:objcProperty];
+    
+    // If it's not dynamic, then it's not one of our properties...
+    
+    if ( !attributes[ObjcAttributeDynamic] )
+        return nil;
+    
+    NTJsonProperty *prop = [[NTJsonProperty alloc] init];
+    
+    prop->_modelClass = class;
+    prop->_name = @(property_getName(objcProperty));
+    
+    // Figure out the base type...
+    
+    NSString *objcType = attributes[ObjcAttributeType];
+
+    NSDictionary *simplePropertyTypes =
+    @{
+      @(@encode(int)): @(NTJsonPropertyTypeInt),
+      @(@encode(BOOL)): @(NTJsonPropertyTypeBool),
+      @(@encode(float)): @(NTJsonPropertyTypeFloat),
+      @(@encode(double)): @(NTJsonPropertyTypeDouble),
+      @(@encode(long long)): @(NTJsonPropertyTypeLongLong),
+      @"@\"NSString\"": @(NTJsonPropertyTypeString),
+      };
+
+    NSNumber *simplePropertyType = simplePropertyTypes[objcType];
+    
+    if ( simplePropertyType )
+    {
+        prop->_type = [simplePropertyType intValue];
+    }
+    
+    else if ( [objcType hasPrefix:@"@"] )
+    {
+        // Parse class name and protocols...
+        
+        // example: @"class<protocol1><protocol2>"
+        
+        NSRegularExpression *classNameRegEx = [[NSRegularExpression alloc] initWithPattern:@"@\"(\\w+).*\"" options:0 error:nil];
+        NSTextCheckingResult *classNameMatch = [classNameRegEx firstMatchInString:objcType options:0 range:NSMakeRange(0, objcType.length)];
+        NSString *className = [objcType substringWithRange:[classNameMatch rangeAtIndex:1]];
+        
+        NSRegularExpression *prototolsRegEx = [[NSRegularExpression alloc] initWithPattern:@"<(\\w+)>" options:0 error:nil];
+        
+        NSMutableArray *protocols = [NSMutableArray array];
+        
+        [prototolsRegEx enumerateMatchesInString:objcType options:0 range:NSMakeRange(0,objcType.length) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop)
+        {
+            [protocols addObject:[objcType substringWithRange:[result rangeAtIndex:1]]];
+        }];
+        
+        NSSet *arrayClassNames = [NSSet setWithArray:@[@"NSArray", @"NSMutableArray", @"NTJsonModelArray"]];
+        
+        if ( [arrayClassNames containsObject:className] )
+        {
+            // It's an array type...
+            
+            NSString *elementClassName = [protocols firstObject];   // later we will need to deal with multiple protocols
+            
+            if ( !elementClassName )
+                elementClassName = @"NSObject";
+            
+            prop->_typeClass = NSClassFromString(elementClassName);
+            prop->_type = [prop.typeClass isSubclassOfClass:[NTJsonModel class]] ? NTJsonPropertyTypeModelArray : NTJsonPropertyTypeObjectArray;
+        }
+        
+        else
+        {
+            prop->_typeClass = NSClassFromString(className);
+            prop->_type = [prop.typeClass isSubclassOfClass:[NTJsonModel class]] ? NTJsonPropertyTypeModel : NTJsonPropertyTypeObject;
+        }
+    }
+
+    if ( !prop.type )
+        @throw [NSException exceptionWithName:@"NTJsonModelInvalidType" reason:[NSString stringWithFormat:@"Unsupported type for property %@.%@ (%@)", NSStringFromClass(class), prop.name, objcType] userInfo:nil];
+
+    // Ok, now get remaining details from propInfo...
+    
+    __NTJsonPropertyInfo propInfo;
+    
+    SEL propInfoSelector = NSSelectorFromString([NSString stringWithFormat:@"__NTJsonProperty__%@", prop.name]);
+    
+    if ( [class respondsToSelector:propInfoSelector] )
+    {
+        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[class methodSignatureForSelector:propInfoSelector]];
+        invocation.target = class;
+        invocation.selector = propInfoSelector;
+        [invocation invoke];
+        
+        [invocation getReturnValue:&propInfo];
+    }
+    
+    else
+        memset(&propInfo, 0, sizeof(propInfo)); // zero is all defaults.
+
+    prop->_jsonKeyPath = (propInfo.jsonPath) ? @(propInfo.jsonPath) : prop.name;
+    
+    // todo: get remaining data from propInfo...
+    
+    return prop;
+    
+}
+
+
+
 #pragma mark - Properties
 
 
