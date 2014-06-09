@@ -12,36 +12,12 @@
 @implementation User
 
 
-JsonProperty(id)
-JsonProperty(firstName, jsonPath="first_name")
-JsonProperty(lastName, jsonPath="last_name")
-JsonProperty(age)
-JsonProperty(account)
-JsonProperty(accounts)
-
-/*
- 
-@dynamic id;
-@dynamic firstName;
-@dynamic lastName;
-@dynamic age;
-@dynamic account;
-@dynamic accounts;
-
-
-+(NSArray *)jsonPropertyInfo
-{
-    return @[
-             [NTJsonProperty stringProperty:@"id"],
-             [NTJsonProperty stringProperty:@"firstName" jsonKeyPath:@"first_name"],
-             [NTJsonProperty stringProperty:@"lastName" jsonKeyPath:@"last_name"],
-             [NTJsonProperty intProperty:@"age"],
-             [NTJsonProperty modelProperty:@"account" class:[Account class]],
-             [NTJsonProperty modelArrayProperty:@"accounts" class:[Account class]],
-            ];
-}
- 
-*/
+NTJsonProperty(id)
+NTJsonProperty(firstName, jsonPath="first_name")
+NTJsonProperty(lastName, jsonPath="last_name")
+NTJsonProperty(age)
+NTJsonProperty(account)
+NTJsonProperty(accounts)
 
 
 @end

@@ -1,5 +1,5 @@
 //
-//  NTJsonProperty.h
+//  NTJsonProp.h
 //  NTJsonModelSample
 //
 //  Created by Ethan Nagel on 4/8/14.
@@ -12,32 +12,32 @@
 
 typedef enum
 {
-    NTJsonPropertyTypeString        = 1,
-    NTJsonPropertyTypeInt           = 2,
-    NTJsonPropertyTypeBool          = 3,
-    NTJsonPropertyTypeFloat         = 4,
-    NTJsonPropertyTypeDouble        = 5,
-    NTJsonPropertyTypeLongLong      = 6,
-    NTJsonPropertyTypeModel         = 7,
-    NTJsonPropertyTypeModelArray    = 8,
-    NTJsonPropertyTypeStringEnum    = 9,
-    NTJsonPropertyTypeObject        = 10,   // a custom object of some kind (eg NSDate)
-    NTJsonPropertyTypeObjectArray   = 11,   // an array of custom objects
-} NTJsonPropertyType;
+    NTJsonPropTypeString        = 1,
+    NTJsonPropTypeInt           = 2,
+    NTJsonPropTypeBool          = 3,
+    NTJsonPropTypeFloat         = 4,
+    NTJsonPropTypeDouble        = 5,
+    NTJsonPropTypeLongLong      = 6,
+    NTJsonPropTypeModel         = 7,
+    NTJsonPropTypeModelArray    = 8,
+    NTJsonPropTypeStringEnum    = 9,
+    NTJsonPropTypeObject        = 10,   // a custom object of some kind (eg NSDate)
+    NTJsonPropTypeObjectArray   = 11,   // an array of custom objects
+} NTJsonPropType;
 
 
-@interface NTJsonProperty : NSObject
+@interface NTJsonProp : NSObject
 
 @property (nonatomic,readonly) Class modelClass;
 @property (nonatomic,readonly) NSString *name;
 @property (nonatomic,readonly) NSString *jsonKeyPath;
-@property (nonatomic,readonly) NTJsonPropertyType type;
+@property (nonatomic,readonly) NTJsonPropType type;
 @property (nonatomic,readonly) Class typeClass;
 @property (nonatomic,readonly) NSSet *enumValues;
 
 // basic types
 
-+(instancetype)property:(NSString *)name type:(NTJsonPropertyType)type jsonKeyPath:(NSString *)jsonKeyPath;
++(instancetype)property:(NSString *)name type:(NTJsonPropType)type jsonKeyPath:(NSString *)jsonKeyPath;
 
 +(instancetype)stringProperty:(NSString *)name jsonKeyPath:(NSString *)jsonKeyPath;
 +(instancetype)stringProperty:(NSString *)name;

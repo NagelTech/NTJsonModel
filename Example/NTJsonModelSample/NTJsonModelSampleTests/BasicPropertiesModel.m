@@ -12,16 +12,16 @@
 @implementation BasicPropertiesModel
 
 
-JsonProperty(intProp)
-JsonProperty(floatProp)
-JsonProperty(doubleProp)
-JsonProperty(stringProp)
-JsonProperty(boolProp)
-JsonProperty(colorProp)
-JsonProperty(color2Prop)
-JsonProperty(childModel)
-JsonProperty(modelArray)
-JsonProperty(nestedValue, jsonPath="nested.value")
+NTJsonProperty(intProp)
+NTJsonProperty(floatProp)
+NTJsonProperty(doubleProp)
+NTJsonProperty(stringProp)
+NTJsonProperty(boolProp)
+NTJsonProperty(colorProp)
+NTJsonProperty(color2Prop)
+NTJsonProperty(childModel)
+NTJsonProperty(modelArray)
+NTJsonProperty(nestedValue, jsonPath="nested.value")
 
 
 +(id)convertColor2PropToJson:(UIColor *)value

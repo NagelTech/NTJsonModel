@@ -1,5 +1,5 @@
 //
-//  NTJsonProperty+Private.h
+//  NTJsonProp+Private.h
 //  NTJsonModelSample
 //
 //  Created by Ethan Nagel on 4/18/14.
@@ -8,9 +8,9 @@
 
 #import <objc/runtime.h>
 
-#import "NTJsonProperty.h"
+#import "NTJsonProp.h"
 
-@interface NTJsonProperty (Private)
+@interface NTJsonProp (Private)
 
 @property (nonatomic,readwrite) Class modelClass;
 @property (nonatomic,readonly) id defaultValue;

@@ -14,7 +14,7 @@
 #import "NTJsonModel.h"
 
 #import "NTJsonModelArray+Private.h"
-#import "NTJsonProperty+Private.h"
+#import "NTJsonProp+Private.h"
 
 #import "NTJsonPropertyInfo.h"
 

@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #import "NTJsonModelArray.h"
-#import "NTJsonProperty.h"
+#import "NTJsonProp.h"
 #import "NTJsonPropertyConversion.h"
 
 #import "NTJsonPropertyInfo.h"

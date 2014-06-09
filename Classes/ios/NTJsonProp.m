@@ -1,5 +1,5 @@
 //
-//  NTJsonProperty.m
+//  NTJsonProp.m
 //  NTJsonModelSample
 //
 //  Created by Ethan Nagel on 4/8/14.
@@ -9,7 +9,7 @@
 #import "NTJsonModel+Private.h"
 
 
-@interface NTJsonProperty ()
+@interface NTJsonProp ()
 {
     Class _modelClass;
     
@@ -25,15 +25,15 @@
 @end
 
 
-@implementation NTJsonProperty
+@implementation NTJsonProp
 
 
 #pragma mark - Internal initializers
 
 
-+(instancetype)property:(NSString *)name type:(NTJsonPropertyType)type jsonKeyPath:(NSString *)jsonKeyPath
++(instancetype)property:(NSString *)name type:(NTJsonPropType)type jsonKeyPath:(NSString *)jsonKeyPath
 {
-    NTJsonProperty *property = [[NTJsonProperty alloc] init];
+    NTJsonProp *property = [[NTJsonProp alloc] init];
     
     if ( property )
     {
@@ -46,9 +46,9 @@
 }
 
 
-+(instancetype)property:(NSString *)name type:(NTJsonPropertyType)type class:(Class)class jsonKeyPath:(NSString *)jsonKeyPath
++(instancetype)property:(NSString *)name type:(NTJsonPropType)type class:(Class)class jsonKeyPath:(NSString *)jsonKeyPath
 {
-    NTJsonProperty *property = [[NTJsonProperty alloc] init];
+    NTJsonProp *property = [[NTJsonProp alloc] init];
     
     if ( property )
     {
@@ -62,9 +62,9 @@
 }
 
 
-+(instancetype)property:(NSString *)name type:(NTJsonPropertyType)type enumValues:(NSSet *)enumValues jsonKeyPath:(NSString *)jsonKeyPath
++(instancetype)property:(NSString *)name type:(NTJsonPropType)type enumValues:(NSSet *)enumValues jsonKeyPath:(NSString *)jsonKeyPath
 {
-    NTJsonProperty *property = [[NTJsonProperty alloc] init];
+    NTJsonProp *property = [[NTJsonProp alloc] init];
     
     if ( property )
     {
@@ -83,73 +83,73 @@
 
 +(instancetype)stringProperty:(NSString *)name jsonKeyPath:(NSString *)jsonKeyPath
 {
-    return [self property:name type:NTJsonPropertyTypeString jsonKeyPath:jsonKeyPath];
+    return [self property:name type:NTJsonPropTypeString jsonKeyPath:jsonKeyPath];
 }
 
 
 +(instancetype)stringProperty:(NSString *)name
 {
-    return [self property:name type:NTJsonPropertyTypeString jsonKeyPath:name];
+    return [self property:name type:NTJsonPropTypeString jsonKeyPath:name];
 }
 
 
 +(instancetype)intProperty:(NSString *)name jsonKeyPath:(NSString *)jsonKeyPath
 {
-    return [self property:name type:NTJsonPropertyTypeInt jsonKeyPath:jsonKeyPath];
+    return [self property:name type:NTJsonPropTypeInt jsonKeyPath:jsonKeyPath];
 }
 
 
 +(instancetype)intProperty:(NSString *)name
 {
-    return [self property:name type:NTJsonPropertyTypeInt jsonKeyPath:name];
+    return [self property:name type:NTJsonPropTypeInt jsonKeyPath:name];
 }
 
 
 +(instancetype)boolProperty:(NSString *)name jsonKeyPath:(NSString *)jsonKeyPath;
 {
-    return [self property:name type:NTJsonPropertyTypeBool jsonKeyPath:jsonKeyPath];
+    return [self property:name type:NTJsonPropTypeBool jsonKeyPath:jsonKeyPath];
 }
 
 
 +(instancetype)boolProperty:(NSString *)name;
 {
-    return [self property:name type:NTJsonPropertyTypeBool jsonKeyPath:name];
+    return [self property:name type:NTJsonPropTypeBool jsonKeyPath:name];
 }
 
 
 +(instancetype)floatProperty:(NSString *)name jsonKeyPath:(NSString *)jsonKeyPath;
 {
-    return [self property:name type:NTJsonPropertyTypeFloat jsonKeyPath:jsonKeyPath];
+    return [self property:name type:NTJsonPropTypeFloat jsonKeyPath:jsonKeyPath];
 }
 
 
 +(instancetype)floatProperty:(NSString *)name;
 {
-    return [self property:name type:NTJsonPropertyTypeFloat jsonKeyPath:name];
+    return [self property:name type:NTJsonPropTypeFloat jsonKeyPath:name];
 }
 
 
 +(instancetype)doubleProperty:(NSString *)name jsonKeyPath:(NSString *)jsonKeyPath;
 {
-    return [self property:name type:NTJsonPropertyTypeDouble jsonKeyPath:jsonKeyPath];
+    return [self property:name type:NTJsonPropTypeDouble jsonKeyPath:jsonKeyPath];
 }
 
 
 +(instancetype)doubleProperty:(NSString *)name;
 {
-    return [self property:name type:NTJsonPropertyTypeDouble jsonKeyPath:name];
+    return [self property:name type:NTJsonPropTypeDouble jsonKeyPath:name];
 }
 
 
 +(instancetype)longLongProperty:(NSString *)name jsonKeyPath:(NSString *)jsonKeyPath;
 {
-    return [self property:name type:NTJsonPropertyTypeLongLong jsonKeyPath:jsonKeyPath];
+    return [self property:name type:NTJsonPropTypeLongLong jsonKeyPath:jsonKeyPath];
 }
 
 
 +(instancetype)longLongProperty:(NSString *)name;
 {
-    return [self property:name type:NTJsonPropertyTypeLongLong jsonKeyPath:name];
+    return [self property:name type:NTJsonPropTypeLongLong jsonKeyPath:name];
 }
 
 
@@ -158,13 +158,13 @@
 
 +(instancetype)enumProperty:(NSString *)name enumValues:(NSSet *)enumValues jsonKeyPath:(NSString *)jsonKeyPath
 {
-    return [self property:name type:NTJsonPropertyTypeStringEnum enumValues:enumValues jsonKeyPath:jsonKeyPath];
+    return [self property:name type:NTJsonPropTypeStringEnum enumValues:enumValues jsonKeyPath:jsonKeyPath];
 }
 
 
 +(instancetype)enumProperty:(NSString *)name enumValues:(NSSet *)enumValues
 {
-    return [self property:name type:NTJsonPropertyTypeStringEnum enumValues:enumValues jsonKeyPath:name];
+    return [self property:name type:NTJsonPropTypeStringEnum enumValues:enumValues jsonKeyPath:name];
 }
 
 
@@ -173,25 +173,25 @@
 
 +(instancetype)modelProperty:(NSString *)name class:(Class)class jsonKeyPath:(NSString *)jsonKeyPath
 {
-    return [self property:name type:NTJsonPropertyTypeModel class:class jsonKeyPath:jsonKeyPath];
+    return [self property:name type:NTJsonPropTypeModel class:class jsonKeyPath:jsonKeyPath];
 }
 
 
 +(instancetype)modelProperty:(NSString *)name class:(Class)class
 {
-    return [self property:name type:NTJsonPropertyTypeModel class:class jsonKeyPath:name];
+    return [self property:name type:NTJsonPropTypeModel class:class jsonKeyPath:name];
 }
 
 
 +(instancetype)modelArrayProperty:(NSString *)name class:(Class)class jsonKeyPath:(NSString *)jsonKeyPath
 {
-    return [self property:name type:NTJsonPropertyTypeModelArray class:class jsonKeyPath:jsonKeyPath];
+    return [self property:name type:NTJsonPropTypeModelArray class:class jsonKeyPath:jsonKeyPath];
 }
 
 
 +(instancetype)modelArrayProperty:(NSString *)name class:(Class)class
 {
-    return [self property:name type:NTJsonPropertyTypeModelArray class:class jsonKeyPath:name];
+    return [self property:name type:NTJsonPropTypeModelArray class:class jsonKeyPath:name];
 }
 
 
@@ -200,25 +200,25 @@
 
 +(instancetype)objectProperty:(NSString *)name class:(Class)class jsonKeyPath:(NSString *)jsonKeyPath
 {
-    return [self property:name type:NTJsonPropertyTypeObject class:class jsonKeyPath:jsonKeyPath];
+    return [self property:name type:NTJsonPropTypeObject class:class jsonKeyPath:jsonKeyPath];
 }
 
 
 +(instancetype)objectProperty:(NSString *)name class:(Class)class
 {
-    return [self property:name type:NTJsonPropertyTypeObject class:class jsonKeyPath:name];
+    return [self property:name type:NTJsonPropTypeObject class:class jsonKeyPath:name];
 }
 
 
 +(instancetype)objectArrayProperty:(NSString *)name class:(Class)class jsonKeyPath:(NSString *)jsonKeyPath
 {
-    return [self property:name type:NTJsonPropertyTypeObjectArray class:class jsonKeyPath:jsonKeyPath];
+    return [self property:name type:NTJsonPropTypeObjectArray class:class jsonKeyPath:jsonKeyPath];
 }
 
 
 +(instancetype)objectArrayProperty:(NSString *)name class:(Class)class
 {
-    return [self property:name type:NTJsonPropertyTypeObjectArray class:class jsonKeyPath:name];
+    return [self property:name type:NTJsonPropTypeObjectArray class:class jsonKeyPath:name];
 }
 
 
@@ -252,11 +252,11 @@ static NSString *ObjcAttributeIvar = @"V";
 
 /*
  
- NTJsonPropertyTypeModel         = 7,
- NTJsonPropertyTypeModelArray    = 8,
- NTJsonPropertyTypeStringEnum    = 9,
- NTJsonPropertyTypeObject        = 10,   // a custom object of some kind (eg NSDate)
- NTJsonPropertyTypeObjectArray   = 11,   // an array of custom objects
+ NTJsonPropTypeModel         = 7,
+ NTJsonPropTypeModelArray    = 8,
+ NTJsonPropTypeStringEnum    = 9,
+ NTJsonPropTypeObject        = 10,   // a custom object of some kind (eg NSDate)
+ NTJsonPropTypeObjectArray   = 11,   // an array of custom objects
 
  */
 
@@ -270,7 +270,7 @@ static NSString *ObjcAttributeIvar = @"V";
     if ( !attributes[ObjcAttributeDynamic] )
         return nil;
     
-    NTJsonProperty *prop = [[NTJsonProperty alloc] init];
+    NTJsonProp *prop = [[NTJsonProp alloc] init];
     
     prop->_modelClass = class;
     prop->_name = @(property_getName(objcProperty));
@@ -281,12 +281,12 @@ static NSString *ObjcAttributeIvar = @"V";
 
     NSDictionary *simplePropertyTypes =
     @{
-      @(@encode(int)): @(NTJsonPropertyTypeInt),
-      @(@encode(BOOL)): @(NTJsonPropertyTypeBool),
-      @(@encode(float)): @(NTJsonPropertyTypeFloat),
-      @(@encode(double)): @(NTJsonPropertyTypeDouble),
-      @(@encode(long long)): @(NTJsonPropertyTypeLongLong),
-      @"@\"NSString\"": @(NTJsonPropertyTypeString),
+      @(@encode(int)): @(NTJsonPropTypeInt),
+      @(@encode(BOOL)): @(NTJsonPropTypeBool),
+      @(@encode(float)): @(NTJsonPropTypeFloat),
+      @(@encode(double)): @(NTJsonPropTypeDouble),
+      @(@encode(long long)): @(NTJsonPropTypeLongLong),
+      @"@\"NSString\"": @(NTJsonPropTypeString),
       };
 
     NSNumber *simplePropertyType = simplePropertyTypes[objcType];
@@ -327,13 +327,13 @@ static NSString *ObjcAttributeIvar = @"V";
                 elementClassName = @"NSObject";
             
             prop->_typeClass = NSClassFromString(elementClassName);  // todo: validate
-            prop->_type = [prop.typeClass isSubclassOfClass:[NTJsonModel class]] ? NTJsonPropertyTypeModelArray : NTJsonPropertyTypeObjectArray;
+            prop->_type = [prop.typeClass isSubclassOfClass:[NTJsonModel class]] ? NTJsonPropTypeModelArray : NTJsonPropTypeObjectArray;
         }
         
         else
         {
             prop->_typeClass = NSClassFromString(className); // todo: validate
-            prop->_type = [prop.typeClass isSubclassOfClass:[NTJsonModel class]] ? NTJsonPropertyTypeModel : NTJsonPropertyTypeObject;
+            prop->_type = [prop.typeClass isSubclassOfClass:[NTJsonModel class]] ? NTJsonPropTypeModel : NTJsonPropTypeObject;
         }
     }
 
@@ -361,15 +361,15 @@ static NSString *ObjcAttributeIvar = @"V";
 
     prop->_jsonKeyPath = (propInfo.jsonPath) ? @(propInfo.jsonPath) : prop.name;
     
-    if ( propInfo.elementType && (prop->_type == NTJsonPropertyTypeModel || prop->_type == NTJsonPropertyTypeObject) )
+    if ( propInfo.elementType && (prop->_type == NTJsonPropTypeModel || prop->_type == NTJsonPropTypeObject) )
     {
         prop->_typeClass = propInfo.elementType;
-        prop->_type = [prop->_typeClass isSubclassOfClass:[NTJsonModel class]] ? NTJsonPropertyTypeModel : NTJsonPropertyTypeObject;
+        prop->_type = [prop->_typeClass isSubclassOfClass:[NTJsonModel class]] ? NTJsonPropTypeModel : NTJsonPropTypeObject;
     }
     
-    if ( propInfo.enumValues && (prop->_type == NTJsonPropertyTypeString ||prop->_type == NTJsonPropertyTypeStringEnum) )
+    if ( propInfo.enumValues && (prop->_type == NTJsonPropTypeString ||prop->_type == NTJsonPropTypeStringEnum) )
     {
-        prop->_type = NTJsonPropertyTypeStringEnum;
+        prop->_type = NTJsonPropTypeStringEnum;
         prop->_enumValues = [NSSet setWithArray:propInfo.enumValues];
     }
     
@@ -384,17 +384,17 @@ static NSString *ObjcAttributeIvar = @"V";
 {
     switch(self.type)
     {
-        case NTJsonPropertyTypeString: return(@"String");
-        case NTJsonPropertyTypeInt: return(@"Int");
-        case NTJsonPropertyTypeBool: return(@"Bool");
-        case NTJsonPropertyTypeFloat: return(@"Float");
-        case NTJsonPropertyTypeDouble: return(@"Double");
-        case NTJsonPropertyTypeLongLong: return(@"LongLong");
-        case NTJsonPropertyTypeModel: return([NSString stringWithFormat:@"%@{Model}", NSStringFromClass(self.typeClass)]);
-        case NTJsonPropertyTypeModelArray: return([NSString stringWithFormat:@"%@{Model}[]", NSStringFromClass(self.typeClass)]);
-        case NTJsonPropertyTypeStringEnum: return(@"StringEnum");
-        case NTJsonPropertyTypeObject: return([NSString stringWithFormat:@"%@", NSStringFromClass(self.typeClass)]);
-        case NTJsonPropertyTypeObjectArray: return([NSString stringWithFormat:@"%@[]", NSStringFromClass(self.typeClass)]);
+        case NTJsonPropTypeString: return(@"String");
+        case NTJsonPropTypeInt: return(@"Int");
+        case NTJsonPropTypeBool: return(@"Bool");
+        case NTJsonPropTypeFloat: return(@"Float");
+        case NTJsonPropTypeDouble: return(@"Double");
+        case NTJsonPropTypeLongLong: return(@"LongLong");
+        case NTJsonPropTypeModel: return([NSString stringWithFormat:@"%@{Model}", NSStringFromClass(self.typeClass)]);
+        case NTJsonPropTypeModelArray: return([NSString stringWithFormat:@"%@{Model}[]", NSStringFromClass(self.typeClass)]);
+        case NTJsonPropTypeStringEnum: return(@"StringEnum");
+        case NTJsonPropTypeObject: return([NSString stringWithFormat:@"%@", NSStringFromClass(self.typeClass)]);
+        case NTJsonPropTypeObjectArray: return([NSString stringWithFormat:@"%@[]", NSStringFromClass(self.typeClass)]);
     }
 }
 
@@ -408,7 +408,7 @@ static NSString *ObjcAttributeIvar = @"V";
     if ( ![self.jsonKeyPath isEqualToString:self.name] )
         [desc appendFormat:@", jsonKeyPath=\"%@\"", self.jsonKeyPath];
     
-    if ( self.type == NTJsonPropertyTypeStringEnum )
+    if ( self.type == NTJsonPropTypeStringEnum )
         [desc appendFormat:@", enumValues=[%@]", [[self.enumValues allObjects] componentsJoinedByString:@", "]];
     
     [desc appendString:@")"];
@@ -422,30 +422,30 @@ static NSString *ObjcAttributeIvar = @"V";
 
 -(BOOL)shouldCache
 {
-    return (self.type == NTJsonPropertyTypeModel
-            || self.type == NTJsonPropertyTypeModelArray
-            || self.type == NTJsonPropertyTypeObject
-            || self.type == NTJsonPropertyTypeObjectArray);
+    return (self.type == NTJsonPropTypeModel
+            || self.type == NTJsonPropTypeModelArray
+            || self.type == NTJsonPropTypeObject
+            || self.type == NTJsonPropTypeObjectArray);
 }
 
 
-+(id)defaultValueForType:(NTJsonPropertyType)type
++(id)defaultValueForType:(NTJsonPropType)type
 {
     switch (type)
     {
-        case NTJsonPropertyTypeInt:
+        case NTJsonPropTypeInt:
             return @(0);
             
-        case NTJsonPropertyTypeBool:
+        case NTJsonPropTypeBool:
             return @(NO);
             
-        case NTJsonPropertyTypeFloat:
+        case NTJsonPropTypeFloat:
             return @((float)0);
             
-        case NTJsonPropertyTypeDouble:
+        case NTJsonPropTypeDouble:
             return @((double)0);
             
-        case NTJsonPropertyTypeLongLong:
+        case NTJsonPropTypeLongLong:
             return ((long long)0);
             
         default:
@@ -502,7 +502,7 @@ static NSString *ObjcAttributeIvar = @"V";
 
 -(id)convertJsonToValue:(id)json
 {
-    if ( self.type != NTJsonPropertyTypeObject && self.type != NTJsonPropertyTypeObjectArray )
+    if ( self.type != NTJsonPropTypeObject && self.type != NTJsonPropTypeObjectArray )
         @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"convertJsonToValue: only supports Objects currently." userInfo:nil];
     
     if ( !_convertJsonToValueSelector )
@@ -533,7 +533,7 @@ static NSString *ObjcAttributeIvar = @"V";
 
 -(id)convertValueToJson:(id)value
 {
-    if ( self.type != NTJsonPropertyTypeObject && self.type != NTJsonPropertyTypeObjectArray )
+    if ( self.type != NTJsonPropTypeObject && self.type != NTJsonPropTypeObjectArray )
         @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"convertValueToJson: only supports Objects currently." userInfo:nil];
     
     if ( !_convertValueToJsonSelector )
