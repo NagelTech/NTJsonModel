@@ -77,7 +77,8 @@ static NSString *ObjcAttributeIvar = @"V";
     NSDictionary *simplePropertyTypes =
     @{
       @(@encode(int)): @(NTJsonPropTypeInt),
-      @(@encode(BOOL)): @(NTJsonPropTypeBool),
+      @(@encode(BOOL)): @(NTJsonPropTypeBool),  // == char, but that's an unlikely type for a property
+      @(@encode(bool)): @(NTJsonPropTypeBool),
       @(@encode(float)): @(NTJsonPropTypeFloat),
       @(@encode(double)): @(NTJsonPropTypeDouble),
       @(@encode(long long)): @(NTJsonPropTypeLongLong),
