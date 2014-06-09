@@ -15,3 +15,9 @@
 @property (nonatomic) NSString *username;
 
 @end
+
+
+@protocol Account <NSObject>
+
+@end
+

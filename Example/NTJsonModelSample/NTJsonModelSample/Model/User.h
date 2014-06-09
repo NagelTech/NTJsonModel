@@ -10,6 +10,9 @@
 
 #import "Account.h"
 
+@protocol SampleProtocol <NSObject>
+@end
+
 
 @interface User : NTJsonModel
 
@@ -18,6 +21,6 @@
 @property (nonatomic) NSString *lastName;
 @property (nonatomic) int age;
 @property (nonatomic) Account *account;
-@property (nonatomic) NSMutableArray *accounts;
+@property (nonatomic) NSMutableArray<Account> *accounts;
 
 @end

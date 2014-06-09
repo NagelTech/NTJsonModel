@@ -11,18 +11,8 @@
 
 @implementation Account
 
-@dynamic id;
-@dynamic service;
-@dynamic username;
-
-+(NSArray *)jsonPropertyInfo
-{
-    return @[
-             [NTJsonProperty stringProperty:@"id"],
-             [NTJsonProperty stringProperty:@"service"],
-             [NTJsonProperty stringProperty:@"username" jsonKeyPath:@"user_name"],
-            ];
-}
-
+NTJsonProperty(id)
+NTJsonProperty(service)
+NTJsonProperty(username, jsonPath="user_name")
 
 @end

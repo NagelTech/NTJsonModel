@@ -9,8 +9,9 @@
 #import <Foundation/Foundation.h>
 
 #import "NTJsonModelArray.h"
-#import "NTJsonProperty.h"
 #import "NTJsonPropertyConversion.h"
+
+#import "NTJsonPropertyInfo.h"
 
 
 @interface NTJsonModel : NSObject <NSCopying, NSMutableCopying>

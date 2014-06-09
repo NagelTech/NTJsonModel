@@ -25,7 +25,7 @@
 		F0A5D24918F4D410006891E9 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F0A5D24718F4D410006891E9 /* InfoPlist.strings */; };
 		F0A5D25718F4D435006891E9 /* NTJsonModel.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A5D25618F4D435006891E9 /* NTJsonModel.m */; };
 		F0A5D25E18F4D887006891E9 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A5D25D18F4D887006891E9 /* User.m */; };
-		F0A5D26118F4DA3B006891E9 /* NTJsonProperty.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A5D26018F4DA3B006891E9 /* NTJsonProperty.m */; };
+		F0A5D26118F4DA3B006891E9 /* NTJsonProp.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A5D26018F4DA3B006891E9 /* NTJsonProp.m */; };
 		F0A5D26418F5DFBE006891E9 /* Account.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A5D26318F5DFBE006891E9 /* Account.m */; };
 		F0A5D26718F5F43F006891E9 /* NTJsonModelArray.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A5D26618F5F43F006891E9 /* NTJsonModelArray.m */; };
 		F0A5D26A18F6F833006891E9 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = F0A5D26818F6F833006891E9 /* LICENSE */; };
@@ -47,6 +47,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F000A25A1939517E00E3257D /* NTJsonPropertyInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NTJsonPropertyInfo.h; sourceTree = "<group>"; };
 		F062848B1909EDC100A93DF7 /* TestBasicProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestBasicProperties.m; sourceTree = "<group>"; };
 		F062848D1909EE5800A93DF7 /* BasicPropertiesModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BasicPropertiesModel.h; sourceTree = "<group>"; };
 		F062848E1909EE5800A93DF7 /* BasicPropertiesModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BasicPropertiesModel.m; sourceTree = "<group>"; };
@@ -73,8 +74,7 @@
 		F0A5D25818F4D479006891E9 /* NTJsonModel+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NTJsonModel+Private.h"; sourceTree = "<group>"; };
 		F0A5D25C18F4D887006891E9 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
 		F0A5D25D18F4D887006891E9 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
-		F0A5D25F18F4DA3B006891E9 /* NTJsonProperty.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NTJsonProperty.h; sourceTree = "<group>"; };
-		F0A5D26018F4DA3B006891E9 /* NTJsonProperty.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NTJsonProperty.m; sourceTree = "<group>"; };
+		F0A5D26018F4DA3B006891E9 /* NTJsonProp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NTJsonProp.m; sourceTree = "<group>"; };
 		F0A5D26218F5DFBE006891E9 /* Account.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Account.h; sourceTree = "<group>"; };
 		F0A5D26318F5DFBE006891E9 /* Account.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Account.m; sourceTree = "<group>"; };
 		F0A5D26518F5F43F006891E9 /* NTJsonModelArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NTJsonModelArray.h; sourceTree = "<group>"; };
@@ -86,7 +86,7 @@
 		F0AF212B1912B3C200F314CE /* TestDefaultJson.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestDefaultJson.m; sourceTree = "<group>"; };
 		F0F395C5190185CF007985CD /* NTJsonPropertyConversion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NTJsonPropertyConversion.h; sourceTree = "<group>"; };
 		F0F395C719019786007985CD /* NTJsonModelArray+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NTJsonModelArray+Private.h"; sourceTree = "<group>"; };
-		F0F395CA1901BCF3007985CD /* NTJsonProperty+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NTJsonProperty+Private.h"; sourceTree = "<group>"; };
+		F0F395CA1901BCF3007985CD /* NTJsonProp+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NTJsonProp+Private.h"; sourceTree = "<group>"; };
 		F0F395CD1901C1CC007985CD /* NTJsonModel.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = NTJsonModel.podspec; path = ../../NTJsonModel.podspec; sourceTree = "<group>"; };
 		F0F395D21902D2C9007985CD /* NTJsonModel+NativeConversions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NTJsonModel+NativeConversions.h"; sourceTree = "<group>"; };
 		F0F395D31902D2C9007985CD /* NTJsonModel+NativeConversions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NTJsonModel+NativeConversions.m"; sourceTree = "<group>"; };
@@ -211,10 +211,10 @@
 				F0A5D26518F5F43F006891E9 /* NTJsonModelArray.h */,
 				F0A5D26618F5F43F006891E9 /* NTJsonModelArray.m */,
 				F0F395D51905C922007985CD /* NTJsonModelContainer.h */,
-				F0F395CA1901BCF3007985CD /* NTJsonProperty+Private.h */,
-				F0A5D25F18F4DA3B006891E9 /* NTJsonProperty.h */,
-				F0A5D26018F4DA3B006891E9 /* NTJsonProperty.m */,
+				F0F395CA1901BCF3007985CD /* NTJsonProp+Private.h */,
+				F0A5D26018F4DA3B006891E9 /* NTJsonProp.m */,
 				F0F395C5190185CF007985CD /* NTJsonPropertyConversion.h */,
+				F000A25A1939517E00E3257D /* NTJsonPropertyInfo.h */,
 				F0A5D26918F6F833006891E9 /* README.md */,
 			);
 			name = NTJsonModel;
@@ -338,7 +338,7 @@
 				F0AF212A1912AF7100F314CE /* NSMutableDictionary+NTJsonModelPrivate.m in Sources */,
 				F0A5D26718F5F43F006891E9 /* NTJsonModelArray.m in Sources */,
 				F0A5D23218F4D410006891E9 /* main.m in Sources */,
-				F0A5D26118F4DA3B006891E9 /* NTJsonProperty.m in Sources */,
+				F0A5D26118F4DA3B006891E9 /* NTJsonProp.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

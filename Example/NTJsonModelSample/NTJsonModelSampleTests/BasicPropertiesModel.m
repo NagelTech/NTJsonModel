@@ -11,33 +11,17 @@
 
 @implementation BasicPropertiesModel
 
-@dynamic intProp;
-@dynamic floatProp;
-@dynamic doubleProp;
-@dynamic stringProp;
-@dynamic boolProp;
-@dynamic colorProp;
-@dynamic color2Prop;
-@dynamic childModel;
-@dynamic modelArray;
-@dynamic nestedValue;
 
-
-+(NSArray *)jsonPropertyInfo
-{
-    return @[
-             [NTJsonProperty intProperty:@"intProp"],
-             [NTJsonProperty floatProperty:@"floatProp"],
-             [NTJsonProperty doubleProperty:@"doubleProp"],
-             [NTJsonProperty stringProperty:@"stringProp"],
-             [NTJsonProperty boolProperty:@"boolProp"],
-             [NTJsonProperty objectProperty:@"colorProp" class:[UIColor class]],
-             [NTJsonProperty objectProperty:@"color2Prop" class:[UIColor class]],
-             [NTJsonProperty modelProperty:@"childModel" class:[BasicPropertiesModel class]],
-             [NTJsonProperty modelArrayProperty:@"modelArray" class:[BasicPropertiesModel class]],
-             [NTJsonProperty intProperty:@"nestedValue" jsonKeyPath:@"nested.value"],
-             ];
-}
+NTJsonProperty(intProp)
+NTJsonProperty(floatProp)
+NTJsonProperty(doubleProp)
+NTJsonProperty(stringProp)
+NTJsonProperty(boolProp)
+NTJsonProperty(colorProp)
+NTJsonProperty(color2Prop)
+NTJsonProperty(childModel)
+NTJsonProperty(modelArray)
+NTJsonProperty(nestedValue, jsonPath="nested.value")
 
 
 +(id)convertColor2PropToJson:(UIColor *)value

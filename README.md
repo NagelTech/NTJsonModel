@@ -21,6 +21,8 @@ Seems like this all makes sense, but there are some gotchas:
    the user to override existing properties... or can we?
    
  - need to make sure everything is threadsafe. (Or not?)
+ 
+ - Store meta data using magical macros ;)
 
 Done-ish
 --------
