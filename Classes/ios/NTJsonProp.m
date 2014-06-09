@@ -122,24 +122,24 @@ static NSString *ObjcAttributeIvar = @"V";
                 elementClassName = @"NSObject";
             
             prop->_typeClass = NSClassFromString(elementClassName);  // todo: validate
-            prop->_type = [prop.typeClass isSubclassOfClass:[NTJsonModel class]] ? NTJsonPropTypeModelArray : NTJsonPropTypeObjectArray;
+            prop->_type = [prop->_typeClass isSubclassOfClass:[NTJsonModel class]] ? NTJsonPropTypeModelArray : NTJsonPropTypeObjectArray;
         }
         
         else
         {
             prop->_typeClass = NSClassFromString(className); // todo: validate
-            prop->_type = [prop.typeClass isSubclassOfClass:[NTJsonModel class]] ? NTJsonPropTypeModel : NTJsonPropTypeObject;
+            prop->_type = [prop->_typeClass isSubclassOfClass:[NTJsonModel class]] ? NTJsonPropTypeModel : NTJsonPropTypeObject;
         }
     }
 
-    if ( !prop.type )
-        @throw [NSException exceptionWithName:@"NTJsonModelInvalidType" reason:[NSString stringWithFormat:@"Unsupported type for property %@.%@ (%@)", NSStringFromClass(class), prop.name, objcType] userInfo:nil];
+    if ( !prop->_type )
+        @throw [NSException exceptionWithName:@"NTJsonModelInvalidType" reason:[NSString stringWithFormat:@"Unsupported type for property %@.%@ (%@)", NSStringFromClass(class), prop->_name, objcType] userInfo:nil];
 
     // Ok, now get remaining details from propInfo...
     
     __NTJsonPropertyInfo propInfo;
     
-    SEL propInfoSelector = NSSelectorFromString([NSString stringWithFormat:@"__NTJsonProperty__%@", prop.name]);
+    SEL propInfoSelector = NSSelectorFromString([NSString stringWithFormat:@"__NTJsonProperty__%@", prop->_name]);
     
     if ( [class respondsToSelector:propInfoSelector] )
     {
@@ -154,7 +154,7 @@ static NSString *ObjcAttributeIvar = @"V";
     else
         memset(&propInfo, 0, sizeof(propInfo)); // zero is all defaults.
 
-    prop->_jsonKeyPath = (propInfo.jsonPath) ? @(propInfo.jsonPath) : prop.name;
+    prop->_jsonKeyPath = (propInfo.jsonPath) ? @(propInfo.jsonPath) : prop->_name;
     
     if ( propInfo.elementType && (prop->_type == NTJsonPropTypeModel || prop->_type == NTJsonPropTypeObject) )
     {
@@ -271,7 +271,6 @@ static NSString *ObjcAttributeIvar = @"V";
 
 
 #pragma mark - Conversion support
-
 
 
 -(BOOL)probeConverterToValue:(BOOL)toValue Target:(id)target selector:(SEL)selector
