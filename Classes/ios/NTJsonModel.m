@@ -201,39 +201,8 @@ static char DEFAULT_JSON_ASSOC_KEY;
 }
 
 
-static BOOL classImplementsSelector(Class class, SEL sel)
-{
-    unsigned int numMethods;
-    Method *methods = class_copyMethodList(object_getClass(class), &numMethods);
-    
-    BOOL found = NO;
-    
-    for(int index=0; index<numMethods; index++)
-    {
-        SEL methodSelector = method_getName(methods[index]);
-        
-        if ( methodSelector == sel )
-        {
-            found = YES;
-            break;
-        }
-    }
-    
-    free(methods);
-    
-    return found;
-}
-
-
 +(NSArray *)jsonPropertiesForClass:(Class)class
 {
-    // This is the old way...
-    
-    if ( classImplementsSelector(class, @selector(jsonPropertyInfo)) )
-        return [self jsonPropertyInfo];
-    
-    // This is the new sexy way...
-    
     unsigned int numProperties;
     objc_property_t *objc_properties = class_copyPropertyList(class, &numProperties);
     
@@ -275,7 +244,6 @@ static BOOL classImplementsSelector(Class class, SEL sel)
     
     for(NTJsonProp *property in [self jsonPropertiesForClass:self])
     {
-        property.modelClass = self;
         success = success && [self addImpsForProperty:property];
         jsonAllPropertyInfo[property.name] = property;
     }

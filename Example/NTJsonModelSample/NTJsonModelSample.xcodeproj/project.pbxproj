@@ -74,7 +74,6 @@
 		F0A5D25818F4D479006891E9 /* NTJsonModel+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NTJsonModel+Private.h"; sourceTree = "<group>"; };
 		F0A5D25C18F4D887006891E9 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
 		F0A5D25D18F4D887006891E9 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
-		F0A5D25F18F4DA3B006891E9 /* NTJsonProp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NTJsonProp.h; sourceTree = "<group>"; };
 		F0A5D26018F4DA3B006891E9 /* NTJsonProp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NTJsonProp.m; sourceTree = "<group>"; };
 		F0A5D26218F5DFBE006891E9 /* Account.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Account.h; sourceTree = "<group>"; };
 		F0A5D26318F5DFBE006891E9 /* Account.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Account.m; sourceTree = "<group>"; };
@@ -213,7 +212,6 @@
 				F0A5D26618F5F43F006891E9 /* NTJsonModelArray.m */,
 				F0F395D51905C922007985CD /* NTJsonModelContainer.h */,
 				F0F395CA1901BCF3007985CD /* NTJsonProp+Private.h */,
-				F0A5D25F18F4DA3B006891E9 /* NTJsonProp.h */,
 				F0A5D26018F4DA3B006891E9 /* NTJsonProp.m */,
 				F0F395C5190185CF007985CD /* NTJsonPropertyConversion.h */,
 				F000A25A1939517E00E3257D /* NTJsonPropertyInfo.h */,

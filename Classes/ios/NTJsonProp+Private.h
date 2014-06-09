@@ -8,11 +8,32 @@
 
 #import <objc/runtime.h>
 
-#import "NTJsonProp.h"
+@class NTJsonModel;
 
-@interface NTJsonProp (Private)
+typedef enum
+{
+    NTJsonPropTypeString        = 1,
+    NTJsonPropTypeInt           = 2,
+    NTJsonPropTypeBool          = 3,
+    NTJsonPropTypeFloat         = 4,
+    NTJsonPropTypeDouble        = 5,
+    NTJsonPropTypeLongLong      = 6,
+    NTJsonPropTypeModel         = 7,
+    NTJsonPropTypeModelArray    = 8,
+    NTJsonPropTypeStringEnum    = 9,
+    NTJsonPropTypeObject        = 10,   // a custom object of some kind (eg NSDate)
+    NTJsonPropTypeObjectArray   = 11,   // an array of custom objects
+} NTJsonPropType;
 
-@property (nonatomic,readwrite) Class modelClass;
+
+@interface NTJsonProp : NSObject
+
+@property (nonatomic,readonly) Class modelClass;
+@property (nonatomic,readonly) NSString *name;
+@property (nonatomic,readonly) NSString *jsonKeyPath;
+@property (nonatomic,readonly) NTJsonPropType type;
+@property (nonatomic,readonly) Class typeClass;
+@property (nonatomic,readonly) NSSet *enumValues;
 @property (nonatomic,readonly) id defaultValue;
 @property (nonatomic,readonly) BOOL shouldCache;
 

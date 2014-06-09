@@ -28,201 +28,8 @@
 @implementation NTJsonProp
 
 
-#pragma mark - Internal initializers
+#pragma mark - Initializer
 
-
-+(instancetype)property:(NSString *)name type:(NTJsonPropType)type jsonKeyPath:(NSString *)jsonKeyPath
-{
-    NTJsonProp *property = [[NTJsonProp alloc] init];
-    
-    if ( property )
-    {
-        property->_name = name;
-        property->_jsonKeyPath = jsonKeyPath;
-        property->_type = type;
-    }
-    
-    return property;
-}
-
-
-+(instancetype)property:(NSString *)name type:(NTJsonPropType)type class:(Class)class jsonKeyPath:(NSString *)jsonKeyPath
-{
-    NTJsonProp *property = [[NTJsonProp alloc] init];
-    
-    if ( property )
-    {
-        property->_name = name;
-        property->_jsonKeyPath = jsonKeyPath;
-        property->_type = type;
-        property->_typeClass = class;
-    }
-    
-    return property;
-}
-
-
-+(instancetype)property:(NSString *)name type:(NTJsonPropType)type enumValues:(NSSet *)enumValues jsonKeyPath:(NSString *)jsonKeyPath
-{
-    NTJsonProp *property = [[NTJsonProp alloc] init];
-    
-    if ( property )
-    {
-        property->_name = name;
-        property->_jsonKeyPath = jsonKeyPath;
-        property->_type = type;
-        property->_enumValues = enumValues;
-    }
-    
-    return property;
-}
-
-
-#pragma mark - Basic Types
-
-
-+(instancetype)stringProperty:(NSString *)name jsonKeyPath:(NSString *)jsonKeyPath
-{
-    return [self property:name type:NTJsonPropTypeString jsonKeyPath:jsonKeyPath];
-}
-
-
-+(instancetype)stringProperty:(NSString *)name
-{
-    return [self property:name type:NTJsonPropTypeString jsonKeyPath:name];
-}
-
-
-+(instancetype)intProperty:(NSString *)name jsonKeyPath:(NSString *)jsonKeyPath
-{
-    return [self property:name type:NTJsonPropTypeInt jsonKeyPath:jsonKeyPath];
-}
-
-
-+(instancetype)intProperty:(NSString *)name
-{
-    return [self property:name type:NTJsonPropTypeInt jsonKeyPath:name];
-}
-
-
-+(instancetype)boolProperty:(NSString *)name jsonKeyPath:(NSString *)jsonKeyPath;
-{
-    return [self property:name type:NTJsonPropTypeBool jsonKeyPath:jsonKeyPath];
-}
-
-
-+(instancetype)boolProperty:(NSString *)name;
-{
-    return [self property:name type:NTJsonPropTypeBool jsonKeyPath:name];
-}
-
-
-+(instancetype)floatProperty:(NSString *)name jsonKeyPath:(NSString *)jsonKeyPath;
-{
-    return [self property:name type:NTJsonPropTypeFloat jsonKeyPath:jsonKeyPath];
-}
-
-
-+(instancetype)floatProperty:(NSString *)name;
-{
-    return [self property:name type:NTJsonPropTypeFloat jsonKeyPath:name];
-}
-
-
-+(instancetype)doubleProperty:(NSString *)name jsonKeyPath:(NSString *)jsonKeyPath;
-{
-    return [self property:name type:NTJsonPropTypeDouble jsonKeyPath:jsonKeyPath];
-}
-
-
-+(instancetype)doubleProperty:(NSString *)name;
-{
-    return [self property:name type:NTJsonPropTypeDouble jsonKeyPath:name];
-}
-
-
-+(instancetype)longLongProperty:(NSString *)name jsonKeyPath:(NSString *)jsonKeyPath;
-{
-    return [self property:name type:NTJsonPropTypeLongLong jsonKeyPath:jsonKeyPath];
-}
-
-
-+(instancetype)longLongProperty:(NSString *)name;
-{
-    return [self property:name type:NTJsonPropTypeLongLong jsonKeyPath:name];
-}
-
-
-#pragma mark - String Enum Types
-
-
-+(instancetype)enumProperty:(NSString *)name enumValues:(NSSet *)enumValues jsonKeyPath:(NSString *)jsonKeyPath
-{
-    return [self property:name type:NTJsonPropTypeStringEnum enumValues:enumValues jsonKeyPath:jsonKeyPath];
-}
-
-
-+(instancetype)enumProperty:(NSString *)name enumValues:(NSSet *)enumValues
-{
-    return [self property:name type:NTJsonPropTypeStringEnum enumValues:enumValues jsonKeyPath:name];
-}
-
-
-#pragma mark - Model Types
-
-
-+(instancetype)modelProperty:(NSString *)name class:(Class)class jsonKeyPath:(NSString *)jsonKeyPath
-{
-    return [self property:name type:NTJsonPropTypeModel class:class jsonKeyPath:jsonKeyPath];
-}
-
-
-+(instancetype)modelProperty:(NSString *)name class:(Class)class
-{
-    return [self property:name type:NTJsonPropTypeModel class:class jsonKeyPath:name];
-}
-
-
-+(instancetype)modelArrayProperty:(NSString *)name class:(Class)class jsonKeyPath:(NSString *)jsonKeyPath
-{
-    return [self property:name type:NTJsonPropTypeModelArray class:class jsonKeyPath:jsonKeyPath];
-}
-
-
-+(instancetype)modelArrayProperty:(NSString *)name class:(Class)class
-{
-    return [self property:name type:NTJsonPropTypeModelArray class:class jsonKeyPath:name];
-}
-
-
-#pragma mark - Object Types
-
-
-+(instancetype)objectProperty:(NSString *)name class:(Class)class jsonKeyPath:(NSString *)jsonKeyPath
-{
-    return [self property:name type:NTJsonPropTypeObject class:class jsonKeyPath:jsonKeyPath];
-}
-
-
-+(instancetype)objectProperty:(NSString *)name class:(Class)class
-{
-    return [self property:name type:NTJsonPropTypeObject class:class jsonKeyPath:name];
-}
-
-
-+(instancetype)objectArrayProperty:(NSString *)name class:(Class)class jsonKeyPath:(NSString *)jsonKeyPath
-{
-    return [self property:name type:NTJsonPropTypeObjectArray class:class jsonKeyPath:jsonKeyPath];
-}
-
-
-+(instancetype)objectArrayProperty:(NSString *)name class:(Class)class
-{
-    return [self property:name type:NTJsonPropTypeObjectArray class:class jsonKeyPath:name];
-}
-
-
-#pragma mark - New style initializer
 
 static NSString *ObjcAttributeType = @"T";
 static NSString *ObjcAttributeReadonly = @"R";
@@ -236,7 +43,6 @@ static NSString *ObjcAttributeWeak = @"D";
 static NSString *ObjcAttributeIvar = @"V";
 
 
-
 +(NSDictionary *)attributesForObjcProperty:(objc_property_t)objcProperty
 {
     NSArray *attributePairs = [@(property_getAttributes(objcProperty)) componentsSeparatedByString:@","];
@@ -248,17 +54,6 @@ static NSString *ObjcAttributeIvar = @"V";
 
     return [attributes copy];
 }
-
-
-/*
- 
- NTJsonPropTypeModel         = 7,
- NTJsonPropTypeModelArray    = 8,
- NTJsonPropTypeStringEnum    = 9,
- NTJsonPropTypeObject        = 10,   // a custom object of some kind (eg NSDate)
- NTJsonPropTypeObjectArray   = 11,   // an array of custom objects
-
- */
 
 
 +(instancetype)propertyWithClass:(Class)class objcProperty:(objc_property_t)objcProperty
