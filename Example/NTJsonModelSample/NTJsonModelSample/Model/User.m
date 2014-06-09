@@ -12,6 +12,15 @@
 @implementation User
 
 
+JsonProperty(id)
+JsonProperty(firstName, jsonPath="first_name")
+JsonProperty(lastName, jsonPath="last_name")
+JsonProperty(age)
+JsonProperty(account)
+JsonProperty(accounts)
+
+/*
+ 
 @dynamic id;
 @dynamic firstName;
 @dynamic lastName;
@@ -31,6 +40,8 @@
              [NTJsonProperty modelArrayProperty:@"accounts" class:[Account class]],
             ];
 }
+ 
+*/
 
 
 @end

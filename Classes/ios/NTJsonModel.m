@@ -225,6 +225,36 @@ static BOOL classImplementsSelector(Class class, SEL sel)
 }
 
 
++(NSArray *)jsonPropertiesForClass:(Class)class
+{
+    // This is the old way...
+    
+    if ( classImplementsSelector(class, @selector(jsonPropertyInfo)) )
+        return [self jsonPropertyInfo];
+    
+    // This is the new sexy way...
+    
+    unsigned int numProperties;
+    objc_property_t *objc_properties = class_copyPropertyList(class, &numProperties);
+    
+    NSMutableArray *properties = [NSMutableArray arrayWithCapacity:numProperties];
+    
+    for(unsigned int index=0; index<numProperties; index++)
+    {
+        objc_property_t objc_property = objc_properties[index];
+        
+        NTJsonProperty *prop = [NTJsonProperty propertyWithClass:self objcProperty:objc_property];
+
+        if ( prop )
+            [properties addObject:prop];
+    }
+    
+    free(objc_properties);
+
+    return [properties copy];
+}
+
+
 +(void)initialize
 {
     if ( self == [NTJsonModel class] )
@@ -232,26 +262,6 @@ static BOOL classImplementsSelector(Class class, SEL sel)
     
     if ( [self jsonAllPropertyInfo] )
         return ; // already initiailized
-    
-    // TEST START
-    
-    
-    unsigned int numProperties;
-    objc_property_t *objc_properties = class_copyPropertyList(self, &numProperties);
-    
-    for(unsigned int index=0; index<numProperties; index++)
-    {
-        objc_property_t objc_property = objc_properties[index];
-
-        NTJsonProperty *prop = [NTJsonProperty propertyWithClass:self objcProperty:objc_property];
-        
-        NSLog(@"%@", prop);
-    }
-    
-    free(objc_properties);
-    
-    // TEST END
-
     
     NSMutableDictionary *jsonAllPropertyInfo = [NSMutableDictionary dictionary];
     BOOL success = YES;
@@ -263,14 +273,11 @@ static BOOL classImplementsSelector(Class class, SEL sel)
     
     // Add our properties and create the implementations for them...
     
-    if ( classImplementsSelector(self, @selector(jsonPropertyInfo)) )
+    for(NTJsonProperty *property in [self jsonPropertiesForClass:self])
     {
-        for(NTJsonProperty *property in [self jsonPropertyInfo])
-        {
-            property.modelClass = self;
-            success = success && [self addImpsForProperty:property];
-            jsonAllPropertyInfo[property.name] = property;
-        }
+        property.modelClass = self;
+        success = success && [self addImpsForProperty:property];
+        jsonAllPropertyInfo[property.name] = property;
     }
     
     if ( !success )

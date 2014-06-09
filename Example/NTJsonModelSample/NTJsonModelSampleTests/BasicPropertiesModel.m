@@ -12,73 +12,16 @@
 @implementation BasicPropertiesModel
 
 
-//@dynamic intProp;
-//@dynamic floatProp;
-//@dynamic doubleProp;
-@dynamic stringProp;
-@dynamic boolProp;
-@dynamic colorProp;
-@dynamic color2Prop;
-@dynamic childModel;
-@dynamic modelArray;
-@dynamic nestedValue;
-
-
-struct NTJsonProperty_Info
-{
-    const char *jsonPath;
-    
-    // examples...
-    
-    BOOL required;
-    
-    /// The class that acts as the converter for this property.
-    Class converter;
-    
-    /// Selector in the Model class to convert the value from Json into the internal representation.
-    SEL fromJson;
-    SEL toJson;
-    __unsafe_unretained id def;
-} ;
-
-
-#define __NTJsonProp_Internal(property, ...) @dynamic property; +(struct NTJsonProperty_Info)__NTJsonProp__##property { return (struct NTJsonProperty_Info) { __VA_ARGS__ };   }
-#define __NTJsonProp_0(property)              __NTJsonProp_Internal(property)
-#define __NTJsonProp_1(property,a)            __NTJsonProp_Internal(property, .a)
-#define __NTJsonProp_2(property,a,b)          __NTJsonProp_Internal(property, .a, .b)
-#define __NTJsonProp_3(property,a,b,c)        __NTJsonProp_Internal(property, .a, .b, .c)
-#define __NTJsonProp_4(property,a,b,c,d)      __NTJsonProp_Internal(property, .a, .b, .c, .d)
-
-#define __NTJsonProp_X(X,a,b,c,d,FUNC, ...) FUNC
-
-/// Declare an NTJsonModel Property
-#define NTJsonProp(property, ...) __NTJsonProp_X(,##__VA_ARGS__, __NTJsonProp_4(property, __VA_ARGS__), __NTJsonProp_3(property, __VA_ARGS__), __NTJsonProp_2(property, __VA_ARGS__), __NTJsonProp_1(property, __VA_ARGS__), __NTJsonProp_0(property))
-
-
-
-NTJsonProp(intProp, jsonPath="some.other.place", converter=[NSString class], def=[NSNumber numberWithInt:42]);
-
-
-NTJsonProp(floatProp, fromJson=@selector(convertUIColorToJson:));
-NTJsonProp(doubleProp);
-
-
-
-+(NSArray *)jsonPropertyInfo
-{
-    return @[
-             [NTJsonProperty intProperty:@"intProp"],
-             [NTJsonProperty floatProperty:@"floatProp"],
-             [NTJsonProperty doubleProperty:@"doubleProp"],
-             [NTJsonProperty stringProperty:@"stringProp"],
-             [NTJsonProperty boolProperty:@"boolProp"],
-             [NTJsonProperty objectProperty:@"colorProp" class:[UIColor class]],
-             [NTJsonProperty objectProperty:@"color2Prop" class:[UIColor class]],
-             [NTJsonProperty modelProperty:@"childModel" class:[BasicPropertiesModel class]],
-             [NTJsonProperty modelArrayProperty:@"modelArray" class:[BasicPropertiesModel class]],
-             [NTJsonProperty intProperty:@"nestedValue" jsonKeyPath:@"nested.value"],
-             ];
-}
+JsonProperty(intProp)
+JsonProperty(floatProp)
+JsonProperty(doubleProp)
+JsonProperty(stringProp)
+JsonProperty(boolProp)
+JsonProperty(colorProp)
+JsonProperty(color2Prop)
+JsonProperty(childModel)
+JsonProperty(modelArray)
+JsonProperty(nestedValue, jsonPath="nested.value")
 
 
 +(id)convertColor2PropToJson:(UIColor *)value

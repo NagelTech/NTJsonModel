@@ -13,22 +13,11 @@ typedef struct
     const char *jsonPath;
     
     /// The property type for array items
-    Class arrayType;
+    Class elementType;
     
     /// Array of possible values for an enumerated type. Useful for String-based enumerations...
     __unsafe_unretained NSArray *enumValues;
 
-    /// The class that acts as the converter for this property.
-    Class converter;
-    
-    /// Selector in the Model class to convert the value from Json into the internal representation.
-    SEL fromJson;
-    
-    /// Selector in the Model class to convert the value from the internal representation into JSON.
-    SEL toJson;
-    
-    /// The default value for this property
-    __unsafe_unretained id def;
 } __NTJsonPropertyInfo;
 
 

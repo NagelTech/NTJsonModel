@@ -321,18 +321,18 @@ static NSString *ObjcAttributeIvar = @"V";
         {
             // It's an array type...
             
-            NSString *elementClassName = [protocols firstObject];   // later we will need to deal with multiple protocols
+            NSString *elementClassName = [protocols firstObject];   // todo: we will need to deal with multiple protocols
             
             if ( !elementClassName )
                 elementClassName = @"NSObject";
             
-            prop->_typeClass = NSClassFromString(elementClassName);
+            prop->_typeClass = NSClassFromString(elementClassName);  // todo: validate
             prop->_type = [prop.typeClass isSubclassOfClass:[NTJsonModel class]] ? NTJsonPropertyTypeModelArray : NTJsonPropertyTypeObjectArray;
         }
         
         else
         {
-            prop->_typeClass = NSClassFromString(className);
+            prop->_typeClass = NSClassFromString(className); // todo: validate
             prop->_type = [prop.typeClass isSubclassOfClass:[NTJsonModel class]] ? NTJsonPropertyTypeModel : NTJsonPropertyTypeObject;
         }
     }
@@ -361,12 +361,60 @@ static NSString *ObjcAttributeIvar = @"V";
 
     prop->_jsonKeyPath = (propInfo.jsonPath) ? @(propInfo.jsonPath) : prop.name;
     
-    // todo: get remaining data from propInfo...
+    if ( propInfo.elementType && (prop->_type == NTJsonPropertyTypeModel || prop->_type == NTJsonPropertyTypeObject) )
+    {
+        prop->_typeClass = propInfo.elementType;
+        prop->_type = [prop->_typeClass isSubclassOfClass:[NTJsonModel class]] ? NTJsonPropertyTypeModel : NTJsonPropertyTypeObject;
+    }
+    
+    if ( propInfo.enumValues && (prop->_type == NTJsonPropertyTypeString ||prop->_type == NTJsonPropertyTypeStringEnum) )
+    {
+        prop->_type = NTJsonPropertyTypeStringEnum;
+        prop->_enumValues = [NSSet setWithArray:propInfo.enumValues];
+    }
     
     return prop;
-    
 }
 
+
+#pragma mark - description
+
+
+-(NSString *)typeDescription
+{
+    switch(self.type)
+    {
+        case NTJsonPropertyTypeString: return(@"String");
+        case NTJsonPropertyTypeInt: return(@"Int");
+        case NTJsonPropertyTypeBool: return(@"Bool");
+        case NTJsonPropertyTypeFloat: return(@"Float");
+        case NTJsonPropertyTypeDouble: return(@"Double");
+        case NTJsonPropertyTypeLongLong: return(@"LongLong");
+        case NTJsonPropertyTypeModel: return([NSString stringWithFormat:@"%@{Model}", NSStringFromClass(self.typeClass)]);
+        case NTJsonPropertyTypeModelArray: return([NSString stringWithFormat:@"%@{Model}[]", NSStringFromClass(self.typeClass)]);
+        case NTJsonPropertyTypeStringEnum: return(@"StringEnum");
+        case NTJsonPropertyTypeObject: return([NSString stringWithFormat:@"%@", NSStringFromClass(self.typeClass)]);
+        case NTJsonPropertyTypeObjectArray: return([NSString stringWithFormat:@"%@[]", NSStringFromClass(self.typeClass)]);
+    }
+}
+
+
+-(NSString *)description
+{
+    NSMutableString *desc = [NSMutableString string];
+    
+    [desc appendFormat:@"%@.%@(type=%@", NSStringFromClass(self.modelClass), self.name, [self typeDescription]];
+    
+    if ( ![self.jsonKeyPath isEqualToString:self.name] )
+        [desc appendFormat:@", jsonKeyPath=\"%@\"", self.jsonKeyPath];
+    
+    if ( self.type == NTJsonPropertyTypeStringEnum )
+        [desc appendFormat:@", enumValues=[%@]", [[self.enumValues allObjects] componentsJoinedByString:@", "]];
+    
+    [desc appendString:@")"];
+    
+    return [desc copy];
+}
 
 
 #pragma mark - Properties
