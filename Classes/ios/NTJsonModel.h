@@ -19,6 +19,8 @@
 @property (nonatomic,readonly) NSDictionary *json;
 @property (nonatomic,readonly) BOOL isMutable;
 
++(Class)modelClassForJson:(NSDictionary *)json;
+
 -(id)init; // creates mutable instance
 -(id)initWithJson:(NSDictionary *)json;
 -(id)initWithMutableJson:(NSMutableDictionary *)mutableJson;

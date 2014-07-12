@@ -256,6 +256,43 @@
 #pragma mark - Constructors
 
 
++(BOOL)modelClassForJsonOverridden
+{
+    NSNumber *modelClassForJsonOverridden = objc_getAssociatedObject(self, @selector(modelClassForJsonOverridden));
+    
+    if ( !modelClassForJsonOverridden )
+    {
+        modelClassForJsonOverridden = @(NO);
+        
+        unsigned int count;
+        Method *methods = class_copyMethodList(object_getClass(self), &count);
+        
+        for(unsigned int index=0; index<count; index++)
+        {
+            SEL selector = method_getName(methods[index]);
+            
+            if ( selector == @selector(modelClassForJson:) )
+            {
+                modelClassForJsonOverridden = @(YES);
+                break;
+            }
+        }
+        
+        free(methods);
+        
+        objc_setAssociatedObject(self, @selector(modelClassForJsonOverridden), modelClassForJsonOverridden, OBJC_ASSOCIATION_RETAIN);
+    }
+    
+    return [modelClassForJsonOverridden boolValue];
+}
+
+
++(Class)modelClassForJson:(NSDictionary *)json
+{
+    return self;
+}
+
+
 -(id)init
 {
     self = [super init];
@@ -272,6 +309,14 @@
 
 -(id)initWithJson:(NSDictionary *)json
 {
+    if ( [self.class modelClassForJsonOverridden] )
+    {
+        Class modelClass = [self.class modelClassForJson:json];
+        
+        if ( modelClass != self.class )
+            return [[modelClass alloc] initWithJson:json];
+    }
+    
     self = [super init];
     
     if ( self )
@@ -286,6 +331,14 @@
 
 -(id)initWithMutableJson:(NSMutableDictionary *)mutableJson
 {
+    if ( [self.class modelClassForJsonOverridden] )
+    {
+        Class modelClass = [self.class modelClassForJson:mutableJson];
+        
+        if ( modelClass != self.class )
+            return [[modelClass alloc] initWithMutableJson:mutableJson];
+    }
+
     self = [super init];
     
     if ( self )
