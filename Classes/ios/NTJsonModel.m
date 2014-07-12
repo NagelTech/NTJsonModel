@@ -24,10 +24,6 @@
 @implementation NTJsonModel
 
 
-static char ALL_PROPERTY_INFO_ASSOC_KEY;
-static char DEFAULT_JSON_ASSOC_KEY;
-
-
 #pragma mark - One-time initialization
 
 
@@ -253,7 +249,7 @@ static char DEFAULT_JSON_ASSOC_KEY;
         @throw [NSException exceptionWithName:@"NTJsonModelErrors" reason:[NSString stringWithFormat:@"Errors encountered initializing properties for NTJsonModel class %@, see log for more information.", NSStringFromClass(self)] userInfo:nil];
     }
 
-    objc_setAssociatedObject(self, &ALL_PROPERTY_INFO_ASSOC_KEY, [jsonAllPropertyInfo copy], OBJC_ASSOCIATION_RETAIN);
+    objc_setAssociatedObject(self, @selector(jsonAllPropertyInfo), [jsonAllPropertyInfo copy], OBJC_ASSOCIATION_RETAIN);
 }
 
 
@@ -526,7 +522,7 @@ id NTJsonModel_deepCopy(id json)
 
 +(NSDictionary *)jsonAllPropertyInfo
 {
-    return objc_getAssociatedObject(self, &ALL_PROPERTY_INFO_ASSOC_KEY);
+    return objc_getAssociatedObject(self, @selector(jsonAllPropertyInfo));
 }
 
 
@@ -564,13 +560,13 @@ id NTJsonModel_deepCopy(id json)
 
 +(NSDictionary *)defaultJson
 {
-    NSDictionary *defaultJson = objc_getAssociatedObject(self, &DEFAULT_JSON_ASSOC_KEY);
+    NSDictionary *defaultJson = objc_getAssociatedObject(self, @selector(defaultJson));
     
     if ( !defaultJson )
     {
         defaultJson = NTJsonModel_deepCopy([self _defaultJsonWithParentClasses:nil]) ?: (id)[NSNull null];
         
-        objc_setAssociatedObject(self, &DEFAULT_JSON_ASSOC_KEY, defaultJson, OBJC_ASSOCIATION_RETAIN);
+        objc_setAssociatedObject(self, @selector(defaultJson), defaultJson, OBJC_ASSOCIATION_RETAIN);
     }
     
     return (defaultJson == (id)[NSNull null]) ? nil : defaultJson;
