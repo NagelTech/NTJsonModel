@@ -169,6 +169,14 @@ static NSString *ObjcAttributeIvar = @"V";
         prop->_enumValues = [NSSet setWithArray:propInfo.enumValues];
     }
     
+    prop->_cachedObject = propInfo.cachedObject;
+    
+    if ( prop->_cachedObject && prop->_type == NTJsonPropTypeModel )
+    {
+        // When a model is used as a cached object, we need to treat it as a simple object.
+        prop->_type = NTJsonPropTypeObject;
+    }
+    
     return prop;
 }
 
