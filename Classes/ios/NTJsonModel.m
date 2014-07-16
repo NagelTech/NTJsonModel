@@ -222,9 +222,6 @@
 
 +(void)initialize
 {
-    if ( self == [NTJsonModel class] )
-        return ; // nothing to initialize for ourselves...
-    
     if ( [self jsonAllPropertyInfo] )
         return ; // already initiailized
     
@@ -233,7 +230,7 @@
     
     // start with properties from our superclass...
     
-    if ( self.superclass != [NTJsonModel class] )
+    if ( self.superclass != [NSObject class] )
         [jsonAllPropertyInfo addEntriesFromDictionary:[self.superclass jsonAllPropertyInfo]];
     
     // Add our properties and create the implementations for them...
@@ -248,7 +245,7 @@
     {
         @throw [NSException exceptionWithName:@"NTJsonModelErrors" reason:[NSString stringWithFormat:@"Errors encountered initializing properties for NTJsonModel class %@, see log for more information.", NSStringFromClass(self)] userInfo:nil];
     }
-
+    
     objc_setAssociatedObject(self, @selector(jsonAllPropertyInfo), [jsonAllPropertyInfo copy], OBJC_ASSOCIATION_RETAIN);
 }
 
