@@ -303,18 +303,31 @@ static NSString *ObjcAttributeIvar = @"V";
     if ( !_convertJsonToValueSelector )
     {
         NSString *convertJsonToProperty = [NSString stringWithFormat:@"convertJsonTo%@%@:", [[self.name substringToIndex:1] uppercaseString], [self.name substringFromIndex:1]];
-        NSString *convertJsonToClass = [NSString stringWithFormat:@"convertJsonTo%@:", NSStringFromClass(self.typeClass)];
         
         BOOL found = [self probeConverterToValue:YES Target:self.modelClass selector:NSSelectorFromString(convertJsonToProperty)];
         
         if ( !found )
-            found = [self probeConverterToValue:YES Target:self.modelClass selector:NSSelectorFromString(convertJsonToClass)];
-        
+        {
+            // Walk up all superclasses of typeClass, looking for a match from either a model method or a method on the typeclass...
+            
+            Class typeClass = self.typeClass;
+            
+            while (typeClass && !found)
+            {
+                NSString *convertJsonToClass = [NSString stringWithFormat:@"convertJsonTo%@:", NSStringFromClass(typeClass)];
+                
+                found = [self probeConverterToValue:YES Target:self.modelClass selector:NSSelectorFromString(convertJsonToClass)];
+                
+                if ( !found )
+                    found = [self probeConverterToValue:YES Target:self.typeClass selector:@selector(convertJsonToValue:)];
+                
+                if ( !found )
+                    typeClass = [typeClass superclass];
+            }
+        }
+
         if ( !found )
-            found = [self probeConverterToValue:YES Target:self.typeClass selector:@selector(convertJsonToValue:)];
-        
-        if ( !found )
-            @throw [NSException exceptionWithName:@"UnableToConvert" reason:[NSString stringWithFormat:@"Unable to find a JsonToValue converter for %@.%@ of type %@. Tried %@ +%@, %@ +%@ and %@ +convertJsonToValue:",  NSStringFromClass(self.modelClass), self.name, NSStringFromClass(self.typeClass), NSStringFromClass(self.modelClass), convertJsonToProperty, NSStringFromClass(self.modelClass), convertJsonToClass, NSStringFromClass(self.modelClass)] userInfo:nil];
+            @throw [NSException exceptionWithName:@"UnableToConvert" reason:[NSString stringWithFormat:@"Unable to find a JsonToValue converter for %@.%@ of type %@.",  NSStringFromClass(self.modelClass), self.name, NSStringFromClass(self.typeClass)] userInfo:nil];
     }
 
     // somehow this is the "safe" way to call performSelector using ARC. Ironic? Yep!
@@ -334,18 +347,31 @@ static NSString *ObjcAttributeIvar = @"V";
     if ( !_convertValueToJsonSelector )
     {
         NSString *convertPropertyToJson = [NSString stringWithFormat:@"convert%@%@ToJson:", [[self.name substringToIndex:1] uppercaseString], [self.name substringFromIndex:1]];
-        NSString *convertClassToJson = [NSString stringWithFormat:@"convert%@ToJson:", NSStringFromClass(self.typeClass)];
         
         BOOL found = [self probeConverterToValue:NO Target:self.modelClass selector:NSSelectorFromString(convertPropertyToJson)];
         
         if ( !found )
-            found = [self probeConverterToValue:NO Target:self.modelClass selector:NSSelectorFromString(convertClassToJson)];
-        
+        {
+            // Walk up all superclasses of typeClass, looking for a match from either a model method or a method on the typeclass...
+            
+            Class typeClass = self.typeClass;
+            
+            while (typeClass && !found)
+            {
+                NSString *convertClassToJson = [NSString stringWithFormat:@"convert%@ToJson:", NSStringFromClass(typeClass)];
+                
+                found = [self probeConverterToValue:NO Target:self.modelClass selector:NSSelectorFromString(convertClassToJson)];
+                
+                if ( !found )
+                    found = [self probeConverterToValue:NO Target:typeClass selector:@selector(convertValueToJson:)];
+                
+                if ( !found )
+                    typeClass = [typeClass superclass];
+            }
+        }
+
         if ( !found )
-            found = [self probeConverterToValue:NO Target:self.typeClass selector:@selector(convertValueToJson:)];
-        
-        if ( !found )
-            @throw [NSException exceptionWithName:@"UnableToConvert" reason:[NSString stringWithFormat:@"Unable to find a ValueToJson converter for %@.%@ of type %@. Tried %@ +%@, %@ +%@ and %@ +convertValueToJson:",  NSStringFromClass(self.modelClass), self.name, NSStringFromClass(self.typeClass), NSStringFromClass(self.modelClass), convertPropertyToJson, NSStringFromClass(self.modelClass), convertClassToJson, NSStringFromClass(self.modelClass)] userInfo:nil];
+            @throw [NSException exceptionWithName:@"UnableToConvert" reason:[NSString stringWithFormat:@"Unable to find a ValueToJson converter for %@.%@ of type %@.",  NSStringFromClass(self.modelClass), self.name, NSStringFromClass(self.typeClass)] userInfo:nil];
     }
     
     // somehow this is the "safe" way to call performSelector using ARC. Ironic? Yep!
