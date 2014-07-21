@@ -316,23 +316,13 @@ static NSString *ObjcAttributeIvar = @"V";
         
         if ( !found )
         {
-            // Walk up all superclasses of typeClass, looking for a match from either a model method or a method on the typeclass...
+            NSString *convertJsonToClass = [NSString stringWithFormat:@"convertJsonTo%@:", NSStringFromClass(self.typeClass)];
             
-            Class typeClass = self.typeClass;
-            
-            while (typeClass && !found)
-            {
-                NSString *convertJsonToClass = [NSString stringWithFormat:@"convertJsonTo%@:", NSStringFromClass(typeClass)];
-                
-                found = [self probeConverterToValue:YES Target:self.modelClass selector:NSSelectorFromString(convertJsonToClass)];
-                
-                if ( !found )
-                    found = [self probeConverterToValue:YES Target:self.typeClass selector:@selector(convertJsonToValue:)];
-                
-                if ( !found )
-                    typeClass = [typeClass superclass];
-            }
+            found = [self probeConverterToValue:YES Target:self.modelClass selector:NSSelectorFromString(convertJsonToClass)];
         }
+        
+        if ( !found )
+            found = [self probeConverterToValue:YES Target:self.typeClass selector:@selector(convertJsonToValue:)];
 
         if ( !found )
             @throw [NSException exceptionWithName:@"UnableToConvert" reason:[NSString stringWithFormat:@"Unable to find a JsonToValue converter for %@.%@ of type %@.",  NSStringFromClass(self.modelClass), self.name, NSStringFromClass(self.typeClass)] userInfo:nil];
@@ -360,23 +350,13 @@ static NSString *ObjcAttributeIvar = @"V";
         
         if ( !found )
         {
-            // Walk up all superclasses of typeClass, looking for a match from either a model method or a method on the typeclass...
+            NSString *convertClassToJson = [NSString stringWithFormat:@"convert%@ToJson:", NSStringFromClass(self.typeClass)];
             
-            Class typeClass = self.typeClass;
-            
-            while (typeClass && !found)
-            {
-                NSString *convertClassToJson = [NSString stringWithFormat:@"convert%@ToJson:", NSStringFromClass(typeClass)];
-                
-                found = [self probeConverterToValue:NO Target:self.modelClass selector:NSSelectorFromString(convertClassToJson)];
-                
-                if ( !found )
-                    found = [self probeConverterToValue:NO Target:typeClass selector:@selector(convertValueToJson:)];
-                
-                if ( !found )
-                    typeClass = [typeClass superclass];
-            }
+            found = [self probeConverterToValue:NO Target:self.modelClass selector:NSSelectorFromString(convertClassToJson)];
         }
+        
+        if ( !found )
+            found = [self probeConverterToValue:NO Target:self.typeClass selector:@selector(convertValueToJson:)];
 
         if ( !found )
             @throw [NSException exceptionWithName:@"UnableToConvert" reason:[NSString stringWithFormat:@"Unable to find a ValueToJson converter for %@.%@ of type %@.",  NSStringFromClass(self.modelClass), self.name, NSStringFromClass(self.typeClass)] userInfo:nil];
