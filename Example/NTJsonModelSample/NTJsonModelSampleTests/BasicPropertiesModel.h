@@ -9,6 +9,10 @@
 #import "NTJsonModel.h"
 
 
+@protocol BasicPropertiesModel <NSObject>
+@end
+
+
 @interface BasicPropertiesModel : NTJsonModel
 
 @property (nonatomic) int intProp;
@@ -23,8 +27,14 @@
 @property (nonatomic) BasicPropertiesModel *childModel;
 
 @property (nonatomic) NTJsonModelArray *modelArray;
+@property (nonatomic) NTJsonModelArray *objectArray;
 
 @property (nonatomic) int nestedValue;
+
++(id)convertColor2PropToJson:(UIColor *)value;
++(UIColor *)convertJsonToColor2Prop:(NSDictionary *)json;
++(id)convertUIColorToJson:(UIColor *)value;
++(UIColor *)convertJsonToUIColor:(id)json;
 
 @end
 

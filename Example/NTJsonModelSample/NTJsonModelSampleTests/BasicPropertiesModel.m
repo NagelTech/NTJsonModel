@@ -21,6 +21,7 @@ NTJsonProperty(colorProp)
 NTJsonProperty(color2Prop)
 NTJsonProperty(childModel)
 NTJsonProperty(modelArray)
+NTJsonProperty(objectArray, elementType=[UIColor class])
 NTJsonProperty(nestedValue, jsonPath="nested.value")
 
 

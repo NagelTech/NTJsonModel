@@ -157,10 +157,10 @@ static NSString *ObjcAttributeIvar = @"V";
 
     prop->_jsonKeyPath = (propInfo.jsonPath) ? @(propInfo.jsonPath) : prop->_name;
     
-    if ( propInfo.elementType && (prop->_type == NTJsonPropTypeModel || prop->_type == NTJsonPropTypeObject) )
+    if ( propInfo.elementType && (prop->_type == NTJsonPropTypeModelArray || prop->_type == NTJsonPropTypeObjectArray) )
     {
         prop->_typeClass = propInfo.elementType;
-        prop->_type = [prop->_typeClass isSubclassOfClass:[NTJsonModel class]] ? NTJsonPropTypeModel : NTJsonPropTypeObject;
+        prop->_type = [prop->_typeClass isSubclassOfClass:[NTJsonModel class]] ? NTJsonPropTypeModelArray : NTJsonPropTypeObjectArray;
     }
     
     if ( propInfo.enumValues && (prop->_type == NTJsonPropTypeString ||prop->_type == NTJsonPropTypeStringEnum) )

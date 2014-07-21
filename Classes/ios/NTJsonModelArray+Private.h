@@ -10,11 +10,15 @@
 #import "NTJsonModelArray.h"
 
 
+@class NTJsonProp;
+
 @interface NTJsonModelArray (Private) <NTJsonModelContainer>
 
 @property (nonatomic, readonly) NSMutableArray *mutableJsonArray;
 
 -(id)initWithModelClass:(Class)modelClass jsonArray:(NSArray *)jsonArray;
--(id)initWithModelClass:(Class)modelClass mutableJsonArray:(NSArray *)mutableJsonArray;
+-(id)initWithModelClass:(Class)modelClass mutableJsonArray:(NSMutableArray *)mutableJsonArray;
+-(id)initWithProperty:(NTJsonProp *)property jsonArray:(NSArray *)jsonArray;
+-(id)initWithProperty:(NTJsonProp *)property mutableJsonArray:(NSMutableArray *)mutableJsonArray;
 
 @end

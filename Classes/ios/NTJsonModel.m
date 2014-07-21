@@ -533,7 +533,7 @@ id NTJsonModel_deepCopy(id json)
         if ( !cacheValue )
             continue;
         
-        if ( [cacheValue conformsToProtocol:@protocol(NTJsonModelContainer)] )
+        if ( (property.type == NTJsonPropTypeModel || property.type == NTJsonPropTypeModelArray || property.type == NTJsonPropTypeObjectArray) && [cacheValue conformsToProtocol:@protocol(NTJsonModelContainer)] )
         {
             // Models are remapped so they point to the new JSON
             id jsonValue = [self.json objectForKey:property.jsonKeyPath];
@@ -649,14 +649,14 @@ id NTJsonModel_deepCopy(id json)
     
     id cachedValue = objc_getAssociatedObject(self, (__bridge void *)property);
     
-    if ( [cachedValue conformsToProtocol:@protocol(NTJsonModelContainer)] )
+    if ( (property.type == NTJsonPropTypeModel || property.type == NTJsonPropTypeModelArray || property.type == NTJsonPropTypeObjectArray) && [cachedValue conformsToProtocol:@protocol(NTJsonModelContainer)] )
         [cachedValue setParentJsonContainer:nil];
     
     objc_setAssociatedObject(self, (__bridge void *)property, value, OBJC_ASSOCIATION_RETAIN);
     
     // Assign the container parent (if valid)...
     
-    if ( [value conformsToProtocol:@protocol(NTJsonModelContainer)] )
+    if ( (property.type == NTJsonPropTypeModel || property.type == NTJsonPropTypeModelArray || property.type == NTJsonPropTypeObjectArray) && [value conformsToProtocol:@protocol(NTJsonModelContainer)] )
         [value setParentJsonContainer:self];
 }
 
@@ -711,27 +711,22 @@ id NTJsonModel_deepCopy(id json)
             break;
         }
             
-        case NTJsonPropTypeModelArray:
-        {
-            if ( !jsonValue )
-                jsonValue = nil;
-            else if ( self.isMutable )
-                value = [[NTJsonModelArray alloc] initWithModelClass:property.typeClass mutableJsonArray:jsonValue];
-            else
-                value = [[NTJsonModelArray alloc] initWithModelClass:property.typeClass jsonArray:jsonValue];
-            break ;
-        }
-            
         case NTJsonPropTypeObject:
         {
             value = [property convertJsonToValue:jsonValue];
             break;
         }
-            
+
         case NTJsonPropTypeObjectArray:
+        case NTJsonPropTypeModelArray:
         {
-            // todo: use ModelArray
-            break;
+            if ( !jsonValue )
+                jsonValue = nil;
+            else if ( self.isMutable )
+                value = [[NTJsonModelArray alloc] initWithProperty:property mutableJsonArray:jsonValue];
+            else
+                value = [[NTJsonModelArray alloc] initWithProperty:property jsonArray:jsonValue];
+            break ;
         }
     }
 
@@ -798,20 +793,17 @@ id NTJsonModel_deepCopy(id json)
             jsonValue = [value respondsToSelector:@selector(json)] ? [value json] : nil;
             break;
             
-        case NTJsonPropTypeModelArray:
-            expectedValueType = [NTJsonModelArray class];
-            jsonValue = [value respondsToSelector:@selector(jsonArray)] ? [value jsonArray] : nil;
-            break ;
-
-            
         case NTJsonPropTypeObject:
             expectedValueType = property.typeClass;
             jsonValue = [property convertValueToJson:value];
             break;
-            
+
+        case NTJsonPropTypeModelArray:
         case NTJsonPropTypeObjectArray:
-            // to do - conversion
-            break;
+            // todo: assigning a normal array should work too, not just NTJsonModelArrays...
+            expectedValueType = [NTJsonModelArray class];
+            jsonValue = [value respondsToSelector:@selector(jsonArray)] ? [value jsonArray] : nil;
+            break ;
     }
     
     // Validate we got the correct expected type...
@@ -821,7 +813,7 @@ id NTJsonModel_deepCopy(id json)
     
     // validate this object is not associated with another parent already...
     
-    if ( [value conformsToProtocol:@protocol(NTJsonModelContainer)] )
+    if ( (property.type == NTJsonPropTypeModel || property.type == NTJsonPropTypeModelArray || property.type == NTJsonPropTypeObjectArray) && [value conformsToProtocol:@protocol(NTJsonModelContainer)] )
     {
         id<NTJsonModelContainer> container = value;
         
