@@ -171,10 +171,15 @@ static NSString *ObjcAttributeIvar = @"V";
     
     prop->_cachedObject = propInfo.cachedObject;
     
-    if ( prop->_cachedObject && prop->_type == NTJsonPropTypeModel )
+    if ( prop->_cachedObject )
     {
         // When a model is used as a cached object, we need to treat it as a simple object.
-        prop->_type = NTJsonPropTypeObject;
+        
+        if ( prop->_type == NTJsonPropTypeModel )
+            prop->_type = NTJsonPropTypeObject;
+        
+        else if ( prop->_type == NTJsonPropTypeModelArray )
+            prop->_type = NTJsonPropTypeObjectArray;
     }
     
     return prop;
