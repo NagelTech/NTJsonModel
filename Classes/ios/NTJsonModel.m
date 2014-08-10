@@ -800,10 +800,21 @@ id NTJsonModel_deepCopy(id json)
 
         case NTJsonPropTypeModelArray:
         case NTJsonPropTypeObjectArray:
-            // todo: assigning a normal array should work too, not just NTJsonModelArrays...
-            expectedValueType = [NTJsonModelArray class];
-            jsonValue = [value respondsToSelector:@selector(jsonArray)] ? [value jsonArray] : nil;
+        {
+            // arrays are handled as copy assignments...
+            
+            if ( ![value isKindOfClass:[NSArray class]] )
+                @throw [NSException exceptionWithName:@"InvalidType" reason:@"Invalid type when setting property" userInfo:nil];
+            
+            NTJsonModelArray *modelArray = [[NTJsonModelArray alloc] initWithProperty:property mutableJsonArray:[NSMutableArray array]];
+            
+            [modelArray addObjectsFromArray:value];
+            
+            value = modelArray;
+            jsonValue = modelArray.jsonArray;
+            expectedValueType = [NSArray class];
             break ;
+        }
     }
     
     // Validate we got the correct expected type...
