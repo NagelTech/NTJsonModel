@@ -119,11 +119,17 @@ static NSString *ObjcAttributeIvar = @"V";
             
             NSString *elementClassName = [protocols firstObject];   // todo: we will need to deal with multiple protocols
             
-            if ( !elementClassName )
-                elementClassName = @"NSObject";
-            
-            prop->_typeClass = NSClassFromString(elementClassName);  // todo: validate
-            prop->_type = [prop->_typeClass isSubclassOfClass:[NTJsonModel class]] ? NTJsonPropTypeModelArray : NTJsonPropTypeObjectArray;
+            if ( (elementClassName.length == 0 || [elementClassName isEqualToString:@"NSObject"]) && ![className isEqualToString:@"NTJsonModelArray"] )
+            {
+                // Untyped arrays are handled as simple objects...
+                prop->_type = NTJsonPropTypeObject;
+                prop->_typeClass = NSClassFromString(className);
+            }
+            else
+            {
+                prop->_typeClass = NSClassFromString(elementClassName);  // todo: validate
+                prop->_type = [prop->_typeClass isSubclassOfClass:[NTJsonModel class]] ? NTJsonPropTypeModelArray : NTJsonPropTypeObjectArray;
+            }
         }
         
         else
