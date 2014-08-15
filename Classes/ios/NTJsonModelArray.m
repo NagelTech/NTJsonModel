@@ -17,7 +17,7 @@
 
 
 
-@interface NTJsonModelArray ()
+@interface NTJsonModelArray () <NTJsonModelContainer>
 {
     Class _modelClass;
     NTJsonProp *_property;
