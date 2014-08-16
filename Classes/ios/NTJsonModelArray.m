@@ -289,10 +289,10 @@
     
     if ( self.isModel )
     {
-        // handle nulls right away
+        // handle NSNulls or invalid types right away
         
-        if ( jsonValue == [NSNull null] )
-            return jsonValue;
+        if ( ![jsonValue isKindOfClass:[NSDictionary class]] )
+            return [NSNull null];
         
         // transform
 

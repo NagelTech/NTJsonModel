@@ -350,7 +350,7 @@
 
 +(instancetype)modelWithJson:(NSDictionary *)json
 {
-    if ( !json )
+    if ( ![json isKindOfClass:[NSDictionary class]] )
         return nil;
     
     return [[self alloc] initWithJson:json];
@@ -359,7 +359,7 @@
 
 +(instancetype)modelWithMutableJson:(NSMutableDictionary *)mutableJson
 {
-    if ( !mutableJson )
+    if ( ![mutableJson isKindOfClass:[NSMutableDictionary class]] )
         return nil;
     
     return [[self alloc] initWithMutableJson:mutableJson];
@@ -380,7 +380,7 @@
 
 +(NSMutableArray *)arrayWithMutableJsonArray:(NSMutableArray *)mutableJsonArray
 {
-    if ( ![mutableJsonArray isKindOfClass:[NSArray class]] )
+    if ( ![mutableJsonArray isKindOfClass:[NSMutableArray class]] )
         return nil;
 
     return [[NTJsonModelArray alloc] initWithModelClass:self mutableJsonArray:mutableJsonArray];
@@ -701,7 +701,7 @@ id NTJsonModel_deepCopy(id json)
             
         case NTJsonPropTypeModel:
         {
-            if ( !jsonValue )
+            if ( ![jsonValue isKindOfClass:[NSDictionary class]] )
                 value = nil;
             else if ( self.isMutable )
                 value = [[property.typeClass alloc] initWithMutableJson:jsonValue];
@@ -720,7 +720,7 @@ id NTJsonModel_deepCopy(id json)
         case NTJsonPropTypeObjectArray:
         case NTJsonPropTypeModelArray:
         {
-            if ( !jsonValue )
+            if ( ![jsonValue isKindOfClass:[NSArray class]] )
                 jsonValue = nil;
             else if ( self.isMutable )
                 value = [[NTJsonModelArray alloc] initWithProperty:property mutableJsonArray:jsonValue];
