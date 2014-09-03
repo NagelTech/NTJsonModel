@@ -92,7 +92,6 @@
 		F0F395CD1901C1CC007985CD /* NTJsonModel.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = NTJsonModel.podspec; path = ../../NTJsonModel.podspec; sourceTree = "<group>"; };
 		F0F395D21902D2C9007985CD /* NTJsonModel+NativeConversions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NTJsonModel+NativeConversions.h"; sourceTree = "<group>"; };
 		F0F395D31902D2C9007985CD /* NTJsonModel+NativeConversions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NTJsonModel+NativeConversions.m"; sourceTree = "<group>"; };
-		F0F395D51905C922007985CD /* NTJsonModelContainer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NTJsonModelContainer.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -213,7 +212,6 @@
 				F0F395C719019786007985CD /* NTJsonModelArray+Private.h */,
 				F0A5D26518F5F43F006891E9 /* NTJsonModelArray.h */,
 				F0A5D26618F5F43F006891E9 /* NTJsonModelArray.m */,
-				F0F395D51905C922007985CD /* NTJsonModelContainer.h */,
 				F0F395CA1901BCF3007985CD /* NTJsonProp+Private.h */,
 				F0A5D26018F4DA3B006891E9 /* NTJsonProp.m */,
 				F0F395C5190185CF007985CD /* NTJsonPropertyConversion.h */,

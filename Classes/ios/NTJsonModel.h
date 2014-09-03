@@ -23,12 +23,12 @@
 
 -(id)init; // creates mutable instance
 -(id)initWithJson:(NSDictionary *)json;
--(id)initWithMutableJson:(NSMutableDictionary *)mutableJson;
+-(id)initMutableWithJson:(NSDictionary *)json;
 +(instancetype)modelWithJson:(NSDictionary *)json;
-+(instancetype)modelWithMutableJson:(NSMutableDictionary *)mutableJson;
++(instancetype)mutableModelWithJson:(NSDictionary *)json;
 
 +(NSArray *)arrayWithJsonArray:(NSArray *)jsonArray;
-+(NSMutableArray *)arrayWithMutableJsonArray:(NSMutableArray *)mutableJsonArray;
++(NSMutableArray *)mutableArrayWithJsonArray:(NSArray *)jsonArray;
 
 +(NSArray *)jsonPropertyInfo;
 
@@ -36,7 +36,5 @@
 
 -(id)copyWithZone:(NSZone *)zone;
 -(id)mutableCopyWithZone:(NSZone *)zone;
-
--(void)becomeMutable;
 
 @end

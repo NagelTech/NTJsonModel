@@ -67,6 +67,8 @@
     
 }
 
+/****
+
 -(void)testSet
 {
     BasicPropertiesModel *model = [self createModel];
@@ -125,6 +127,9 @@
     
     XCTAssert([newColorJson isEqualToString:model.objectArray.jsonArray[index]], @"Delete failed, json incorrect at index");
 }
+ 
+ 
+***/
 
 
 @end

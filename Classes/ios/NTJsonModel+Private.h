@@ -10,7 +10,6 @@
 
 #import "NSMutableDictionary+NTJsonModelPrivate.h"
 
-#import "NTJsonModelContainer.h"
 #import "NTJsonModel.h"
 
 #import "NTJsonModelArray+Private.h"
@@ -19,13 +18,8 @@
 #import "NTJsonPropertyInfo.h"
 
 
-@interface NTJsonModel (Private) <NTJsonModelContainer>
-
-@property (nonatomic,readwrite) NSMutableDictionary *mutableJson;
+@interface NTJsonModel (Private)
 
 @end
-
-id NTJsonModel_deepCopy(id json);
-id NTJsonModel_mutableDeepCopy(id json);
 
 

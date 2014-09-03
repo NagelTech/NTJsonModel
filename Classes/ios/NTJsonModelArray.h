@@ -11,15 +11,12 @@
 
 @class NTJsonModel;
 
-@interface NTJsonModelArray : NSMutableArray <NSCopying, NSMutableCopying>
+@interface NTJsonModelArray : NSArray <NSCopying, NSMutableCopying>
 
 @property (nonatomic, readonly) Class modelClass;
 @property (nonatomic, readonly) NSArray *jsonArray;
-@property (nonatomic, readonly) BOOL isMutable;
 
 -(id)copyWithZone:(NSZone *)zone;
 -(id)mutableCopyWithZone:(NSZone *)zone;
-
--(void)becomeMutable;
 
 @end

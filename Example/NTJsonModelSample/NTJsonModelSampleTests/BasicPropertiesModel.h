@@ -27,7 +27,8 @@
 @property (nonatomic) BasicPropertiesModel *childModel;
 
 @property (nonatomic) NTJsonModelArray *modelArray;
-@property (nonatomic) NTJsonModelArray *objectArray;
+@property (nonatomic) NTJsonModelArray<UIColor> *objectArray;
+@property (nonatomic,readonly) NSArray *objectArrayStrings;
 
 @property (nonatomic) int nestedValue;
 

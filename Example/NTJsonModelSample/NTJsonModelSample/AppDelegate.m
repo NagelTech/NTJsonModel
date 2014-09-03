@@ -54,7 +54,7 @@
     
     User *user = [User modelWithJson:json];
     
- //   user = [user mutableCopy];
+    user = [user mutableCopy];
     
     NSLog(@"firstName: %@", user.firstName);
 

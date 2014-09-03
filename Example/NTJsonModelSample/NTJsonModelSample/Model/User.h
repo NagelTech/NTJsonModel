@@ -21,6 +21,6 @@
 @property (nonatomic) NSString *lastName;
 @property (nonatomic) int age;
 @property (nonatomic) Account *account;
-@property (nonatomic) NSMutableArray<Account> *accounts;
+@property (nonatomic) NSArray<Account> *accounts;
 
 @end

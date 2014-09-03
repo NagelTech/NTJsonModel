@@ -69,8 +69,6 @@
     
     // original child is now an orphan, hopefully...
     
-    XCTAssert(child.parentJsonContainer == nil, @"orphan fail");
-    
     child.stringProp = @"orphan";
     
     XCTAssert([child.stringProp isEqualToString:@"orphan"], @"set orphan property fail");
@@ -80,8 +78,6 @@
     model.childModel = nil;
     
     XCTAssert(model.childModel == nil, @"set child model to nil failed");
-    
-    XCTAssert(newChild.parentJsonContainer == nil, @"orphan fail (setting prop to nil)");
     
     newChild.stringProp = @"orphan2";
     

@@ -111,7 +111,7 @@ static NSString *ObjcAttributeIvar = @"V";
             [protocols addObject:[objcType substringWithRange:[result rangeAtIndex:1]]];
         }];
         
-        NSSet *arrayClassNames = [NSSet setWithArray:@[@"NSArray", @"NSMutableArray", @"NTJsonModelArray"]];
+        NSSet *arrayClassNames = [NSSet setWithArray:@[@"NSArray", @"NTJsonModelArray"]];
         
         if ( [arrayClassNames containsObject:className] )
         {
@@ -132,6 +132,11 @@ static NSString *ObjcAttributeIvar = @"V";
             }
         }
         
+        else if ( [className isEqualToString:@"NSMutableArray"] )
+        {
+            @throw [NSException exceptionWithName:@"NTJsonModelInvalidType" reason:[NSString stringWithFormat:@"Mutable arrays are not supported for property %@.%@ (%@)", NSStringFromClass(class), prop->_name, objcType] userInfo:nil];
+        }
+        
         else
         {
             prop->_typeClass = NSClassFromString(className); // todo: validate
@@ -141,6 +146,8 @@ static NSString *ObjcAttributeIvar = @"V";
 
     if ( !prop->_type )
         @throw [NSException exceptionWithName:@"NTJsonModelInvalidType" reason:[NSString stringWithFormat:@"Unsupported type for property %@.%@ (%@)", NSStringFromClass(class), prop->_name, objcType] userInfo:nil];
+    
+    prop->_isReadOnly = (attributes[ObjcAttributeReadonly]) ? YES : NO;
 
     // Ok, now get remaining details from propInfo...
     
@@ -225,6 +232,9 @@ static NSString *ObjcAttributeIvar = @"V";
     
     if ( self.type == NTJsonPropTypeStringEnum )
         [desc appendFormat:@", enumValues=[%@]", [[self.enumValues allObjects] componentsJoinedByString:@", "]];
+    
+    if ( self.isReadOnly )
+        [desc appendFormat:@", readonly"];
     
     [desc appendString:@")"];
     

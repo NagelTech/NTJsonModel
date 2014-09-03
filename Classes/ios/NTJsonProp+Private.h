@@ -37,6 +37,7 @@ typedef enum
 @property (nonatomic,readonly) id defaultValue;
 @property (nonatomic,readonly) BOOL shouldCache;
 @property (nonatomic,readonly) BOOL cachedObject;
+@property (nonatomic,readonly) BOOL isReadOnly;
 
 // conversion
 
