@@ -245,44 +245,81 @@
     for(NTJsonProp *prop in propertyInfo)
     {
         NSMutableArray *relatedProperties = nil;
-        int numReadWrite = (prop.isReadOnly) ? 0 : 1;
         
         for (NTJsonProp *related in propertyInfo)
         {
             if ( prop == related )
                 continue;
             
-            if ( [prop.jsonKeyPath hasPrefix:related.jsonKeyPath] || [related.jsonKeyPath hasPrefix:prop.jsonKeyPath] )
+            if ( [related.jsonKey isEqualToString:prop.jsonKey] )
             {
                 if ( !relatedProperties )
                     relatedProperties = [NSMutableArray array];
                 
                 [relatedProperties addObject:related];
-                
-                numReadWrite += (related.isReadOnly) ? 0 : 1;
             }
         }
         
         if ( relatedProperties )
-        {
             allRelatedProperties[prop.name] = [relatedProperties copy];
-        }
-
     }
     
     return [allRelatedProperties copy];
 }
 
 
-+(NSDictionary *)allRelatedProperties
++(NSDictionary *)jsonAllRelatedProperties
 {
-    return objc_getAssociatedObject(self, @selector(allRelatedProperties));
+    return objc_getAssociatedObject(self, @selector(jsonAllRelatedProperties));
 }
 
 
-+(NSArray *)relatedPropertiesForProperty:(NTJsonProp *)prop
++(NSArray *)jsonRelatedPropertiesForProperty:(NTJsonProp *)prop
 {
-    return [self allRelatedProperties][prop.name];
+    return [self jsonAllRelatedProperties][prop.name];
+}
+
+
++(BOOL)validateRelatedProperties
+{
+    BOOL valid = YES;
+    
+    NSMutableSet *invalidPropNames = [NSMutableSet set];
+    
+    for (NTJsonProp *prop in [self jsonAllPropertyInfo].allValues)
+    {
+        if ( prop.isReadOnly )
+            continue;
+        
+        NSArray *relatedProperties = [self jsonRelatedPropertiesForProperty:prop];
+        
+        if ( !relatedProperties.count )
+            continue;
+        
+        if ( [invalidPropNames containsObject:prop.name] )
+            continue;   // we have alredy output this name
+        
+        NSMutableArray *readwriteNames = nil;
+        
+        for(NTJsonProp *related in relatedProperties)
+        {
+            if ( !related.isReadOnly )
+            {
+                if ( !readwriteNames )  // delay creating this unless there is actually an error
+                    readwriteNames = [NSMutableArray arrayWithObject:prop.name];
+                
+                [readwriteNames addObject:related.name];
+            }
+        }
+        
+        if ( readwriteNames.count > 1 )
+        {
+            NSLog(@"Error: Only one readwrite property may refer to the same jsonPath, consider making secondary properties read-only. Properties: %@(%@), JsonKey: %@", NSStringFromClass(self), [readwriteNames componentsJoinedByString:@", "], prop.jsonKey);
+            valid = NO;
+        }
+    }
+    
+    return valid;
 }
 
 
@@ -307,12 +344,22 @@
         jsonAllPropertyInfo[property.name] = property;
     }
     
+    // Get our related properties...
+    
+    NSDictionary *allRelatedProperties = [self allRelatedPropertiesForPropertyInfo:jsonAllPropertyInfo.allValues];
+    
+    // Set our associated properties...
+    
+    objc_setAssociatedObject(self, @selector(jsonAllPropertyInfo), [jsonAllPropertyInfo copy], OBJC_ASSOCIATION_RETAIN);
+    objc_setAssociatedObject(self, @selector(jsonAllRelatedProperties), allRelatedProperties, OBJC_ASSOCIATION_RETAIN);
+    
+    // Now validate related properties...
+
     if ( !success )
     {
         @throw [NSException exceptionWithName:@"NTJsonModelErrors" reason:[NSString stringWithFormat:@"Errors encountered initializing properties for NTJsonModel class %@, see log for more information.", NSStringFromClass(self)] userInfo:nil];
     }
     
-    objc_setAssociatedObject(self, @selector(jsonAllPropertyInfo), [jsonAllPropertyInfo copy], OBJC_ASSOCIATION_RETAIN);
 }
 
 
@@ -646,7 +693,12 @@ static id NTJsonModel_deepCopy(id json)
     
     // grab the value from our json...
     
-    id jsonValue = [self.json objectForKey:property.jsonKeyPath];
+    id jsonValue = [self.json objectForKey:property.jsonKey];
+    
+    if ( property.remainingJsonKeyPath.length )
+    {
+        // todo - walk into key path...
+    }
     
     // transform it...
     

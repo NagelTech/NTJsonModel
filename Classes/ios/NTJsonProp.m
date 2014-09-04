@@ -132,9 +132,9 @@ static NSString *ObjcAttributeIvar = @"V";
             }
         }
         
-        else if ( [className isEqualToString:@"NSMutableArray"] )
+        else if ( [className isEqualToString:@"NSMutableArray"] || [className isEqualToString:@"NSMutableDictionary"] )
         {
-            @throw [NSException exceptionWithName:@"NTJsonModelInvalidType" reason:[NSString stringWithFormat:@"Mutable arrays are not supported for property %@.%@ (%@)", NSStringFromClass(class), prop->_name, objcType] userInfo:nil];
+            @throw [NSException exceptionWithName:@"NTJsonModelInvalidType" reason:[NSString stringWithFormat:@"Mutable Arrays/Dictionaries are not supported. Property: %@.%@ (%@)", NSStringFromClass(class), prop->_name, objcType] userInfo:nil];
         }
         
         else
@@ -167,8 +167,20 @@ static NSString *ObjcAttributeIvar = @"V";
     
     else
         memset(&propInfo, 0, sizeof(propInfo)); // zero is all defaults.
+    
+    // Parse the keypath...
 
-    prop->_jsonKeyPath = (propInfo.jsonPath) ? @(propInfo.jsonPath) : prop->_name;
+    NSString *jsonKeyPath = (propInfo.jsonPath) ? @(propInfo.jsonPath) : prop->_name;
+    
+    NSInteger dotPos = [jsonKeyPath rangeOfString:@"."].location;
+    
+    if ( dotPos != NSNotFound )
+    {
+        prop->_jsonKey = [jsonKeyPath substringToIndex:dotPos];
+        prop->_remainingJsonKeyPath = [jsonKeyPath substringFromIndex:dotPos+1];
+    }
+    else
+        prop->_jsonKey = jsonKeyPath;
     
     if ( propInfo.elementType && (prop->_type == NTJsonPropTypeModelArray || prop->_type == NTJsonPropTypeObjectArray) )
     {
@@ -193,6 +205,11 @@ static NSString *ObjcAttributeIvar = @"V";
         
         else if ( prop->_type == NTJsonPropTypeModelArray )
             prop->_type = NTJsonPropTypeObjectArray;
+    }
+    
+    if ( prop->_remainingJsonKeyPath.length && !prop->_isReadOnly )
+    {
+        @throw [NSException exceptionWithName:@"NTJsonModelInvalidType" reason:[NSString stringWithFormat:@"Properties with nested jsonKeyPaths must currently be read-only for property %@.%@ (%@)", NSStringFromClass(class), prop->_name, objcType] userInfo:nil];
     }
     
     return prop;
@@ -227,8 +244,11 @@ static NSString *ObjcAttributeIvar = @"V";
     
     [desc appendFormat:@"%@.%@(type=%@", NSStringFromClass(self.modelClass), self.name, [self typeDescription]];
     
-    if ( ![self.jsonKeyPath isEqualToString:self.name] )
-        [desc appendFormat:@", jsonKeyPath=\"%@\"", self.jsonKeyPath];
+    if ( self.remainingJsonKeyPath.length )
+        [desc appendFormat:@", jsonKeyPath=\"%@.%@\"", self.jsonKey, self.remainingJsonKeyPath];
+    
+    else if ( ![self.jsonKey isEqualToString:self.name] )
+        [desc appendFormat:@", jsonKeyPath=\"%@\"", self.jsonKey];
     
     if ( self.type == NTJsonPropTypeStringEnum )
         [desc appendFormat:@", enumValues=[%@]", [[self.enumValues allObjects] componentsJoinedByString:@", "]];
@@ -297,6 +317,15 @@ static NSString *ObjcAttributeIvar = @"V";
 -(void)setModelClass:(Class)modelClass
 {
     _modelClass = modelClass;
+}
+
+
+-(NSString *)jsonKeyPath
+{
+    if ( !self.remainingJsonKeyPath.length )
+        return self.jsonKey;
+    
+    return [NSString stringWithFormat:@"%@.%@", self.jsonKey, self.remainingJsonKeyPath];
 }
 
 
