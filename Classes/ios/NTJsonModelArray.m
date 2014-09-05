@@ -65,7 +65,7 @@
     if ( self )
     {
         _modelClass = modelClass;
-        _jsonArray = jsonArray;
+        _jsonArray = [jsonArray copy];
         _valueCache = nil;
     }
     
@@ -80,6 +80,7 @@
     if ( self )
     {
         _property = property;
+        _jsonArray = [jsonArray copy];
         _valueCache = nil;
     }
     
@@ -187,15 +188,14 @@
         // handle NSNulls or invalid types right away
         
         if ( ![jsonValue isKindOfClass:[NSDictionary class]] )
-            return [NSNull null];
-        
-        // transform
-
-        value = [[self.modelClass alloc] initWithJson:jsonValue];
+            value = [NSNull null];
+        else
+            value = [[self.modelClass alloc] initWithJson:jsonValue];
     }
+    
     else
     {
-        value = [_property convertJsonToValue:jsonValue];
+        value = [_property convertJsonToValue:jsonValue] ?: [NSNull null];  // don't allow null returns
     }
     
     // cache...

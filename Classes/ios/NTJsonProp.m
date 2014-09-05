@@ -421,4 +421,84 @@ static NSString *ObjcAttributeIvar = @"V";
 }
 
 
+-(id)transformJsonValue:(id)value
+{
+    switch (self.type)
+    {
+        case NTJsonPropTypeInt:
+        {
+            if ( ![value isKindOfClass:[NSNumber class]] )
+                value = [value respondsToSelector:@selector(intValue)] ? @([value intValue]) : self.defaultValue;
+            break;
+        }
+            
+        case NTJsonPropTypeBool:
+        {
+            if ( ![value isKindOfClass:[NSNumber class]] )
+                value = [value respondsToSelector:@selector(boolValue)] ? @([value boolValue]) : self.defaultValue;
+            break;
+        }
+            
+        case NTJsonPropTypeFloat:
+        {
+            if ( ![value isKindOfClass:[NSNumber class]] )
+                value = [value respondsToSelector:@selector(floatValue)] ? @([value floatValue]) : self.defaultValue;
+            break;
+        }
+            
+        case NTJsonPropTypeDouble:
+        {
+            if ( ![value isKindOfClass:[NSNumber class]] )
+                value = [value respondsToSelector:@selector(doubleValue)] ? @([value doubleValue]) : self.defaultValue;
+            break;
+        }
+            
+            
+        case NTJsonPropTypeLongLong:
+        {
+            if ( ![value isKindOfClass:[NSNumber class]] )
+                value = [value respondsToSelector:@selector(longLongValue)] ? @([value longLongValue]) : self.defaultValue;
+            break;
+        }
+            
+        case NTJsonPropTypeString:
+        {
+            if ( ![value isKindOfClass:[NSString class]] )
+                value = [value respondsToSelector:@selector(stringValue)] ? [value stringValue] : self.defaultValue;
+            break;
+        }
+            
+        case NTJsonPropTypeStringEnum:
+        {
+            if ( ![value isKindOfClass:[NSString class]] )
+                value = [value respondsToSelector:@selector(stringValue)] ? [value stringValue] : self.defaultValue;
+            
+            value = [self.enumValues member:value] ?: value;
+            break;
+        }
+            
+        case NTJsonPropTypeModel:
+        {
+            value = [value isKindOfClass:[NSDictionary class]] ? [[self.typeClass alloc] initWithJson:value] : self.defaultValue;
+            break;
+        }
+            
+        case NTJsonPropTypeObject:
+        {
+            value = [self convertJsonToValue:value] ?: self.defaultValue;
+            break;
+        }
+            
+        case NTJsonPropTypeObjectArray:
+        case NTJsonPropTypeModelArray:
+        {
+            value = [value isKindOfClass:[NSArray class]] ? [[NTJsonModelArray alloc] initWithProperty:self jsonArray:value] : self.defaultValue;
+            break ;
+        }
+    }
+    
+    return value;
+}
+
+
 @end

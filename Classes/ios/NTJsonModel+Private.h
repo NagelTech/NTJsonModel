@@ -18,7 +18,14 @@
 #import "NTJsonPropertyInfo.h"
 
 
+@class __NTJsonModelSupport;
+
+
 @interface NTJsonModel (Private)
+
++(__NTJsonModelSupport *)__ntJsonModelSupport;
+
+-(id)__json;
 
 @end
 

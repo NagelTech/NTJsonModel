@@ -46,6 +46,8 @@ typedef enum
 -(id)convertValueToJson:(id)object;
 -(id)convertJsonToValue:(id)json;
 
+-(id)transformJsonValue:(id)value;
+
 +(instancetype)propertyWithClass:(Class)class objcProperty:(objc_property_t)objcProperty;
 
 

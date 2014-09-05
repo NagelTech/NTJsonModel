@@ -32,6 +32,7 @@
 }
 
 
+/*
 -(void)testMutableCaching
 {
     BasicPropertiesModel *model;
@@ -88,8 +89,9 @@
     BasicPropertiesModel *model2 = [BasicPropertiesModel modelWithJson:@{@"stringProp": @"model2", @"childModel": @{@"stringProp": @"model2child"}}];
     
     XCTAssertThrows(model.childModel = model2.childModel, @"should throw exception when assigning model between models.");
-    
 }
+ 
+*/
 
 
 @end

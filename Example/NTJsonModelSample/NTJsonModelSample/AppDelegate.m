@@ -21,6 +21,8 @@
     [self.window makeKeyAndVisible];
     
     
+/***
+ 
     NSDictionary *json =
     @{
       @"id": @(12),
@@ -72,6 +74,8 @@
     for(Account *account in user.accounts)
         NSLog(@"account: %@ - %@", account.service, account.username);
 
+ ***/
+    
 /**
     
     NSLog(@"First Name: %@", user.firstName);

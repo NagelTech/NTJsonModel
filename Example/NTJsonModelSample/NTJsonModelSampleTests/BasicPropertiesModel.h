@@ -27,10 +27,10 @@
 @property (nonatomic) BasicPropertiesModel *childModel;
 
 @property (nonatomic) NTJsonModelArray *modelArray;
-@property (nonatomic) NTJsonModelArray<UIColor> *objectArray;
+@property (nonatomic) NTJsonModelArray *objectArray;
 @property (nonatomic,readonly) NSArray *objectArrayStrings;
 
-@property (nonatomic) int nestedValue;
+@property (nonatomic,readonly) int nestedValue;
 
 +(id)convertColor2PropToJson:(UIColor *)value;
 +(UIColor *)convertJsonToColor2Prop:(NSDictionary *)json;

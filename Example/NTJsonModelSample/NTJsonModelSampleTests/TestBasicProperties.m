@@ -37,11 +37,7 @@
     BasicPropertiesModel *model = [[BasicPropertiesModel alloc] init];
     
     XCTAssertTrue((model.intProp == 0), @"intProp default value failed");
-    
-    model.intProp = 42;
-    XCTAssertTrue(model.isMutable, @"becomeMutable failed");
-    XCTAssertTrue((model.intProp == 42), @"intProp set failed");
-    
+
     // Test int no conversion
     
     model = [BasicPropertiesModel modelWithJson:@{@"intProp": @(42)}];
@@ -62,10 +58,6 @@
     BasicPropertiesModel *model = [[BasicPropertiesModel alloc] init];
     
     XCTAssertTrue((model.floatProp == 0.0f), @"floatProp default value failed");
-    
-    model.floatProp = 4.2f;
-    XCTAssertTrue(model.isMutable, @"becomeMutable failed");
-    XCTAssertTrue((model.floatProp == 4.2f), @"floatProp set failed");
     
     // Test int no conversion
     
@@ -90,10 +82,6 @@
     
     XCTAssertTrue((model.doubleProp == 0.0), @"doubleProp default value failed");
     
-    model.doubleProp = 4.2;
-    XCTAssertTrue(model.isMutable, @"becomeMutable failed");
-    XCTAssertTrue((model.doubleProp == 4.2), @"doubleProp set failed");
-    
     // Test int no conversion
     
     model = [BasicPropertiesModel modelWithJson:@{@"doubleProp": @(4.2)}];
@@ -117,10 +105,6 @@
     
     XCTAssertTrue((model.stringProp == nil), @"stringProp default value failed");
     
-    model.stringProp = @"test";
-    XCTAssertTrue(model.isMutable, @"becomeMutable failed");
-    XCTAssertTrue([model.stringProp isEqualToString:@"test"], @"stringProp set failed");
-    
     // Test double conversion
     
     model = [BasicPropertiesModel modelWithJson:@{@"stringProp": @(4.2)}];
@@ -143,10 +127,6 @@
     BasicPropertiesModel *model = [[BasicPropertiesModel alloc] init];
     
     XCTAssertTrue((model.boolProp == NO), @"boolProp default value failed");
-    
-    model.boolProp = YES;
-    XCTAssertTrue(model.isMutable, @"becomeMutable failed");
-    XCTAssertTrue((model.boolProp == YES), @"boolProp set failed");
     
     // Test int no conversion
     

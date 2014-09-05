@@ -18,6 +18,7 @@
 
 @property (nonatomic,readonly) NSDictionary *json;
 @property (nonatomic,readonly) BOOL isMutable;
++(NSDictionary *)defaultJson;
 
 +(Class)modelClassForJson:(NSDictionary *)json;
 
@@ -30,11 +31,11 @@
 +(NSArray *)arrayWithJsonArray:(NSArray *)jsonArray;
 +(NSMutableArray *)mutableArrayWithJsonArray:(NSArray *)jsonArray;
 
-+(NSArray *)jsonPropertyInfo;
-
-+(NSDictionary *)defaultJson;
-
 -(id)copyWithZone:(NSZone *)zone;
 -(id)mutableCopyWithZone:(NSZone *)zone;
+
+-(BOOL)isEqualToModel:(NTJsonModel *)model;
+-(BOOL)isEqual:(id)object;
+-(NSUInteger)hash;
 
 @end

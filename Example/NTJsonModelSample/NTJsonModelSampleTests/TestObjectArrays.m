@@ -48,6 +48,7 @@
 }
 
 
+
 -(void)testConvertFromJson
 {
     BasicPropertiesModel *model = [self createModel];
@@ -66,6 +67,8 @@
     XCTAssert(model.objectArray[index] == model.objectArray[index], @"Caching may not be working correctly");
     
 }
+
+
 
 /****
 
