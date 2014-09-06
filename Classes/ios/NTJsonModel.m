@@ -176,10 +176,7 @@
 
 -(NSDictionary *)json
 {
-    if ( self.isMutable )
-        return [[self.class __ntJsonModelSupport] jsonForModel:self];
-    else
-        return _json;
+    return [_json copy];
 }
 
 
@@ -227,7 +224,7 @@
 
 -(NSUInteger)hash
 {
-    return self.json.hash;  // NSDictionary hash sucks, maybe we should try a little harder here? (Also, could be expensive if mutable)
+    return [_json hash];  // NSDictionary hash sucks, maybe we should try a little harder here?
 }
 
 

@@ -20,6 +20,4 @@
 
 -(instancetype)initWithModelClass:(Class)modelClass;
 
--(NSDictionary *)jsonForModel:(NTJsonModel *)model;
-
 @end

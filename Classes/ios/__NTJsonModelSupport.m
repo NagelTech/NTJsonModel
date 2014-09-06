@@ -235,7 +235,7 @@
 
 -(NSArray *)relatedPropertiesForProperty:(NTJsonProp *)prop
 {
-    return self.allRelatedProperties[prop.name];
+    return self.allRelatedProperties[prop.name] ?: @[];
 }
 
 
@@ -421,22 +421,6 @@
 }
 
 
-#pragma mark - json calculation (mutable)
-
-
--(NSDictionary *)jsonForModel:(NTJsonModel *)model
-{
-    if ( !model.isMutable )
-        return [model __json];
-    
-    NSMutableDictionary *json = [[model __json] mutableCopy];
-    
-    // todo: calculate any dynamic json bits and return...
-    
-    return [json copy];
-}
-
-
 #pragma mark - caching
 
 
@@ -507,7 +491,7 @@
     
     // transform it, if needed...
 
-    value = [property transformJsonValue:jsonValue];
+    value = [property convertJsonToValue:jsonValue];
     
     // save in cache, if there was any conversion or we had to parse a path...
     
@@ -521,123 +505,121 @@
 #pragma mark - setValue
 
 
++(id)convertValue:(id)value toTypeOfValue:(id)originalValue
+{
+    if ( [originalValue isKindOfClass:[NSNumber class]] )
+    {
+        if ( [value isKindOfClass:[NSString class]] )
+        {
+            NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+            
+            formatter.numberStyle = NSNumberFormatterDecimalStyle;
+            
+            value = [formatter numberFromString:value];
+        }
+        
+        if ( [value isKindOfClass:[NSNumber class]] && strcmp([value objCType], [originalValue objCType]) != 0 )
+        {
+            const char *objcType = [originalValue objCType];
+            
+            if      ( strcmp(objcType, @encode(BOOL)) == 0 )        value = [NSNumber numberWithBool:[value boolValue]];
+            else if ( strcmp(objcType, @encode(double)) == 0)       value = [NSNumber numberWithDouble:[value doubleValue]];
+            else if ( strcmp(objcType, @encode(float)) == 0)        value = [NSNumber numberWithFloat:[value floatValue]];
+            else if ( strcmp(objcType, @encode(int)) == 0)          value = [NSNumber numberWithInt:[value intValue]];
+            else if ( strcmp(objcType, @encode(NSInteger)) == 0)    value = [NSNumber numberWithInteger:[value integerValue]];
+            else if ( strcmp(objcType, @encode(long)) == 0)         value = [NSNumber numberWithLong:[value longValue]];
+            else if ( strcmp(objcType, @encode(long long)) == 0)    value = [NSNumber numberWithLongLong:[value longLongValue]];
+        }
+        
+        return value;
+    }
+    
+    else if ( [originalValue isKindOfClass:[NSString class]] )
+    {
+        if ( [value respondsToSelector:@selector(stringValue)] )
+            return [value stringValue];
+    }
+    
+    return nil; // can't convert
+}
+
+
++(id)tryConvertValue:(id)value toTypeOfValue:(id)originalValue
+{
+    
+    id newValue = [self convertValue:value toTypeOfValue:originalValue];
+    
+    if ( !newValue || newValue == value )
+        return value;   // either we failed or are already the correct type.
+    
+    // Now try converting back again to make sure we get the same value out (round-tripable)
+    
+    id testValue = [self convertValue:newValue toTypeOfValue:value];
+    
+    if ( !testValue || ![testValue isEqual:value] )
+        return value;   // either we failed to convert back or our reconverted values doesn't match
+    
+    return newValue;
+}
+
+
 -(void)setValue:(id)value forProperty:(NTJsonProp *)prop inModel:(NTJsonModel *)model
 {
-    // todo
-}
-
-
-/***
- 
-
--(id)getJsonValueForProperty:(NTJsonProp *)property
-{
-    id value = [self getCacheValueForProperty:property];
+    if ( !model.isMutable )
+        @throw [NSException exceptionWithName:@"NTJsonModelImmutable"
+                                       reason:[NSString stringWithFormat:@"Attempt to modify immutable NTJsonModel: %@.%@", NSStringFromClass(self.modelClass), prop.name]
+                                      userInfo:nil];
     
-    if ( !value )
-        return nil;
+    NSMutableDictionary *json = [model __json];
     
-    switch (property.type)
-    {
-        case NTJsonPropTypeInt:
-        case NTJsonPropTypeBool:
-        case NTJsonPropTypeFloat:
-        case NTJsonPropTypeDouble:
-        case NTJsonPropTypeLongLong:
-        case NTJsonPropTypeString:
-        case NTJsonPropTypeStringEnum:
-            return value;
-            
-        case NTJsonPropTypeModel:
-            return [value respondsToSelector:@selector(json)] ? [value json] : nil;
-            
-        case NTJsonPropTypeModelArray:
-            return [(NSArray *)value valueForKey:@"json"];  // extract the json out of each model object and create an array
-            
-        case NTJsonPropTypeObjectArray:
-        {
-            NSMutableArray *jsonArray = [NSMutableArray arrayWithCapacity:[value count]];
-            
-            for(id object in value)
-                [jsonArray addObject:[property convertValueToJson:object] ?: [NSNull null]];
-            
-            return [jsonArray copy];
-        }
-            
-        case NTJsonPropTypeObject:
-            return [property convertValueToJson:value];
-            
-        default:
-            return nil;
-    }
-}
-
-
--(void)setValue:(id)value forProperty:(NTJsonProp *)property
-{
-    // make sure we are mutable...
-    
-    if ( !self.isMutable )
-        @throw [NSException exceptionWithName:@"Immutable" reason:@"Attempt to modify an immutable NTJsonModel" userInfo:nil];
-    
-    // if we had a cached version of the json, invalidate it now.
-    
-    _json = nil;
-    
-    // if nil is passed in we simply remove the value
+    // nil's are pretty easy to handle...
     
     if ( !value )
     {
-        [self setCacheValue:nil forProperty:property];
+        [self setCacheValue:nil forProperty:prop inModel:model];
+        [json removeObjectForKey:prop.jsonKey];
         return ;
     }
 
-    // Make sure we have a valid type
+    // Grab a COPY of the value, so we know it's immutable
     
-    Class expectedValueType = Nil;
+    value = [value copy];       // we always grab an immutable copy
     
-    switch (property.type)
+    // Get the JSON for our value...
+    
+    id jsonValue = [prop convertValueToJson:value];
+    
+    // For basic types, we attempt to maintain consistency with any existing json value...
+    // this helps maintain consistency when assigning and comparing values even if the underlying JSON
+    // type doesn't match the model properties type...
+    
+    if ( prop.type == NTJsonPropTypeBool || prop.type == NTJsonPropTypeInt || prop.type == NTJsonPropTypeLongLong
+        || prop.type == NTJsonPropTypeFloat || prop.type == NTJsonPropTypeDouble
+        || prop.type == NTJsonPropTypeString || prop.type == NTJsonPropTypeStringEnum )
     {
-        case NTJsonPropTypeInt:
-        case NTJsonPropTypeBool:
-        case NTJsonPropTypeFloat:
-        case NTJsonPropTypeDouble:
-        case NTJsonPropTypeLongLong:
-            expectedValueType = [NSNumber class];
-            break;
-            
-        case NTJsonPropTypeString:
-            expectedValueType = [NSString class];
-            break;
-
-        case NTJsonPropTypeStringEnum:
-        {
-            expectedValueType = [NSString class];
-            value = [property.enumValues member:value] ?: value;       // always massage to the enum value if it exists
-            break;
-        }
-            
-        case NTJsonPropTypeModel:
-        case NTJsonPropTypeObject:
-            expectedValueType = property.typeClass;
-            break;
-
-        case NTJsonPropTypeModelArray:
-        case NTJsonPropTypeObjectArray:
-        {
-            expectedValueType = [NSArray class];
-            break ;
-        }
+        id existingValue = json[prop.jsonKey];
+        
+        if ( existingValue )
+            jsonValue = [__NTJsonModelSupport tryConvertValue:jsonValue toTypeOfValue:existingValue];
+        
+        else if ( [jsonValue isEqual:prop.defaultValue] )
+            jsonValue = nil;        // if there is no existing value and we are setting to the default, don't actually do anything.
     }
     
-    // Validate we got the correct expected type...
+    // Now, save in our json and our cache...
+
+    if ( jsonValue )
+        json[prop.jsonKey] = jsonValue;
+    else
+        [json removeObjectForKey:prop.jsonKey];
     
-    if ( ![value isKindOfClass:expectedValueType] )
-        @throw [NSException exceptionWithName:@"InvalidType" reason:@"Invalid type when setting property" userInfo:nil];
+    [self setCacheValue:value forProperty:prop inModel:model];
     
-    [self setCacheValue:value forProperty:property];
+    // Clear cached values for any related properties...
+    
+    for(NTJsonProp *related in [self relatedPropertiesForProperty:prop])
+        [self setCacheValue:nil forProperty:related inModel:model];
 }
 
-***/
 
 @end

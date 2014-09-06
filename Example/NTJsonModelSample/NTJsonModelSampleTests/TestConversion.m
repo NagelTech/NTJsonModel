@@ -39,13 +39,11 @@
     UIColor *sampleColor = [UIColor colorWithRed:153.0/255.0 green:51.0/255.0 blue:255.0/255.0 alpha:1.0];
     BasicPropertiesModel *model;
     
-    model = [BasicPropertiesModel modelWithJson:@{@"colorProp": @"#9933ff"}];
+    model = [BasicPropertiesModel mutableModelWithJson:@{@"colorProp": @"#9933ff"}];
     XCTAssert([model.colorProp isEqual:sampleColor], @"JSON -> UIColor conversion failed");
 
-/*
     model.colorProp = [UIColor redColor];
     XCTAssert([model.json[@"colorProp"] isEqualToString:@"#FF0000"], @"UIColor -> JSON conversion failed");
-*/
 }
 
 
@@ -55,13 +53,11 @@
     
     BasicPropertiesModel *model;
     
-    model = [BasicPropertiesModel modelWithJson:@{@"color2Prop": @{@"r": @(0.20), @"g": @(0.40), @"b": @(0.60)}}];
+    model = [BasicPropertiesModel mutableModelWithJson:@{@"color2Prop": @{@"r": @(0.20), @"g": @(0.40), @"b": @(0.60)}}];
     XCTAssert([model.color2Prop.description isEqualToString:sampleColor.description], @"JSON -> UIColor conversion failed");
     
-/*
     model.color2Prop = [UIColor redColor];
     XCTAssert([model.json[@"color2Prop"][@"r"] floatValue] == 1.00, @"UIColor -> JSON conversion failed");
-*/
 }
 
 

@@ -193,15 +193,18 @@
             value = [[self.modelClass alloc] initWithJson:jsonValue];
     }
     
-    else
+    else // it is an object array
     {
-        value = [_property convertJsonToValue:jsonValue] ?: [NSNull null];  // don't allow null returns
+        value = [_property object_convertJsonToValue:jsonValue];
     }
     
     // cache...
     
-    [self ensureCacheSize:index];
-    _valueCache[index] = value;
+    if ( value )
+    {
+        [self ensureCacheSize:index];
+        _valueCache[index] = value;
+    }
     
     return value;
 }

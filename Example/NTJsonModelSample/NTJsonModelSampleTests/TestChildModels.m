@@ -32,7 +32,7 @@
 }
 
 
-/*
+
 -(void)testMutableCaching
 {
     BasicPropertiesModel *model;
@@ -47,51 +47,33 @@
     
     XCTAssert(child == model.childModel, @"immutable caching fail");
     
-    child.intProp = 2;
+    XCTAssertThrows(child.intProp = 2, @"Exception expected when setting immutable property");
     
-    XCTAssert(child.isMutable, @"becomeMutable fail");
-    XCTAssert(model.isMutable, @"becomeMutable fail (recursion to parent)");
+    BasicPropertiesModel *mutableModel = [model mutableCopy];
+    
+    XCTAssertTrue([mutableModel isEqual:model], @"mutableCopy != to original");
+    
+    mutableModel.intProp = 2;
 
-    XCTAssert(child.intProp == 2, @"failed to set child property (becomeMutable fail?)");
-    
-    XCTAssert(child == model.childModel, @"cache fail after becomeMutable");
+    XCTAssert(mutableModel.intProp == 2, @"failed to set parent property (becomeMutable fail?)");
     
     // set new child
     
-    BasicPropertiesModel *newChild = [BasicPropertiesModel modelWithJson:@{@"stringProp": @"newChild"}];
+    BasicPropertiesModel *newChild = [BasicPropertiesModel mutableModelWithJson:@{@"stringProp": @"newChild"}];
     
-    model.childModel = newChild;
+    mutableModel.childModel = newChild;
     
-    XCTAssert(model.childModel == newChild, @"set child model to new value failed");
+    XCTAssert([mutableModel.childModel isEqual:newChild], @"set child model to new value failed");
     
-    XCTAssert([model.childModel.stringProp isEqualToString:@"newChild"], @"get newCHild properry value failed");
-    
-    XCTAssert(newChild.isMutable, @"newChild is not mutable");
-    
-    // original child is now an orphan, hopefully...
-    
-    child.stringProp = @"orphan";
-    
-    XCTAssert([child.stringProp isEqualToString:@"orphan"], @"set orphan property fail");
+    XCTAssert([mutableModel.childModel.stringProp isEqualToString:@"newChild"], @"get newChild property value failed");
     
     // set child to nil...
     
-    model.childModel = nil;
+    mutableModel.childModel = nil;
     
-    XCTAssert(model.childModel == nil, @"set child model to nil failed");
-    
-    newChild.stringProp = @"orphan2";
-    
-    XCTAssert([newChild.stringProp isEqualToString:@"orphan2"], @"set orphan property fail (setting prop to nil)");
-    
-    // Test atempt to assign object from one model to another...
-    
-    BasicPropertiesModel *model2 = [BasicPropertiesModel modelWithJson:@{@"stringProp": @"model2", @"childModel": @{@"stringProp": @"model2child"}}];
-    
-    XCTAssertThrows(model.childModel = model2.childModel, @"should throw exception when assigning model between models.");
+    XCTAssert(mutableModel.childModel == nil, @"set child model to nil failed");
 }
- 
-*/
+
 
 
 @end

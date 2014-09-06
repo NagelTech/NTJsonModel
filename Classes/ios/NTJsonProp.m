@@ -353,7 +353,7 @@ static NSString *ObjcAttributeIvar = @"V";
 }
 
 
--(id)convertJsonToValue:(id)json
+-(id)object_convertJsonToValue:(id)json
 {
     if ( self.type != NTJsonPropTypeObject && self.type != NTJsonPropTypeObjectArray )
         @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"convertJsonToValue: only supports Objects currently." userInfo:nil];
@@ -387,7 +387,7 @@ static NSString *ObjcAttributeIvar = @"V";
 }
 
 
--(id)convertValueToJson:(id)value
+-(id)object_convertValueToJson:(id)value
 {
     if ( self.type != NTJsonPropTypeObject && self.type != NTJsonPropTypeObjectArray )
         @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"convertValueToJson: only supports Objects currently." userInfo:nil];
@@ -421,14 +421,18 @@ static NSString *ObjcAttributeIvar = @"V";
 }
 
 
--(id)transformJsonValue:(id)value
+-(id)convertJsonToValue:(id)json
 {
+    id value = json;
+    
     switch (self.type)
     {
         case NTJsonPropTypeInt:
         {
             if ( ![value isKindOfClass:[NSNumber class]] )
                 value = [value respondsToSelector:@selector(intValue)] ? @([value intValue]) : self.defaultValue;
+            else if ( strcmp([value objCType], @encode(int)) != 0 )
+                value = [NSNumber numberWithInt:[value intValue]];
             break;
         }
             
@@ -436,6 +440,8 @@ static NSString *ObjcAttributeIvar = @"V";
         {
             if ( ![value isKindOfClass:[NSNumber class]] )
                 value = [value respondsToSelector:@selector(boolValue)] ? @([value boolValue]) : self.defaultValue;
+            else if ( strcmp([value objCType], @encode(BOOL)) != 0 )
+                value = [NSNumber numberWithBool:[value boolValue]];
             break;
         }
             
@@ -443,6 +449,8 @@ static NSString *ObjcAttributeIvar = @"V";
         {
             if ( ![value isKindOfClass:[NSNumber class]] )
                 value = [value respondsToSelector:@selector(floatValue)] ? @([value floatValue]) : self.defaultValue;
+            else if ( strcmp([value objCType], @encode(float)) != 0 )
+                value = [NSNumber numberWithFloat:[value floatValue]];
             break;
         }
             
@@ -450,6 +458,8 @@ static NSString *ObjcAttributeIvar = @"V";
         {
             if ( ![value isKindOfClass:[NSNumber class]] )
                 value = [value respondsToSelector:@selector(doubleValue)] ? @([value doubleValue]) : self.defaultValue;
+            else if ( strcmp([value objCType], @encode(double)) != 0 )
+                value = [NSNumber numberWithDouble:[value doubleValue]];
             break;
         }
             
@@ -458,6 +468,8 @@ static NSString *ObjcAttributeIvar = @"V";
         {
             if ( ![value isKindOfClass:[NSNumber class]] )
                 value = [value respondsToSelector:@selector(longLongValue)] ? @([value longLongValue]) : self.defaultValue;
+            else if ( strcmp([value objCType], @encode(long long)) != 0 )
+                value = [NSNumber numberWithLongLong:[value longLongValue]];
             break;
         }
             
@@ -485,7 +497,7 @@ static NSString *ObjcAttributeIvar = @"V";
             
         case NTJsonPropTypeObject:
         {
-            value = [self convertJsonToValue:value] ?: self.defaultValue;
+            value = [self object_convertJsonToValue:value] ?: self.defaultValue;
             break;
         }
             
@@ -498,6 +510,44 @@ static NSString *ObjcAttributeIvar = @"V";
     }
     
     return value;
+}
+
+
+-(id)convertValueToJson:(id)value
+{
+    switch (self.type)
+    {
+        case NTJsonPropTypeInt:
+        case NTJsonPropTypeBool:
+        case NTJsonPropTypeFloat:
+        case NTJsonPropTypeDouble:
+        case NTJsonPropTypeLongLong:
+        case NTJsonPropTypeString:
+        case NTJsonPropTypeStringEnum:
+            return value;   // the runtime shoul have given these to us in the correct format already.
+            
+        case NTJsonPropTypeModel:
+            return [value json];
+            
+        case NTJsonPropTypeObject:
+            return [self object_convertValueToJson:value];
+            
+        case NTJsonPropTypeObjectArray:
+        {
+            NSMutableArray *items = [NSMutableArray arrayWithCapacity:[value count]];
+            
+            for(id item in value)
+                [items addObject:[self object_convertValueToJson:item] ?: [NSNull null]];
+            
+            return [items copy];
+        }
+            
+        case NTJsonPropTypeModelArray:
+            return [value objectForKey:@"json"];
+            
+        default:
+            @throw [NSException exceptionWithName:@"NTJsonUnexpectedType" reason:@"Unexpected Property Type" userInfo:nil];
+    }
 }
 
 

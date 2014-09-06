@@ -8,8 +8,6 @@
 
 #import <objc/objc.h>
 
-#import "NSMutableDictionary+NTJsonModelPrivate.h"
-
 #import "NTJsonModel.h"
 
 #import "NTJsonModelArray+Private.h"
