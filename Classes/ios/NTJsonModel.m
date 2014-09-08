@@ -146,7 +146,7 @@
     if ( ![jsonArray isKindOfClass:[NSArray class]] )
         return nil;
     
-    return [[NTJsonModelArray alloc] initWithModelClass:self jsonArray:jsonArray];
+    return [[NTJsonModelArray alloc] initWithModelClass:self json:jsonArray];
 }
 
 
@@ -174,7 +174,7 @@
 }
 
 
--(NSDictionary *)json
+-(NSDictionary *)asJson
 {
     return [_json copy];
 }
@@ -185,7 +185,7 @@
 
 -(id)mutableCopyWithZone:(NSZone *)zone
 {
-    return [[self.class alloc] initMutableWithJson:self.json];
+    return [[self.class alloc] initMutableWithJson:[self asJson]];
 }
 
 
@@ -194,7 +194,7 @@
     if ( !self.isMutable )
         return self;
     
-    return [[self.class alloc] initWithJson:self.json];
+    return [[self.class alloc] initWithJson:[self asJson]];
 }
 
 
@@ -206,7 +206,7 @@
     if ( model == self )
         return YES;
     
-    return [self.json isEqualToDictionary:model.json];
+    return [self->_json isEqualToDictionary:model->_json];
 }
 
 

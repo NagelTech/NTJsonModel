@@ -458,7 +458,7 @@
     
     // grab the value from our json...
     
-    id jsonValue = [model.json objectForKey:property.jsonKey];
+    id jsonValue = [model.__json objectForKey:property.jsonKey];
     
     // if there's a jsonPath, walk it to get to the effective value...
     

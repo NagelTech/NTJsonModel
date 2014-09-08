@@ -21,7 +21,7 @@
 {
     Class _modelClass;
     NTJsonProp *_property;
-    id _jsonArray;
+    id _json;
     
     NSMutableArray *_valueCache;
 }
@@ -58,14 +58,14 @@
 #pragma mark - Initialization
 
 
--(id)initWithModelClass:(Class)modelClass jsonArray:(NSArray *)jsonArray
+-(id)initWithModelClass:(Class)modelClass json:(NSArray *)json
 {
     self = [super init];
     
     if ( self )
     {
         _modelClass = modelClass;
-        _jsonArray = [jsonArray copy];
+        _json = [json copy];
         _valueCache = nil;
     }
     
@@ -73,14 +73,14 @@
 }
 
 
--(id)initWithProperty:(NTJsonProp *)property jsonArray:(NSArray *)jsonArray
+-(id)initWithProperty:(NTJsonProp *)property json:(NSArray *)json
 {
     self = [super init];
     
     if ( self )
     {
         _property = property;
-        _jsonArray = [jsonArray copy];
+        _json = [json copy];
         _valueCache = nil;
     }
     
@@ -91,9 +91,9 @@
 #pragma mark - Properties
 
 
--(NSArray *)jsonArray
+-(NSArray *)__NSJsonModelArray_json
 {
-    return _jsonArray;
+    return _json;
 }
 
 
@@ -168,7 +168,7 @@
 
 -(NSUInteger)count
 {
-    return self.jsonArray.count;
+    return [_json count];
 }
 
 
@@ -181,7 +181,7 @@
     if ( value )
         return value;
     
-    id jsonValue = self.jsonArray[index];
+    id jsonValue = [_json objectAtIndex:index];
     
     if ( self.isModel )
     {

@@ -6,14 +6,18 @@
 //  Copyright (c) 2014 NagelTech. All rights reserved.
 //
 
-#import "NTJsonModelArray.h"
-
-
+@class NTJsonModel;
 @class NTJsonProp;
 
-@interface NTJsonModelArray (Private) 
+@interface NTJsonModelArray : NSArray <NSCopying, NSMutableCopying>
 
--(id)initWithModelClass:(Class)modelClass jsonArray:(NSArray *)jsonArray;
--(id)initWithProperty:(NTJsonProp *)property jsonArray:(NSArray *)jsonArray;
+@property (nonatomic, readonly) Class modelClass;
+@property (nonatomic, readonly) NSArray *__NSJsonModelArray_json;
+
+-(id)initWithModelClass:(Class)modelClass json:(NSArray *)json;
+-(id)initWithProperty:(NTJsonProp *)property json:(NSArray *)json;
+
+-(id)copyWithZone:(NSZone *)zone;
+-(id)mutableCopyWithZone:(NSZone *)zone;
 
 @end

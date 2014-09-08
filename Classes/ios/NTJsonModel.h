@@ -8,7 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
-#import "NTJsonModelArray.h"
+#import "Categories/NSArray+NTJsonModel.h"
+#import "Categories/NSDictionary+NTJsonModel.h"
+
 #import "NTJsonPropertyConversion.h"
 
 #import "NTJsonPropertyInfo.h"
@@ -16,9 +18,10 @@
 
 @interface NTJsonModel : NSObject <NSCopying, NSMutableCopying>
 
-@property (nonatomic,readonly) NSDictionary *json;
 @property (nonatomic,readonly) BOOL isMutable;
 +(NSDictionary *)defaultJson;
+
+-(NSDictionary *)asJson;
 
 +(Class)modelClassForJson:(NSDictionary *)json;
 

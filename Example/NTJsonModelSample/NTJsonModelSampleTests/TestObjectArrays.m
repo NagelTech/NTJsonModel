@@ -56,7 +56,7 @@
     const NSInteger index = 1;
     
     NSString *jsonValue = self.jsonColors[index];
-    UIColor *value = [BasicPropertiesModel convertJsonToUIColor:jsonValue];
+    UIColor *value = [UIColor convertJsonToValue:jsonValue];
     
     // Make sure we can convert from JSON to our object type...
     
@@ -65,74 +65,49 @@
     // Make sure we are caching values once we read them...
     
     XCTAssert(model.objectArray[index] == model.objectArray[index], @"Caching may not be working correctly");
-    
 }
 
 
-
-/****
-
 -(void)testSet
 {
-    BasicPropertiesModel *model = [self createModel];
+    BasicPropertiesModel *model = [[self createModel] mutableCopy];
 
     // See if we can set values...
     
     UIColor *newColor = [UIColor colorWithRed:0.25 green:0.25 blue:0.25 alpha:1.0];
-    NSString *newColorJson = [BasicPropertiesModel convertUIColorToJson:newColor];
+    NSString *newColorJson = [UIColor convertValueToJson:newColor];
     const NSInteger index = 2;
     
-    model.objectArray[index] = newColor;
+    NSMutableArray *mutableObjectArray = [model.objectArray mutableCopy];
+    mutableObjectArray[index] = newColor;
+    
+    model.objectArray = mutableObjectArray;
     
     XCTAssert([newColor isEqual:model.objectArray[index]], @"Set value failed");
     XCTAssert(newColor == model.objectArray[index], @"Set Value isn't caching correctly");
     
     // Check conversion back to Json...
+
+    NSArray *jsonArray = [model asJson][@"objectArray"];
     
-    XCTAssert([newColorJson isEqualToString:model.objectArray.jsonArray[index]], @"Conversion to JSON failed");
+    XCTAssert([newColorJson isEqualToString:jsonArray[index]], @"Conversion to JSON failed");
 }
 
 
--(void)testInsert
+-(void)testArrayMutableCopy
 {
     BasicPropertiesModel *model = [self createModel];
     
-    UIColor *newColor = [UIColor cyanColor];
-    NSString *newColorJson = [BasicPropertiesModel convertUIColorToJson:newColor];
-    const NSInteger index = 2;
-    NSInteger newSize = self.jsonColors.count + 1;
+    NSMutableArray *mutable = [model.objectArray mutableCopy];
     
-    [model.objectArray insertObject:newColor atIndex:index];
+    // First let's compare the objects...
     
-    XCTAssert(model.objectArray.count == newSize, @"Insert failed (size wrong)");
+    XCTAssertTrue([mutable isEqualToArray:model.objectArray], @"mutableCopy objects differ");
     
-    XCTAssert([newColor isEqual:model.objectArray[index]], @"Insert failed, value not inserted");
-    XCTAssert(newColor == model.objectArray[index], @"Insert failed, value not cached");
+    // Now let's check the underlying json...
     
-    XCTAssert([newColorJson isEqualToString:model.objectArray.jsonArray[index]], @"Insert failed, json incorrect");
+    XCTAssertTrue([[mutable asJson] isEqual:[model.objectArray asJson]], @"asJson of mutableCopy differs");
 }
-
-
--(void)testDelete
-{
-    BasicPropertiesModel *model = [self createModel];
-    
-    const NSInteger index = 2;
-    NSInteger newSize = self.jsonColors.count - 1;
-    NSString *newColorJson = self.jsonColors[index+1]; // these are the values we expect to find at index after the delete
-    UIColor *newColor = [BasicPropertiesModel convertJsonToUIColor:newColorJson];
-    
-    [model.objectArray removeObjectAtIndex:index];
-    
-    XCTAssert(model.objectArray.count == newSize, @"Delete failed (size wrong)");
-    
-    XCTAssert([newColor isEqual:model.objectArray[index]], @"Delete failed, exected value not found at index");
-    
-    XCTAssert([newColorJson isEqualToString:model.objectArray.jsonArray[index]], @"Delete failed, json incorrect at index");
-}
- 
- 
-***/
 
 
 @end

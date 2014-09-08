@@ -65,10 +65,31 @@ static NSString *ObjcAttributeIvar = @"V";
     if ( !attributes[ObjcAttributeDynamic] )
         return nil;
     
+    // Create our class and set the basics...
+    
     NTJsonProp *prop = [[NTJsonProp alloc] init];
     
     prop->_modelClass = class;
     prop->_name = @(property_getName(objcProperty));
+    
+    // Get to our propInfo...
+    
+    __NTJsonPropertyInfo propInfo;
+    
+    SEL propInfoSelector = NSSelectorFromString([NSString stringWithFormat:@"__NTJsonProperty__%@", prop->_name]);
+    
+    if ( [class respondsToSelector:propInfoSelector] )
+    {
+        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[class methodSignatureForSelector:propInfoSelector]];
+        invocation.target = class;
+        invocation.selector = propInfoSelector;
+        [invocation invoke];
+        
+        [invocation getReturnValue:&propInfo];
+    }
+    
+    else
+        memset(&propInfo, 0, sizeof(propInfo)); // zero is all defaults.
     
     // Figure out the base type...
     
@@ -111,15 +132,35 @@ static NSString *ObjcAttributeIvar = @"V";
             [protocols addObject:[objcType substringWithRange:[result rangeAtIndex:1]]];
         }];
         
-        NSSet *arrayClassNames = [NSSet setWithArray:@[@"NSArray", @"NTJsonModelArray"]];
+        NSSet *arrayClassNames = [NSSet setWithArray:@[@"NSArray"]];        // only this one type for now
         
         if ( [arrayClassNames containsObject:className] )
         {
-            // It's an array type...
+            // It's an array type, let's figure out the element type...
+            // this can com from two different places, so we need to do a bit of validation here...
             
-            NSString *elementClassName = [protocols firstObject];   // todo: we will need to deal with multiple protocols
+            Class elementClass = propInfo.elementType;
+            NSString *protocolElementClassName = [protocols firstObject];
             
-            if ( (elementClassName.length == 0 || [elementClassName isEqualToString:@"NSObject"]) && ![className isEqualToString:@"NTJsonModelArray"] )
+            if ( elementClass && protocolElementClassName.length ) // both were defined
+            {
+                @throw [NSException exceptionWithName:@"NTJsonModelInvalidType" reason:[NSString stringWithFormat:@"Array element type is defined as a protocol as well as explicitly in NTPropInfo: %@.%@ (%@ and %@)", NSStringFromClass(class), prop->_name, NSStringFromClass(elementClass), protocolElementClassName] userInfo:nil];
+            }
+            else if ( !elementClass && !protocolElementClassName.length ) // neither were defined
+            {
+                elementClass = [NSObject class];
+            }
+            else if ( protocolElementClassName.length )    // only defined in protocol
+            {
+                elementClass = NSClassFromString(protocolElementClassName);
+                
+                if ( !elementClass )
+                {
+                    @throw [NSException exceptionWithName:@"NTJsonModelInvalidType" reason:[NSString stringWithFormat:@"Invalid elementName defined as protocol: %@.%@ (%@)", NSStringFromClass(class), prop->_name, protocolElementClassName] userInfo:nil];
+                }
+            }
+            
+            if ( elementClass == [NSObject class] )
             {
                 // Untyped arrays are handled as simple objects...
                 prop->_type = NTJsonPropTypeObject;
@@ -127,8 +168,8 @@ static NSString *ObjcAttributeIvar = @"V";
             }
             else
             {
-                prop->_typeClass = NSClassFromString(elementClassName);  // todo: validate
                 prop->_type = [prop->_typeClass isSubclassOfClass:[NTJsonModel class]] ? NTJsonPropTypeModelArray : NTJsonPropTypeObjectArray;
+                prop->_typeClass = elementClass;
             }
         }
         
@@ -148,25 +189,6 @@ static NSString *ObjcAttributeIvar = @"V";
         @throw [NSException exceptionWithName:@"NTJsonModelInvalidType" reason:[NSString stringWithFormat:@"Unsupported type for property %@.%@ (%@)", NSStringFromClass(class), prop->_name, objcType] userInfo:nil];
     
     prop->_isReadOnly = (attributes[ObjcAttributeReadonly]) ? YES : NO;
-
-    // Ok, now get remaining details from propInfo...
-    
-    __NTJsonPropertyInfo propInfo;
-    
-    SEL propInfoSelector = NSSelectorFromString([NSString stringWithFormat:@"__NTJsonProperty__%@", prop->_name]);
-    
-    if ( [class respondsToSelector:propInfoSelector] )
-    {
-        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[class methodSignatureForSelector:propInfoSelector]];
-        invocation.target = class;
-        invocation.selector = propInfoSelector;
-        [invocation invoke];
-        
-        [invocation getReturnValue:&propInfo];
-    }
-    
-    else
-        memset(&propInfo, 0, sizeof(propInfo)); // zero is all defaults.
     
     // Parse the keypath...
 
@@ -181,12 +203,6 @@ static NSString *ObjcAttributeIvar = @"V";
     }
     else
         prop->_jsonKey = jsonKeyPath;
-    
-    if ( propInfo.elementType && (prop->_type == NTJsonPropTypeModelArray || prop->_type == NTJsonPropTypeObjectArray) )
-    {
-        prop->_typeClass = propInfo.elementType;
-        prop->_type = [prop->_typeClass isSubclassOfClass:[NTJsonModel class]] ? NTJsonPropTypeModelArray : NTJsonPropTypeObjectArray;
-    }
     
     if ( propInfo.enumValues && (prop->_type == NTJsonPropTypeString ||prop->_type == NTJsonPropTypeStringEnum) )
     {
@@ -504,7 +520,7 @@ static NSString *ObjcAttributeIvar = @"V";
         case NTJsonPropTypeObjectArray:
         case NTJsonPropTypeModelArray:
         {
-            value = [value isKindOfClass:[NSArray class]] ? [[NTJsonModelArray alloc] initWithProperty:self jsonArray:value] : self.defaultValue;
+            value = [value isKindOfClass:[NSArray class]] ? [[NTJsonModelArray alloc] initWithProperty:self json:value] : self.defaultValue;
             break ;
         }
     }
@@ -527,7 +543,7 @@ static NSString *ObjcAttributeIvar = @"V";
             return value;   // the runtime shoul have given these to us in the correct format already.
             
         case NTJsonPropTypeModel:
-            return [value json];
+            return [value asJson];
             
         case NTJsonPropTypeObject:
             return [self object_convertValueToJson:value];

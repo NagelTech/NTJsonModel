@@ -43,7 +43,7 @@
     XCTAssert([model.colorProp isEqual:sampleColor], @"JSON -> UIColor conversion failed");
 
     model.colorProp = [UIColor redColor];
-    XCTAssert([model.json[@"colorProp"] isEqualToString:@"#FF0000"], @"UIColor -> JSON conversion failed");
+    XCTAssert([[model asJson][@"colorProp"] isEqualToString:@"#FF0000"], @"UIColor -> JSON conversion failed");
 }
 
 
@@ -57,7 +57,7 @@
     XCTAssert([model.color2Prop.description isEqualToString:sampleColor.description], @"JSON -> UIColor conversion failed");
     
     model.color2Prop = [UIColor redColor];
-    XCTAssert([model.json[@"color2Prop"][@"r"] floatValue] == 1.00, @"UIColor -> JSON conversion failed");
+    XCTAssert([[model asJson][@"color2Prop"][@"r"] floatValue] == 1.00, @"UIColor -> JSON conversion failed");
 }
 
 

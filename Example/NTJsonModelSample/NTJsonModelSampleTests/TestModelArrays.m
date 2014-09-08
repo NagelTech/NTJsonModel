@@ -42,7 +42,7 @@
       @{@"intProp": @(4)},
       ];
     
-    NTJsonModelArray *array = [[NTJsonModelArray alloc] initWithModelClass:[BasicPropertiesModel class] jsonArray:jsonArray];
+    NTJsonModelArray *array = [[NTJsonModelArray alloc] initWithModelClass:[BasicPropertiesModel class] json:jsonArray];
     
     // count
     

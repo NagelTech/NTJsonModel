@@ -45,7 +45,14 @@ NTJsonProperty(nestedValue, jsonPath="nested.value")
 }
 
 
-+(id)convertUIColorToJson:(UIColor *)value
+@end
+
+
+
+@implementation UIColor (BasicPropertiesModel)
+
+
++(id)convertValueToJson:(UIColor *)value
 {
     if ( CGColorGetNumberOfComponents(value.CGColor) != 4 )
         return nil; // this will catch colors that are in a strange space or something
@@ -60,7 +67,7 @@ NTJsonProperty(nestedValue, jsonPath="nested.value")
 }
 
 
-+(UIColor *)convertJsonToUIColor:(id)json
++(id)convertJsonToValue:(id)json
 {
     unsigned int hexValue;
     

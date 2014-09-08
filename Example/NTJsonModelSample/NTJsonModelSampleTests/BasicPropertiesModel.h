@@ -13,6 +13,13 @@
 @end
 
 
+@interface UIColor (BasicPropertiesModel) <NTJsonPropertyConversion>
+
++(id)convertJsonToValue:(id)json;
++(id)convertValueToJson:(id)value;
+
+@end
+
 @interface BasicPropertiesModel : NTJsonModel
 
 @property (nonatomic) int intProp;
@@ -26,16 +33,14 @@
 
 @property (nonatomic) BasicPropertiesModel *childModel;
 
-@property (nonatomic) NTJsonModelArray *modelArray;
-@property (nonatomic) NTJsonModelArray *objectArray;
+@property (nonatomic) NSArray *modelArray;
+@property (nonatomic) NSArray *objectArray;
 @property (nonatomic,readonly) NSArray *objectArrayStrings;
 
 @property (nonatomic,readonly) int nestedValue;
 
 +(id)convertColor2PropToJson:(UIColor *)value;
 +(UIColor *)convertJsonToColor2Prop:(NSDictionary *)json;
-+(id)convertUIColorToJson:(UIColor *)value;
-+(UIColor *)convertJsonToUIColor:(id)json;
 
 @end
 
