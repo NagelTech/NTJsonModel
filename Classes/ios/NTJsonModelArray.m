@@ -310,8 +310,16 @@
     
     // cache...
     
-    [self ensureCacheSize:index];
-    _valueCache[index] = value;
+    if (value)
+    {
+        [self ensureCacheSize:index];
+        _valueCache[index] = value;
+    }
+    else
+    {
+        NSLog(@"[NTJsonModelArray:%d] Error: No value found at index %lu for class %@", __LINE__, (unsigned long)index,
+              NSStringFromClass(self.modelClass));
+    }
     
     return value;
 }
