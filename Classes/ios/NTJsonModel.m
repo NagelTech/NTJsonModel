@@ -803,15 +803,27 @@ id NTJsonModel_deepCopy(id json)
         {
             // arrays are handled as copy assignments...
             
-            if ( ![value isKindOfClass:[NSArray class]] )
+            if ( [value isKindOfClass:[NTJsonModelArray class]] )
+            {
+                NTJsonModelArray *modelArray = [[NTJsonModelArray alloc] initWithProperty:property jsonArray:[[value jsonArray] copy]];
+                
+                value = modelArray;
+                jsonValue = modelArray.jsonArray;
+            }
+            
+            else if ( [value isKindOfClass:[NSArray class]] )
+            {
+                NTJsonModelArray *modelArray = [[NTJsonModelArray alloc] initWithProperty:property mutableJsonArray:[NSMutableArray array]];
+                
+                [modelArray addObjectsFromArray:value];
+                
+                value = modelArray;
+                jsonValue = modelArray.jsonArray;
+            }
+            
+            else
                 @throw [NSException exceptionWithName:@"InvalidType" reason:@"Invalid type when setting property" userInfo:nil];
             
-            NTJsonModelArray *modelArray = [[NTJsonModelArray alloc] initWithProperty:property mutableJsonArray:[NSMutableArray array]];
-            
-            [modelArray addObjectsFromArray:value];
-            
-            value = modelArray;
-            jsonValue = modelArray.jsonArray;
             expectedValueType = [NSArray class];
             break ;
         }
@@ -829,7 +841,7 @@ id NTJsonModel_deepCopy(id json)
         id<NTJsonModelContainer> container = value;
         
         if ( container.parentJsonContainer )
-            @throw [NSException exceptionWithName:@"MultipleParents" reason:@"Cannot add item to NTJsonModel because it is alrready a member of another object." userInfo:nil];
+            @throw [NSException exceptionWithName:@"MultipleParents" reason:@"Cannot add item to NTJsonModel because it is already a member of another object." userInfo:nil];
         
         if ( !container.isMutable )
             [container becomeMutable];
