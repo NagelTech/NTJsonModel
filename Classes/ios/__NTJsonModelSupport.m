@@ -13,7 +13,7 @@
 
 @interface __NTJsonModelSupport ()
 {
-    NSDictionary *_properties;
+    NSArray *_properties;
     NSDictionary *_allRelatedProperties;
     NSDictionary *_defaultJson;
     BOOL _modelClassForJsonOverridden;
@@ -241,7 +241,7 @@
 
 -(void)validateRelatedProperties
 {
-    for (NTJsonProp *prop in self.properties.allValues)
+    for (NTJsonProp *prop in self.properties)
     {
         if ( prop.isReadOnly )
             continue;
@@ -282,24 +282,43 @@
         
         // start with properties from our superclass...
         
-        NSMutableDictionary *properties = [NSMutableDictionary dictionary];
+        NSMutableArray *properties = [NSMutableArray array];
         
         if ( self.superSupport )
-            [properties addEntriesFromDictionary:self.superSupport.properties];
+            [properties addObjectsFromArray:self.superSupport.properties];
         
         // Add our properties and create the implementations for them...
         
         for(NTJsonProp *property in [self.class extractPropertiesForModelClass:self.modelClass])
         {
+            // If another propertu exists with the same name, we are overriding it...
+            
+            __block NTJsonProp *prevProp = nil;
+            
+            [properties enumerateObjectsUsingBlock:^(NTJsonProp *item, NSUInteger idx, BOOL *stop)
+            {
+                if ( [item.name isEqualToString:property.name] )
+                {
+                    prevProp = item;
+                    *stop = YES;
+                    
+                }
+            }];
+            
+            if ( prevProp ) // remove any previous property...
+            {
+                // todo: I suppose we coul do validation on this property to make sure overring makes sense.
+                [properties removeObjectIdenticalTo:prevProp];
+            }
+            
             [self addImpsForProperty:property];
-            properties[property.name] = property;
         }
         
         _properties = [properties copy];
         
         // Get our related properties...
         
-       _allRelatedProperties = [self.class findAllRelatedPropertiesIn:properties.allValues];
+       _allRelatedProperties = [self.class findAllRelatedPropertiesIn:properties];
         
         // Now validate related properties...
         
@@ -377,7 +396,7 @@
     
     NSMutableDictionary *defaults = nil;
     
-    for(NTJsonProp *prop in self.properties.allValues)
+    for(NTJsonProp *prop in self.properties)
     {
         id defaultValue;
         

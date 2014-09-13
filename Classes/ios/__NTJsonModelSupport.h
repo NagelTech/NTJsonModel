@@ -14,7 +14,7 @@
 @interface __NTJsonModelSupport : NSObject
 
 @property (nonatomic,readonly) Class modelClass;
-@property (nonatomic,readonly) NSDictionary *properties;
+@property (nonatomic,readonly) NSArray *properties;
 @property (nonatomic,readonly) NSDictionary *defaultJson;
 @property (nonatomic,readonly) BOOL modelClassForJsonOverridden;
 
