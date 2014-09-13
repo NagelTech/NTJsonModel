@@ -8,8 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import "Categories/NSArray+NTJsonModel.h"
-#import "Categories/NSDictionary+NTJsonModel.h"
+#import "NSArray+NTJsonModel.h"
+#import "NSDictionary+NTJsonModel.h"
 
 #import "NTJsonPropertyConversion.h"
 
