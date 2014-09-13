@@ -35,7 +35,7 @@
 {
     NSArray *jsonArray =
     @[
-      @{@"intProp": @(0)},
+      @{@"intProp": @(0), @"randomData": @"whatever"},
       @{@"intProp": @(1)},
       @{@"intProp": @(2)},
       @{@"intProp": @(3)},
@@ -55,6 +55,29 @@
     XCTAssert(item.intProp == 2, @"get object failed");
     XCTAssert(item == array[2], @"cache failed");
     XCTAssert(!item.isMutable, "should not be mutable");
+    
+    // Mutate - we should get the same Json, including unmaped "randomData"
+    
+    NSMutableArray *mutableArray = [array mutableCopy];
+    
+    XCTAssertTrue([[array asJson] isEqual:[mutableArray asJson]], @"mutableCopy json doesn't match");
+    
+    // Make a change and see validate that it is in the resulting json...
+    
+    item = mutableArray[0];
+    
+    XCTAssertTrue(!item.isMutable, @"mutableCopy array's contents are mutable");
+    
+    item = [item mutableCopy];
+    item.intProp = 100;
+    
+    mutableArray[0] = item;
+    
+    NSArray *newJsonArray = [mutableArray asJson];
+    
+    XCTAssertTrue([[newJsonArray[0] valueForKey:@"intProp"] isEqual:@(100)], @"change to mutable array element not reflected in asJson result");
+    
+    
 }
 
 

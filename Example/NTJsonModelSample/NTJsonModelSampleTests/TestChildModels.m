@@ -55,7 +55,7 @@
     
     mutableModel.intProp = 2;
 
-    XCTAssert(mutableModel.intProp == 2, @"failed to set parent property (becomeMutable fail?)");
+    XCTAssert(mutableModel.intProp == 2, @"failed to set property (mutableCopy fail?)");
     
     // set new child
     
