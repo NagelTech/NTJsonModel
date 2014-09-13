@@ -728,10 +728,6 @@
         {
             NSNumber *number = value;
             
-            const char *objcType = number.objCType;
-            const char *t1 = @encode(bool);
-            const char *t2 = @encode(char);
-            
             if ( strcmp(number.objCType, @encode(BOOL)) == 0 || strcmp(number.objCType, @encode(signed char)) == 0 )  // looks like a bool
                 [desc appendString:[number boolValue] ? @"YES" : @"NO"];
             else
