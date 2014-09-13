@@ -228,4 +228,19 @@
 }
 
 
+#pragma mark - description
+
+
+-(NSString *)description
+{
+    return [[self.class __ntJsonModelSupport] descriptionForModel:self fullDescription:NO];
+}
+
+
+-(NSString *)fullDescription
+{
+    return [[self.class __ntJsonModelSupport] descriptionForModel:self fullDescription:YES];
+}
+
+
 @end

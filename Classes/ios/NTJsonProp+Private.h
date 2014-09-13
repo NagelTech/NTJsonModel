@@ -30,7 +30,7 @@ typedef enum
 
 @property (nonatomic,readonly) Class modelClass;
 @property (nonatomic,readonly) NSString *name;
-@property (nonatomic,readonly) NSString *jsonKey;               // the first parf of the key path
+@property (nonatomic,readonly) NSString *jsonKey;               // the first part of the key path
 @property (nonatomic,readonly) NSString *remainingJsonKeyPath;  // any remaining key path values (readonly properties only)
 @property (nonatomic,readonly) NSString *jsonKeyPath;           
 @property (nonatomic,readonly) NTJsonPropType type;

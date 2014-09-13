@@ -291,7 +291,7 @@
         
         for(NTJsonProp *property in [self.class extractPropertiesForModelClass:self.modelClass])
         {
-            // If another propertu exists with the same name, we are overriding it...
+            // If another property exists with the same name, we are overriding it...
             
             __block NTJsonProp *prevProp = nil;
             
@@ -301,17 +301,18 @@
                 {
                     prevProp = item;
                     *stop = YES;
-                    
                 }
             }];
             
             if ( prevProp ) // remove any previous property...
             {
-                // todo: I suppose we coul do validation on this property to make sure overring makes sense.
+                // todo: I suppose we could do validation on this property to make sure overring makes sense.
                 [properties removeObjectIdenticalTo:prevProp];
             }
             
             [self addImpsForProperty:property];
+            
+            [properties addObject:property];
         }
         
         _properties = [properties copy];
@@ -639,6 +640,114 @@
     
     for(NTJsonProp *related in [self relatedPropertiesForProperty:prop])
         [self setCacheValue:nil forProperty:related inModel:model];
+}
+
+
+#pragma mark - description
+
+
+-(NSString *)descriptionForModel:(NTJsonModel *)model fullDescription:(BOOL)fullDescription
+{
+    NSMutableString *desc = [NSMutableString string];
+    
+    if ( model.isMutable )
+        [desc appendString:@"mutable"];
+    
+    for(NTJsonProp *prop in self.properties)
+    {
+        id value = [self getValueForProperty:prop inModel:model];
+        id defaultValue = prop.defaultValue;
+        
+        if ( !fullDescription && (value == defaultValue || [value isEqual:defaultValue]) )
+            continue;   // ignore properties that don't look interesting
+        
+        if ( desc.length > 0 )
+            [desc appendString:@", "];
+        
+        [desc appendFormat:@"%@=", prop.name];
+        
+        if ( value ==nil )
+        {
+            [desc appendString:@"nil"];
+        }
+        
+        else if ( value == [NSNull null] )
+        {
+            [desc appendString:@"NSNull"];
+        }
+        
+        else if ( [value isKindOfClass:[NSArray class]] )
+        {
+            NSArray *array = value;
+            
+            if ( fullDescription )
+            {
+                [desc appendString:@"["];
+                
+                [array enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop)
+                {
+                    if ( idx > 0 )
+                        [desc appendString:@", "];
+                    
+                    if ( value == [NSNull null] )
+                    {
+                        [desc appendString:@"NSNull"];
+                    }
+                    
+                    else if ( fullDescription && [value respondsToSelector:@selector(fullDescription)] )
+                    {
+                        [desc appendString:[obj fullDescription]];
+                    }
+                    
+                    else
+                    {
+                        [desc appendString:[obj description]];
+                    }
+                }];
+            }
+            else
+            {
+                // don't try to display array contents
+                [desc appendFormat:@"[%lu items]", (unsigned long)array.count];
+            }
+        }
+        
+        else if ( [value isKindOfClass:[NSString class]] )
+        {
+            const int MAX_LEN = 40;
+            
+            NSString *string = value;
+            
+            if ( !fullDescription && string.length > MAX_LEN-3 )
+                string = [NSString stringWithFormat:@"%@...", [string substringToIndex:MAX_LEN-3]];
+            
+            [desc appendFormat:@"\"%@\"", string];
+        }
+        
+        else if ( [value isKindOfClass:[NSNumber class]] )
+        {
+            NSNumber *number = value;
+            
+            const char *objcType = number.objCType;
+            const char *t1 = @encode(bool);
+            const char *t2 = @encode(char);
+            
+            if ( strcmp(number.objCType, @encode(BOOL)) == 0 || strcmp(number.objCType, @encode(signed char)) == 0 )  // looks like a bool
+                [desc appendString:[number boolValue] ? @"YES" : @"NO"];
+            else
+                [desc appendString:[number stringValue]];
+        }
+        
+        else    // child objects, etc
+        {
+            if ( fullDescription && [value respondsToSelector:@selector(fullDescription)] )
+                [desc appendString:[value fullDescription]];
+            else
+                [desc appendString:[value description]];
+        }
+    }
+    
+    return [NSString stringWithFormat:@"%@(%@)", NSStringFromClass(model.class), desc];
 }
 
 

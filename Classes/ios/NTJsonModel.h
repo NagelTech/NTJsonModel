@@ -41,4 +41,7 @@
 -(BOOL)isEqual:(id)object;
 -(NSUInteger)hash;
 
+-(NSString *)description;
+-(NSString *)fullDescription;
+
 @end
