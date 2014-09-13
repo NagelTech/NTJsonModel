@@ -65,7 +65,7 @@
             
         case NTJsonPropTypeBool:
         {
-            typeCode = @encode(BOOL);
+            typeCode = @encode(BOOL);       // may map to bool or signed char, depening on, umm maybe 64 vs 32 bit? that's ok though.
             setBlock = ^(NTJsonModel *model, BOOL value)
             {
                 [self setValue:@(value) forProperty:property inModel:model];
@@ -541,13 +541,14 @@
         {
             const char *objcType = [originalValue objCType];
             
-            if      ( strcmp(objcType, @encode(BOOL)) == 0 )        value = [NSNumber numberWithBool:[value boolValue]];
-            else if ( strcmp(objcType, @encode(double)) == 0)       value = [NSNumber numberWithDouble:[value doubleValue]];
-            else if ( strcmp(objcType, @encode(float)) == 0)        value = [NSNumber numberWithFloat:[value floatValue]];
-            else if ( strcmp(objcType, @encode(int)) == 0)          value = [NSNumber numberWithInt:[value intValue]];
-            else if ( strcmp(objcType, @encode(NSInteger)) == 0)    value = [NSNumber numberWithInteger:[value integerValue]];
-            else if ( strcmp(objcType, @encode(long)) == 0)         value = [NSNumber numberWithLong:[value longValue]];
-            else if ( strcmp(objcType, @encode(long long)) == 0)    value = [NSNumber numberWithLongLong:[value longLongValue]];
+            if      ( strcmp(objcType, @encode(bool)) == 0 )            value = [NSNumber numberWithBool:[value boolValue]];
+            if      ( strcmp(objcType, @encode(signed char)) == 0 )     value = [NSNumber numberWithBool:[value boolValue]];
+            else if ( strcmp(objcType, @encode(double)) == 0)           value = [NSNumber numberWithDouble:[value doubleValue]];
+            else if ( strcmp(objcType, @encode(float)) == 0)            value = [NSNumber numberWithFloat:[value floatValue]];
+            else if ( strcmp(objcType, @encode(int)) == 0)              value = [NSNumber numberWithInt:[value intValue]];
+            else if ( strcmp(objcType, @encode(NSInteger)) == 0)        value = [NSNumber numberWithInteger:[value integerValue]];
+            else if ( strcmp(objcType, @encode(long)) == 0)             value = [NSNumber numberWithLong:[value longValue]];
+            else if ( strcmp(objcType, @encode(long long)) == 0)        value = [NSNumber numberWithLongLong:[value longLongValue]];
         }
         
         return value;

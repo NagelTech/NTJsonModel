@@ -98,7 +98,7 @@ static NSString *ObjcAttributeIvar = @"V";
     NSDictionary *simplePropertyTypes =
     @{
       @(@encode(int)): @(NTJsonPropTypeInt),
-      @(@encode(BOOL)): @(NTJsonPropTypeBool),  // == char, but that's an unlikely type for a property
+      @(@encode(signed char)): @(NTJsonPropTypeBool),  // sometimes BOOls look like this, that's an unlikely type for a property
       @(@encode(bool)): @(NTJsonPropTypeBool),
       @(@encode(float)): @(NTJsonPropTypeFloat),
       @(@encode(double)): @(NTJsonPropTypeDouble),
@@ -456,7 +456,7 @@ static NSString *ObjcAttributeIvar = @"V";
         {
             if ( ![value isKindOfClass:[NSNumber class]] )
                 value = [value respondsToSelector:@selector(boolValue)] ? @([value boolValue]) : self.defaultValue;
-            else if ( strcmp([value objCType], @encode(BOOL)) != 0 )
+            else if ( strcmp([value objCType], @encode(bool)) != 0 && strcmp([value objCType], @encode(signed char)) != 0 )
                 value = [NSNumber numberWithBool:[value boolValue]];
             break;
         }
