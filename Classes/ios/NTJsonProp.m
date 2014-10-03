@@ -543,23 +543,12 @@ static NSString *ObjcAttributeIvar = @"V";
             return value;   // the runtime shoul have given these to us in the correct format already.
             
         case NTJsonPropTypeModel:
+        case NTJsonPropTypeObjectArray:
+        case NTJsonPropTypeModelArray:
             return [value asJson];
             
         case NTJsonPropTypeObject:
             return [self object_convertValueToJson:value];
-            
-        case NTJsonPropTypeObjectArray:
-        {
-            NSMutableArray *items = [NSMutableArray arrayWithCapacity:[value count]];
-            
-            for(id item in value)
-                [items addObject:[self object_convertValueToJson:item] ?: [NSNull null]];
-            
-            return [items copy];
-        }
-            
-        case NTJsonPropTypeModelArray:
-            return [value objectForKey:@"json"];
             
         default:
             @throw [NSException exceptionWithName:@"NTJsonUnexpectedType" reason:@"Unexpected Property Type" userInfo:nil];
