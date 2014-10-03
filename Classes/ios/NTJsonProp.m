@@ -168,7 +168,7 @@ static NSString *ObjcAttributeIvar = @"V";
             }
             else
             {
-                prop->_type = [prop->_typeClass isSubclassOfClass:[NTJsonModel class]] ? NTJsonPropTypeModelArray : NTJsonPropTypeObjectArray;
+                prop->_type = [elementClass isSubclassOfClass:[NTJsonModel class]] ? NTJsonPropTypeModelArray : NTJsonPropTypeObjectArray;
                 prop->_typeClass = elementClass;
             }
         }
