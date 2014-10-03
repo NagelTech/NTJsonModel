@@ -239,13 +239,13 @@
 
 -(NSString *)description
 {
-    return [[self.class __ntJsonModelSupport] descriptionForModel:self fullDescription:NO];
+    return [[self.class __ntJsonModelSupport] descriptionForModel:self fullDescription:NO parentModels:@[]];
 }
 
 
 -(NSString *)fullDescription
 {
-    return [[self.class __ntJsonModelSupport] descriptionForModel:self fullDescription:YES];
+    return [[self.class __ntJsonModelSupport] descriptionForModel:self fullDescription:YES parentModels:@[]];
 }
 
 
