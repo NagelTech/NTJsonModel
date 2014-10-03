@@ -24,6 +24,7 @@
 -(NSDictionary *)asJson;
 
 +(Class)modelClassForJson:(NSDictionary *)json;
++(BOOL)modelClassForJsonOverridden;
 
 -(id)init; // creates mutable instance
 -(id)initWithJson:(NSDictionary *)json;

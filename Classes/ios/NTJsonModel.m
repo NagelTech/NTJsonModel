@@ -162,6 +162,12 @@
 #pragma mark - Properties
 
 
++(BOOL)modelClassForJsonOverridden
+{
+    return [self __ntJsonModelSupport].modelClassForJsonOverridden;
+}
+
+
 +(NSDictionary *)defaultJson
 {
     return [self __ntJsonModelSupport].defaultJson;
