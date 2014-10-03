@@ -41,7 +41,7 @@
     // test description with a child model...
     
     NSString *description = model.description;
-    NSString *expectedDescription = @"BasicPropertiesModel(stringProp=\"parent\", childModel=BasicPropertiesModel(stringProp=\"child\"))";
+    NSString *expectedDescription = @"BasicPropertiesModel(stringProp=\"parent\", childModel=BasicPropertiesModel(...))";
     
     XCTAssertTrue([description isEqualToString:expectedDescription], @"description does not match");
     
