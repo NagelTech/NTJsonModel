@@ -154,8 +154,13 @@
 {
     if ( ![jsonArray isKindOfClass:[NSArray class]] )
         return nil;
+
+    NSMutableArray *array = [NSMutableArray arrayWithCapacity:jsonArray.count];
     
-    return nil; // todo
+    for(NSDictionary *json in jsonArray)
+        [array addObject:[[self alloc] initMutableWithJson:json]];
+    
+    return array;
 }
 
 
