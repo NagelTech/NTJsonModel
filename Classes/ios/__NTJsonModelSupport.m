@@ -589,7 +589,7 @@
     if ( !model.isMutable )
         @throw [NSException exceptionWithName:@"NTJsonModelImmutable"
                                        reason:[NSString stringWithFormat:@"Attempt to modify immutable NTJsonModel: %@.%@", NSStringFromClass(self.modelClass), prop.name]
-                                      userInfo:nil];
+                                     userInfo:nil];
     
     NSMutableDictionary *json = [model __json];
     
@@ -646,7 +646,7 @@
 #pragma mark - description
 
 
--(NSString *)descriptionForModel:(NTJsonModel *)model fullDescription:(BOOL)fullDescription
+-(NSString *)descriptionForModel:(NTJsonModel *)model fullDescription:(BOOL)fullDescription parentModels:(NSArray *)parentModels
 {
     NSMutableString *desc = [NSMutableString string];
     
@@ -685,25 +685,36 @@
                 [desc appendString:@"["];
                 
                 [array enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop)
-                {
-                    if ( idx > 0 )
-                        [desc appendString:@", "];
-                    
-                    if ( value == [NSNull null] )
-                    {
-                        [desc appendString:@"NSNull"];
-                    }
-                    
-                    else if ( fullDescription && [value respondsToSelector:@selector(fullDescription)] )
-                    {
-                        [desc appendString:[obj fullDescription]];
-                    }
-                    
-                    else
-                    {
-                        [desc appendString:[obj description]];
-                    }
-                }];
+                 {
+                     if ( idx > 0 )
+                         [desc appendString:@", "];
+                     
+                     if ( obj == [NSNull null] )
+                     {
+                         [desc appendString:@"NSNull"];
+                     }
+                     
+                     else if ( [obj isKindOfClass:[NTJsonModel class]] )
+                     {
+                         if ( [parentModels indexOfObjectIdenticalTo:obj] == NSNotFound )
+                         {
+                             __NTJsonModelSupport *support = [[obj class] __ntJsonModelSupport];
+                             
+                             [desc appendString:[support descriptionForModel:obj
+                                                             fullDescription:fullDescription
+                                                                parentModels:[parentModels arrayByAddingObject:model]]];
+                         }
+                         else
+                         {
+                             [desc appendFormat:@"%@({recursive}])", NSStringFromClass([obj class])];
+                         }
+                     }
+                     
+                     else
+                     {
+                         [desc appendString:[obj description]];
+                     }
+                 }];
             }
             else
             {
@@ -736,8 +747,27 @@
         
         else    // child objects, etc
         {
-            if ( fullDescription && [value respondsToSelector:@selector(fullDescription)] )
-                [desc appendString:[value fullDescription]];
+            if ( [value isKindOfClass:[NTJsonModel class]] )
+            {
+                if ( !fullDescription )
+                {
+                    [desc appendFormat:@"%@(...)", NSStringFromClass([value class])];
+                }
+                
+                else if ( [parentModels indexOfObjectIdenticalTo:value] == NSNotFound )
+                {
+                    __NTJsonModelSupport *support = [[value class] __ntJsonModelSupport];
+                    
+                    [desc appendString:[support descriptionForModel:value
+                                                    fullDescription:fullDescription
+                                                       parentModels:[parentModels arrayByAddingObject:model]]];
+                }
+                else
+                {
+                    [desc appendFormat:@"%@({recursive}])", NSStringFromClass([value class])];
+                }
+            }
+            
             else
                 [desc appendString:[value description]];
         }
