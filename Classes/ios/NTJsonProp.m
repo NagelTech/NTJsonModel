@@ -540,12 +540,30 @@ static NSString *ObjcAttributeIvar = @"V";
         case NTJsonPropTypeLongLong:
         case NTJsonPropTypeString:
         case NTJsonPropTypeStringEnum:
-            return value;   // the runtime shoul have given these to us in the correct format already.
+            return value;   // the runtime should have given these to us in the correct format already.
             
         case NTJsonPropTypeModel:
-        case NTJsonPropTypeObjectArray:
         case NTJsonPropTypeModelArray:
             return [value asJson];
+            
+        case NTJsonPropTypeObjectArray:
+        {
+            NSArray *valueArray = value;
+            NSMutableArray *jsonArray = [NSMutableArray arrayWithCapacity:valueArray.count];
+            
+            if ( [valueArray isKindOfClass:[NSArray class]] )
+            {
+                for(id itemValue in valueArray)
+                {
+                    id itemJson = [self object_convertValueToJson:itemValue];
+                    
+                    if ( itemJson )
+                        [jsonArray addObject:itemJson];
+                }
+            }
+            
+            return [jsonArray copy];
+        }
             
         case NTJsonPropTypeObject:
             return [self object_convertValueToJson:value];
