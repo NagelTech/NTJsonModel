@@ -98,7 +98,7 @@
 }
 
 
--(instancetype)initWithMutationBlock:(id (^)(id mutable))mutationBlock
+-(instancetype)initWithMutationBlock:(void (^)(id mutable))mutationBlock
 {
     NTJsonModel *mutable = [self initMutable];
     
@@ -154,7 +154,7 @@
 }
 
 
-+(instancetype)modelWithMutationBlock:(id (^)(id mutable))mutationBlock
++(instancetype)modelWithMutationBlock:(void (^)(id mutable))mutationBlock
 {
     return [[self alloc] initWithMutationBlock:mutationBlock];
 }
@@ -169,7 +169,7 @@
 }
 
 
--(id)mutate:(id (^)(id mutable))mutationBlock
+-(id)mutate:(void (^)(id mutable))mutationBlock
 {
     NTJsonModel *mutable = [self mutableCopy];
     

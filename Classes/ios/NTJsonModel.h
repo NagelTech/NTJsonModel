@@ -63,7 +63,7 @@
  *
  *  @return an immutable copy of the model
  */
--(instancetype)initWithMutationBlock:(id (^)(id mutable))mutationBlock;
+-(instancetype)initWithMutationBlock:(void (^)(id mutable))mutationBlock;
 
 /**
  *  returns a default mutable instance.
@@ -95,7 +95,7 @@
  *
  *  @return an immutable copy of the model
  */
-+(instancetype)modelWithMutationBlock:(id (^)(id mutable))mutationBlock;
++(instancetype)modelWithMutationBlock:(void (^)(id mutable))mutationBlock;
 
 /**
  *  returns an mutable object with the supplied JSON or nil if json is nil
@@ -111,7 +111,7 @@
  *
  *  @return an immutable object with the changes in the mutationBlock applied.
  */
--(id)mutate:(id (^)(id mutable))mutationBlock;
+-(id)mutate:(void (^)(id mutable))mutationBlock;
 
 /**
  *  returns an array of immutable Model objects with the supplied type. Objects are created lazily as they are accessed.
