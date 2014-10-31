@@ -43,10 +43,9 @@
 +(BOOL)modelClassForJsonOverridden;
 
 /**
- *  returns a default mutable instance.
+ *  returns a default immutable instance.
  */
--(id)init; // creates mutable instance
-
+-(instancetype)init;
 
 /**
  *  returns an immutable object with the supplied JSON
@@ -55,7 +54,21 @@
  *
  *  @return a new immutable model instance
  */
--(id)initWithJson:(NSDictionary *)json;
+-(instancetype)initWithJson:(NSDictionary *)json;
+
+/**
+ *  creates a new mutable instance, executes the mutationBlock and returns an immmutable copy of the object.
+ *
+ *  @param mutationBlock block to execute on the mutable model
+ *
+ *  @return an immutable copy of the model
+ */
+-(instancetype)initWithMutationBlock:(id (^)(id mutable))mutationBlock;
+
+/**
+ *  returns a default mutable instance.
+ */
+-(instancetype)initMutable;
 
 /**
  *  returns an mutable object with the supplied JSON
@@ -64,7 +77,7 @@
  *
  *  @return a new mutable model instance
  */
--(id)initMutableWithJson:(NSDictionary *)json;
+-(instancetype)initMutableWithJson:(NSDictionary *)json;
 
 /**
  *  returns an immutable object with the supplied JSON or nil if json is nil
@@ -76,6 +89,15 @@
 +(instancetype)modelWithJson:(NSDictionary *)json;
 
 /**
+ *  creates a new mutable instance, executes the mutationBlock and returns an immmutable copy of the object.
+ *
+ *  @param mutationBlock block to execute on the mutable model
+ *
+ *  @return an immutable copy of the model
+ */
++(instancetype)modelWithMutationBlock:(id (^)(id mutable))mutationBlock;
+
+/**
  *  returns an mutable object with the supplied JSON or nil if json is nil
  *
  *  @param json the JSON
@@ -83,6 +105,13 @@
  *  @return a new mutable model instance or nil
  */
 +(instancetype)mutableModelWithJson:(NSDictionary *)json;
+
+/**
+ *  creates a mutable copy of the sender, executes the mutationBlock with it and returns an immutable copy of sender
+ *
+ *  @return an immutable object with the changes in the mutationBlock applied.
+ */
+-(id)mutate:(id (^)(id mutable))mutationBlock;
 
 /**
  *  returns an array of immutable Model objects with the supplied type. Objects are created lazily as they are accessed.

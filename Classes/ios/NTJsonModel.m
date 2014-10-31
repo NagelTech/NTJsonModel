@@ -62,21 +62,21 @@
 }
 
 
--(id)init
+-(instancetype)init
 {
     self = [super init];
     
     if ( self )
     {
-        _json = [NSMutableDictionary dictionary];
-        _isMutable = YES;
+        _json = @{};
+        _isMutable = NO;
     }
     
     return self;
 }
 
 
--(id)initWithJson:(NSDictionary *)json
+-(instancetype)initWithJson:(NSDictionary *)json
 {
     if ( [self.class __ntJsonModelSupport].modelClassForJsonOverridden )
     {
@@ -98,7 +98,32 @@
 }
 
 
--(id)initMutableWithJson:(NSDictionary *)json
+-(instancetype)initWithMutationBlock:(id (^)(id mutable))mutationBlock
+{
+    NTJsonModel *mutable = [self initMutable];
+    
+    if ( mutable )
+        mutationBlock(mutable);
+    
+    return [mutable copy];
+}
+
+
+-(instancetype)initMutable
+{
+    self = [super init];
+    
+    if ( self )
+    {
+        _json = [NSMutableDictionary dictionary];
+        _isMutable = YES;
+    }
+    
+    return self;
+}
+
+
+-(instancetype)initMutableWithJson:(NSDictionary *)json
 {
     if ( [self.class __ntJsonModelSupport].modelClassForJsonOverridden )
     {
@@ -129,12 +154,28 @@
 }
 
 
++(instancetype)modelWithMutationBlock:(id (^)(id mutable))mutationBlock
+{
+    return [[self alloc] initWithMutationBlock:mutationBlock];
+}
+
+
 +(instancetype)mutableModelWithJson:(NSDictionary *)json
 {
     if ( ![json isKindOfClass:[NSDictionary class]] )
         return nil;
     
     return [[self alloc] initMutableWithJson:json];
+}
+
+
+-(id)mutate:(id (^)(id mutable))mutationBlock
+{
+    NTJsonModel *mutable = [self mutableCopy];
+    
+    mutationBlock(mutable);
+    
+    return [mutable copy];
 }
 
 
