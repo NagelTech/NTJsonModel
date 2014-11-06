@@ -22,6 +22,11 @@
 @end
 
 
+@interface NTJsonModel (Mutable) <NTJsonMutableModel>
+
+@end
+
+
 @implementation NTJsonModel
 
 
@@ -296,3 +301,13 @@
 
 
 @end
+
+
+@implementation NTJsonModel (Mutable)
+
+// we need to implement the category to make sure the compiler actually generates the meta data for NTJsonMutableModel
+
+@end
+
+
+

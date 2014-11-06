@@ -60,36 +60,32 @@ static NSString *ObjcAttributeIvar = @"V";
 {
     NSDictionary *attributes = [self attributesForObjcProperty:objcProperty];
     
-    // If it's not dynamic, then it's not one of our properties...
+    NSString *name = @(property_getName(objcProperty));
     
-    if ( !attributes[ObjcAttributeDynamic] )
-        return nil;
+    // Get to our propInfo...
+    
+    SEL propInfoSelector = NSSelectorFromString([NSString stringWithFormat:@"__NTJsonProperty__%@", name]);
+    
+    if ( ![class respondsToSelector:propInfoSelector] )
+        return nil; // it's not one of ours...
     
     // Create our class and set the basics...
     
     NTJsonProp *prop = [[NTJsonProp alloc] init];
     
     prop->_modelClass = class;
-    prop->_name = @(property_getName(objcProperty));
+    prop->_name = name;
     
     // Get to our propInfo...
     
     __NTJsonPropertyInfo propInfo;
     
-    SEL propInfoSelector = NSSelectorFromString([NSString stringWithFormat:@"__NTJsonProperty__%@", prop->_name]);
+    NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[class methodSignatureForSelector:propInfoSelector]];
+    invocation.target = class;
+    invocation.selector = propInfoSelector;
+    [invocation invoke];
     
-    if ( [class respondsToSelector:propInfoSelector] )
-    {
-        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[class methodSignatureForSelector:propInfoSelector]];
-        invocation.target = class;
-        invocation.selector = propInfoSelector;
-        [invocation invoke];
-        
-        [invocation getReturnValue:&propInfo];
-    }
-    
-    else
-        memset(&propInfo, 0, sizeof(propInfo)); // zero is all defaults.
+    [invocation getReturnValue:&propInfo];
     
     // Figure out the base type...
     
