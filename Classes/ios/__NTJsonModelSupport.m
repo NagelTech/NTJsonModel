@@ -16,7 +16,9 @@
     NSArray *_properties;
     NSDictionary *_allRelatedProperties;
     NSDictionary *_defaultJson;
-    BOOL _modelClassForJsonOverridden;
+    NSNumber *_modelClassForJsonOverridden;
+    BOOL _isImmutableClass;
+    __NTJsonModelSupport *_pairedSupport;
 }
 
 @property (nonatomic,readonly) NSDictionary *allRelatedProperties;
@@ -37,6 +39,64 @@
 
 
 #pragma mark - Initialization
+
+
+static BOOL isClassSubclassOfClass(Class baseClass, Class class)
+{
+    while ( class )
+    {
+        if ( class == baseClass )
+            return YES;
+        
+        class = class_getSuperclass(class);
+    }
+    
+    return NO;
+}
+
+
++(NSArray *)ntJsonModelSubclasses
+{
+    // Ok, this method looks at ALL classes that are registered in the system and returns the list of classes that are subclasses
+    // of NTJsonModel. This is used to handle the edge case where we are creating an instance of a mutable paired class, but the
+    // mutable pair hasn't been referenced yet. In this case we need to manually reference the class so it is loaded and +initialize is
+    // called.
+    // See -pairedSupport for moew info.
+    
+    static NSArray *ntJsonModelSubclasses = nil;
+    
+    if ( !ntJsonModelSubclasses )
+    {
+        NSMutableArray *subclasses = [NSMutableArray array];
+        
+        int numClasses;
+        numClasses = objc_getClassList(NULL, 0);
+        
+        if (numClasses > 0 )
+        {
+            __unsafe_unretained Class *classes = (__unsafe_unretained Class *)malloc(sizeof(Class) * numClasses);
+            
+            numClasses = objc_getClassList(classes, numClasses);
+        
+            for(int index=0; index<numClasses; index++)
+            {
+                Class class = classes[index];
+                
+                if ( isClassSubclassOfClass([NTJsonModel class], class) )
+                    [subclasses addObject:class];
+            }
+            
+            free(classes);
+            classes = nil;
+        }
+        
+        NSLog(@"Scanned %d classes, found %lu subclasses", numClasses, (unsigned long)subclasses.count);
+        
+        ntJsonModelSubclasses = [subclasses copy];
+    }
+    
+    return ntJsonModelSubclasses;
+}
 
 
 -(void)addImpsForProperty:(NTJsonProp *)property
@@ -178,53 +238,6 @@
 }
 
 
-+(Protocol *)findMutableProtocolForClass:(Class)modelClass
-{
-    NSString *className = NSStringFromClass(modelClass);
-
-     // If it's one of our classes, try our format...
-    
-    if ( [className hasPrefix:@"NTJson"] )
-    {
-        Protocol *protocol = NSProtocolFromString([NSString stringWithFormat:@"NTJsonMutable%@", [className substringFromIndex:6]]);
-        
-        if ( protocol )
-            return protocol;
-    }
-    
-    // Ok, see if mutable is taked onto the front...
-    
-    Protocol *protocol = NSProtocolFromString([NSString stringWithFormat:@"Mutable%@", NSStringFromClass(modelClass)]);
-    
-    if ( protocol )
-        return protocol;
-
-    // Ok, we tried the easy things, now we look for a protocol that matches the class name, but with "Mutable" somewhere in it
-
-    unsigned int numProtocols;
-    Protocol * __unsafe_unretained *protocols = class_copyProtocolList(modelClass, &numProtocols);
-    
-    for(int index=0; index<numProtocols; index++)
-    {
-        NSString *protocolName = @(protocol_getName(protocols[index]));
-        
-        NSRange mutableRange = [protocolName rangeOfString:@"Mutable"];
-        
-        if ( mutableRange.location == NSNotFound )
-            continue;   // no mutable keyword
-        
-        // remove "Mutable"
-        
-        NSString *matchingClassName = [protocolName stringByReplacingCharactersInRange:mutableRange withString:@""];
-                                       
-        if ( [className isEqualToString:matchingClassName] )
-            return protocols[index];
-    }
-    
-    return nil;
-}
-
-
 +(NSArray *)extractPropertiesForModelClass:(Class)modelClass
 {
     unsigned int numProperties;
@@ -243,55 +256,6 @@
     }
     
     free(objc_properties);
-    
-    // If there is a mutable protocol, then we also parse the properties out of that...
-    
-    Protocol *mutableProtocol = [self findMutableProtocolForClass:modelClass];
-    
-    if ( mutableProtocol )
-    {
-        // Make sure read-only properties are read-only...
-        
-        for(NTJsonProp *prop in properties)
-        {
-            if (!prop.isReadOnly )
-            {
-                @throw [NSException exceptionWithName:@"NTJsonPropertyError"
-                                               reason:[NSString stringWithFormat:@"NTJsonModel property %@.%@ must be declared read-only if a mutable protocol (Mutable%@) is also declared.", NSStringFromClass(modelClass), prop.name, NSStringFromClass(modelClass)]
-                                             userInfo:nil];
-            }
-        }
-        
-        unsigned int numProperties;
-        objc_property_t *objc_properties = protocol_copyPropertyList(mutableProtocol, &numProperties);
-        
-        for(unsigned int index=0; index<numProperties; index++)
-        {
-            objc_property_t objc_property = objc_properties[index];
-            
-            NTJsonProp *prop = [NTJsonProp propertyWithClass:modelClass objcProperty:objc_property];
-            
-            if ( !prop )
-                continue ;
-            
-            // Replace any existing or append new properties...
-            
-            NSInteger existingIndex = [properties indexOfObjectPassingTest:^BOOL(NTJsonProp *item, NSUInteger idx, BOOL *stop) {
-                return [item.name isEqualToString:prop.name];
-            }];
-            
-            if ( existingIndex != NSNotFound )
-            {
-                [properties replaceObjectAtIndex:existingIndex withObject:prop];
-            }
-            else
-            {
-                [properties addObject:prop];
-            }
-        }
-        
-        free(objc_properties);
-    }
     
     return[properties copy];
 }
@@ -370,6 +334,44 @@
 }
 
 
+-(BOOL)setupClassPair
+{
+    NSString *className = NSStringFromClass(self.modelClass);
+    
+    NSRange mutableRange = [className rangeOfString:@"Mutable"];
+    
+    if (  mutableRange.location == NSNotFound )
+        return NO;  // "Mutable" not found, "these are not the classes you are looking for."
+
+    NSString *immutableClassName = [className stringByReplacingCharactersInRange:mutableRange withString:@""];
+    
+    if ( ![immutableClassName isEqualToString:NSStringFromClass([self.modelClass superclass])] )
+        return NO;  // superclass != Mutable class name without "Mutable", not a class pair
+    
+    // Ok, this is the mutable component of the class pair.
+    // good news is the immutable class is the superclass so it's been initialized successfully.
+    // we need to validate that all properties in the super class are read-only...
+    
+    __NTJsonModelSupport *immutableSupport = [self superSupport];
+
+    if ( !immutableSupport.isImmutableClass )
+    {
+        @throw [NSException exceptionWithName:@"NTJsonPropertyError"
+                                       reason:[NSString stringWithFormat:@"NTJsonModel cannot add paired mutable class %@ because it's pair, %@, is not immutable.", immutableClassName, className]
+                                     userInfo:nil];
+    }
+    
+    // Everything is set-up, so wire up our classes...
+    
+    _isImmutableClass = NO;     // force this to be considered mutable even if there are no mutable properties for osme reason
+    _pairedSupport = immutableSupport;
+
+    immutableSupport->_pairedSupport = self;
+    
+    return YES;
+}
+
+
 -(instancetype)initWithModelClass:(Class)modelClass
 {
     if ( (self=[super init]) )
@@ -384,6 +386,8 @@
             [properties addObjectsFromArray:self.superSupport.properties];
         
         // Add our properties and create the implementations for them...
+        
+        BOOL isImmutable = YES;
         
         for(NTJsonProp *property in [self.class extractPropertiesForModelClass:self.modelClass])
         {
@@ -409,9 +413,14 @@
             [self addImpsForProperty:property];
             
             [properties addObject:property];
+            
+            if ( !property.isReadOnly )
+                isImmutable = NO;
         }
         
         _properties = [properties copy];
+        
+        _isImmutableClass = isImmutable;
         
         // Get our related properties...
         
@@ -420,6 +429,11 @@
         // Now validate related properties...
         
         [self validateRelatedProperties];
+        
+        // Ok, now that we are done with all that jazz, let's see if this is the mutable component
+        // of a class pair...
+        
+        [self setupClassPair];
      }
     
     return self;
@@ -427,6 +441,12 @@
 
 
 #pragma mark - Properties
+
+
+-(BOOL)isMutableClass
+{
+    return !_isImmutableClass;
+}
 
 
 -(BOOL)modelClassForJsonOverridden
@@ -448,13 +468,71 @@
                 break;
             }
         }
-        
+    
         free(methods);
         
-        _modelClassForJsonOverridden = modelClassForJsonOverridden;
+        _modelClassForJsonOverridden = @(modelClassForJsonOverridden);
     }
     
-    return _modelClassForJsonOverridden;
+    return [_modelClassForJsonOverridden boolValue];
+}
+
+
+-(__NTJsonModelSupport *)pairedSupport
+{
+    if ( !_pairedSupport )
+    {
+        // If this is an immutable class, it is possible there is a paired class that hasn't been initialized yet, search for it...
+        
+        // NOTE: +nsJsonModelSubclasses is expensive the first time it is run. This handles an edge case, so hopefully we won't get here
+        // often.
+        
+        if ( !self.isMutableClass )
+        {
+            NSString *ourClassName = NSStringFromClass(self.modelClass);
+            
+            for(Class class in [self.class ntJsonModelSubclasses])
+            {
+                if ( ![class isSubclassOfClass:self.modelClass] )
+                    continue;
+                
+                NSString *className = NSStringFromClass(class);
+                
+                NSRange mutableRange = [className rangeOfString:@"Mutable"];
+                
+                if (  mutableRange.location == NSNotFound )
+                    continue;  // "Mutable" not found, "these are not the classes you are looking for."
+                
+                className = [className stringByReplacingCharactersInRange:mutableRange withString:@""];
+                
+                if ( ![ourClassName isEqualToString:className] )
+                    continue;   // Paired class doesn't match, keep searching
+                
+                // Ok this is a paired class that hasn't been initialized yet, reference it so it can be initialized.
+                
+                [class __ntJsonModelSupport];   // just forces initialization
+            
+                break;  // at this point _pairedSupport should have been set by [class +initialize]
+            }
+        }
+        
+        if ( !_pairedSupport )
+            _pairedSupport = (id)[NSNull null];
+    }
+    
+    return (_pairedSupport == (id)[NSNull null]) ? nil : _pairedSupport;
+}
+
+
+-(BOOL)isPairedClass
+{
+    return self.pairedSupport ? YES : NO;
+}
+
+
+-(Class)pairedModelClass
+{
+    return self.pairedSupport.modelClass;
 }
 
 

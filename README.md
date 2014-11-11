@@ -194,7 +194,54 @@ Immutable objects are designed to be high-perfomance and thread-safe. It's good 
 * `isEqual:` and `hash` work as expected.
 * `description` will output non-default properties by default and tries hard to output something that is useful. Additionally, `fullDescription` will out a more detailed version, recursing into nested objects and showing the contents of arrays.
 
- 
+
+## Exploration
+
+
+System can work in three modes, Mutable,  Hybrid Mutable/Immutable and explicit Mutable/Immutable class pairs.
+
+Mutable:
+    Use NTJsonMutableModel as your base class
+
+Hibrid:
+    Use NTJsonHybridModel as your base class
+
+Mutable/Immutable class pairs
+    Use NTJsonImmutableModel as your base class for your immutable model
+    Make YOUR immutable model your base class fo your Mutable model, and add the NTJsonMutableModel protocol
+
+
+C NTJsonModel
+    - All immutable methods
+
+    C NTJsonHybridModel
+        + All Mutable Methods + initMutable, etc
+
+    C NTJsonImmutableModel
+        + ?
+
+    C NTJsonMutableModel
+        + All Mutable Methods
+
+
+C NTJsonImmutableModel
+    C FeedItem
+        C MutableFeedItem <MutableFeedItem>
+
+        C StatusFeedItem
+            C MutableStatusFeedItem <MutableStatusFeedItem>
+
+    C User
+        C MutableUser <NTJsonMutableModel>
+
+P NTJsonMutableModel
+    P MutableFeedItem
+        P MutableStatusFeedItem
+
+
+
+
+
 
  
 

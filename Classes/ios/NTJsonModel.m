@@ -19,6 +19,10 @@
     BOOL _isMutable;
 }
 
+
+-(id)initWithJson:(NSDictionary *)json mutable:(BOOL)isMutable;
+
+
 @end
 
 
@@ -62,43 +66,59 @@
 }
 
 
--(instancetype)init
+-(id)initWithJson:(NSDictionary *)json mutable:(BOOL)isMutable
 {
-    self = [super init];
-    
-    if ( self )
-    {
-        _json = @{};
-        _isMutable = NO;
-    }
-    
-    return self;
-}
+    __NTJsonModelSupport *support = [self.class __ntJsonModelSupport];
 
-
--(instancetype)initWithJson:(NSDictionary *)json
-{
-    if ( [self.class __ntJsonModelSupport].modelClassForJsonOverridden )
+    if ( json && !isMutable && support.modelClassForJsonOverridden )
     {
         Class modelClass = [self.class modelClassForJson:json];
-        
+
         if ( modelClass != self.class )
-            return [[modelClass alloc] initWithJson:json];
+        {
+            if ( ![modelClass isSubclassOfClass:self.class] )
+            {
+                @throw [NSException exceptionWithName:@"NTJsonModelNotSubclass"
+                                               reason:[NSString stringWithFormat:@"NTJsonModel cannot create instance of %@ returned by modelClassForJson because it is not a subclass of %@", NSStringFromClass(modelClass), NSStringFromClass(self.class)]
+                                             userInfo:nil];
+            }
+            
+            return [[modelClass alloc] initWithJson:json mutable:isMutable];
+        }
     }
     
-    self = [super init];
-    
-    if ( self )
+    if ( isMutable != support.isMutableClass )   // if mutability is different between request and actual class
     {
-        _json = [json copy];
-        _isMutable = NO;
+        if ( support.isPairedClass )
+            return [[support.pairedModelClass alloc] initWithJson:json mutable:isMutable];
+    }
+    
+    // Ok, we are here, so it means we need to actually instantiate this guy...
+    
+    if ( (self = [super init]) )
+    {
+        _json = (isMutable) ? [json mutableCopy] ?: [NSMutableDictionary dictionary]
+                            : [json copy] ?: [NSDictionary dictionary];
+        _isMutable = isMutable;
     }
     
     return self;
 }
 
 
--(instancetype)initWithMutationBlock:(void (^)(id mutable))mutationBlock
+-(id)init
+{
+    return [self initWithJson:nil mutable:[self.class __ntJsonModelSupport].isMutableClass && [self.class __ntJsonModelSupport].isPairedClass];
+}
+
+
+-(id)initWithJson:(NSDictionary *)json
+{
+    return [self initWithJson:json mutable:[self.class __ntJsonModelSupport].isMutableClass && [self.class __ntJsonModelSupport].isPairedClass];
+}
+
+
+-(id)initWithMutationBlock:(void (^)(id mutable))mutationBlock
 {
     NTJsonModel *mutable = [self initMutable];
     
@@ -109,43 +129,19 @@
 }
 
 
--(instancetype)initMutable
+-(id)initMutable
 {
-    self = [super init];
-    
-    if ( self )
-    {
-        _json = [NSMutableDictionary dictionary];
-        _isMutable = YES;
-    }
-    
-    return self;
+    return [self initWithJson:nil mutable:YES];
 }
 
 
--(instancetype)initMutableWithJson:(NSDictionary *)json
+-(id)initMutableWithJson:(NSDictionary *)json
 {
-    if ( [self.class __ntJsonModelSupport].modelClassForJsonOverridden )
-    {
-        Class modelClass = [self.class modelClassForJson:json];
-        
-        if ( modelClass != self.class )
-            return [[modelClass alloc] initMutableWithJson:json];
-    }
-
-    self = [super init];
-    
-    if ( self )
-    {
-        _json = [json mutableCopy];
-        _isMutable = YES;
-    }
-    
-    return self;
+    return [self initWithJson:json mutable:YES];
 }
 
 
-+(instancetype)modelWithJson:(NSDictionary *)json
++(id)modelWithJson:(NSDictionary *)json
 {
     if ( ![json isKindOfClass:[NSDictionary class]] )
         return nil;
@@ -154,13 +150,13 @@
 }
 
 
-+(instancetype)modelWithMutationBlock:(void (^)(id mutable))mutationBlock
++(id)modelWithMutationBlock:(void (^)(id mutable))mutationBlock
 {
     return [[self alloc] initWithMutationBlock:mutationBlock];
 }
 
 
-+(instancetype)mutableModelWithJson:(NSDictionary *)json
++(id)mutableModelWithJson:(NSDictionary *)json
 {
     if ( ![json isKindOfClass:[NSDictionary class]] )
         return nil;
@@ -237,7 +233,7 @@
 
 -(id)mutableCopyWithZone:(NSZone *)zone
 {
-    return [[self.class alloc] initMutableWithJson:[self asJson]];
+    return [[self.class alloc] initWithJson:[self asJson] mutable:YES];
 }
 
 
@@ -246,7 +242,7 @@
     if ( !self.isMutable )
         return self;
     
-    return [[self.class alloc] initWithJson:[self asJson]];
+    return [[self.class alloc] initWithJson:[self asJson] mutable:NO];
 }
 
 

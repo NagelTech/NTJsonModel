@@ -17,6 +17,11 @@
 @property (nonatomic,readonly) NSArray *properties;
 @property (nonatomic,readonly) NSDictionary *defaultJson;
 @property (nonatomic,readonly) BOOL modelClassForJsonOverridden;
+@property (nonatomic,readonly) BOOL isImmutableClass;
+@property (nonatomic,readonly) BOOL isMutableClass;
+@property (nonatomic,readonly) BOOL isPairedClass;
+@property (nonatomic,readonly) __NTJsonModelSupport *pairedSupport;
+@property (nonatomic,readonly) Class pairedModelClass;
 
 -(instancetype)initWithModelClass:(Class)modelClass;
 

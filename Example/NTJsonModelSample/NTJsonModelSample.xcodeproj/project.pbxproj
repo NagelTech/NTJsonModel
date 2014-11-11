@@ -12,6 +12,12 @@
 		F0628491190A119500A93DF7 /* TestConversion.m in Sources */ = {isa = PBXBuildFile; fileRef = F0628490190A119500A93DF7 /* TestConversion.m */; };
 		F0628493190ABD1A00A93DF7 /* TestChildModels.m in Sources */ = {isa = PBXBuildFile; fileRef = F0628492190ABD1A00A93DF7 /* TestChildModels.m */; };
 		F0628497190AD13F00A93DF7 /* TestModelArrays.m in Sources */ = {isa = PBXBuildFile; fileRef = F0628496190AD13F00A93DF7 /* TestModelArrays.m */; };
+		F08EA15B1A11572C00E12235 /* TUser.m in Sources */ = {isa = PBXBuildFile; fileRef = F08EA15A1A11572C00E12235 /* TUser.m */; };
+		F08EA15D1A1158EF00E12235 /* TestClassPairs.m in Sources */ = {isa = PBXBuildFile; fileRef = F08EA15C1A1158EF00E12235 /* TestClassPairs.m */; };
+		F08EA1601A119F2100E12235 /* TFeedItem.m in Sources */ = {isa = PBXBuildFile; fileRef = F08EA15F1A119F2100E12235 /* TFeedItem.m */; };
+		F08EA1631A11A16F00E12235 /* TStatusFeedItem.m in Sources */ = {isa = PBXBuildFile; fileRef = F08EA1621A11A16F00E12235 /* TStatusFeedItem.m */; };
+		F08EA1661A11A3F200E12235 /* TCommentFeedItem.m in Sources */ = {isa = PBXBuildFile; fileRef = F08EA1651A11A3F200E12235 /* TCommentFeedItem.m */; };
+		F08EA1681A11A89000E12235 /* TestClassForJson.m in Sources */ = {isa = PBXBuildFile; fileRef = F08EA1671A11A89000E12235 /* TestClassForJson.m */; };
 		F0A5D22618F4D410006891E9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A5D22518F4D410006891E9 /* Foundation.framework */; };
 		F0A5D22818F4D410006891E9 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A5D22718F4D410006891E9 /* CoreGraphics.framework */; };
 		F0A5D22A18F4D410006891E9 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0A5D22918F4D410006891E9 /* UIKit.framework */; };
@@ -58,6 +64,16 @@
 		F0628490190A119500A93DF7 /* TestConversion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestConversion.m; sourceTree = "<group>"; };
 		F0628492190ABD1A00A93DF7 /* TestChildModels.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestChildModels.m; sourceTree = "<group>"; };
 		F0628496190AD13F00A93DF7 /* TestModelArrays.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestModelArrays.m; sourceTree = "<group>"; };
+		F08EA1591A11572C00E12235 /* TUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TUser.h; sourceTree = "<group>"; };
+		F08EA15A1A11572C00E12235 /* TUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TUser.m; sourceTree = "<group>"; };
+		F08EA15C1A1158EF00E12235 /* TestClassPairs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestClassPairs.m; sourceTree = "<group>"; };
+		F08EA15E1A119F2100E12235 /* TFeedItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TFeedItem.h; sourceTree = "<group>"; };
+		F08EA15F1A119F2100E12235 /* TFeedItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TFeedItem.m; sourceTree = "<group>"; };
+		F08EA1611A11A16F00E12235 /* TStatusFeedItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TStatusFeedItem.h; sourceTree = "<group>"; };
+		F08EA1621A11A16F00E12235 /* TStatusFeedItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TStatusFeedItem.m; sourceTree = "<group>"; };
+		F08EA1641A11A3F200E12235 /* TCommentFeedItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCommentFeedItem.h; sourceTree = "<group>"; };
+		F08EA1651A11A3F200E12235 /* TCommentFeedItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCommentFeedItem.m; sourceTree = "<group>"; };
+		F08EA1671A11A89000E12235 /* TestClassForJson.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestClassForJson.m; sourceTree = "<group>"; };
 		F0A5D22218F4D410006891E9 /* NTJsonModelSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NTJsonModelSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0A5D22518F4D410006891E9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		F0A5D22718F4D410006891E9 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -192,6 +208,16 @@
 				F0628496190AD13F00A93DF7 /* TestModelArrays.m */,
 				F0C15A82197D5EA90061735C /* TestObjectArrays.m */,
 				F0B1ECFD19C4B3CF00ED6884 /* TestDescription.m */,
+				F08EA1591A11572C00E12235 /* TUser.h */,
+				F08EA15A1A11572C00E12235 /* TUser.m */,
+				F08EA15C1A1158EF00E12235 /* TestClassPairs.m */,
+				F08EA15E1A119F2100E12235 /* TFeedItem.h */,
+				F08EA15F1A119F2100E12235 /* TFeedItem.m */,
+				F08EA1611A11A16F00E12235 /* TStatusFeedItem.h */,
+				F08EA1621A11A16F00E12235 /* TStatusFeedItem.m */,
+				F08EA1641A11A3F200E12235 /* TCommentFeedItem.h */,
+				F08EA1651A11A3F200E12235 /* TCommentFeedItem.m */,
+				F08EA1671A11A89000E12235 /* TestClassForJson.m */,
 			);
 			path = NTJsonModelSampleTests;
 			sourceTree = "<group>";
@@ -360,13 +386,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F08EA15D1A1158EF00E12235 /* TestClassPairs.m in Sources */,
+				F08EA1661A11A3F200E12235 /* TCommentFeedItem.m in Sources */,
 				F0B1ECFE19C4B3CF00ED6884 /* TestDescription.m in Sources */,
 				F0628493190ABD1A00A93DF7 /* TestChildModels.m in Sources */,
+				F08EA15B1A11572C00E12235 /* TUser.m in Sources */,
 				F0AF212C1912B3C200F314CE /* TestDefaultJson.m in Sources */,
 				F0628491190A119500A93DF7 /* TestConversion.m in Sources */,
 				F0C15A83197D5EA90061735C /* TestObjectArrays.m in Sources */,
+				F08EA1631A11A16F00E12235 /* TStatusFeedItem.m in Sources */,
 				F062848C1909EDC100A93DF7 /* TestBasicProperties.m in Sources */,
+				F08EA1681A11A89000E12235 /* TestClassForJson.m in Sources */,
 				F0628497190AD13F00A93DF7 /* TestModelArrays.m in Sources */,
+				F08EA1601A119F2100E12235 /* TFeedItem.m in Sources */,
 				F062848F1909EE5800A93DF7 /* BasicPropertiesModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

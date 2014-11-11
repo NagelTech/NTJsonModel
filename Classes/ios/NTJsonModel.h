@@ -51,41 +51,42 @@
 +(BOOL)modelClassForJsonOverridden;
 
 /**
- *  returns a default immutable instance.
+ *  returns a default instance. This instance will be immutable unless this is the mutable pair in a paired class.
  */
--(instancetype)init;
+-(id)init;
 
 /**
- *  returns an immutable object with the supplied JSON
+ *  returns an  object with the supplied JSON. This instance will be immutable unless this is the mutable pair in a paired class.
  *
  *  @param json the JSON
  *
- *  @return a new immutable model instance
+ *  @return a new model instance
  */
--(instancetype)initWithJson:(NSDictionary *)json;
+-(id)initWithJson:(NSDictionary *)json;
 
 /**
- *  creates a new mutable instance, executes the mutationBlock and returns an immmutable copy of the object.
+ *  creates a new mutable instance, executes the mutationBlock and returns a copy of the object. The result will be immutable
+ *  unless this is the mutable pair in a paired class.
  *
  *  @param mutationBlock block to execute on the mutable model
  *
- *  @return an immutable copy of the model
+ *  @return an copy of the model
  */
--(instancetype)initWithMutationBlock:(void (^)(id mutable))mutationBlock;
+-(id)initWithMutationBlock:(void (^)(id mutable))mutationBlock;
 
 /**
  *  returns a default mutable instance.
  */
--(instancetype)initMutable;
+-(id)initMutable;
 
 /**
- *  returns an mutable object with the supplied JSON
+ *  returns an mutable object with the supplied JSON. If this is the immutable pair in a paried class the mutable pair will be returned.
  *
  *  @param json the JSON
  *
  *  @return a new mutable model instance
  */
--(instancetype)initMutableWithJson:(NSDictionary *)json;
+-(id)initMutableWithJson:(NSDictionary *)json;
 
 /**
  *  returns an immutable object with the supplied JSON or nil if json is nil
@@ -94,7 +95,7 @@
  *
  *  @return a new immutable model instance or nil
  */
-+(instancetype)modelWithJson:(NSDictionary *)json;
++(id)modelWithJson:(NSDictionary *)json;
 
 /**
  *  creates a new mutable instance, executes the mutationBlock and returns an immmutable copy of the object.
@@ -103,7 +104,7 @@
  *
  *  @return an immutable copy of the model
  */
-+(instancetype)modelWithMutationBlock:(void (^)(id mutable))mutationBlock;
++(id)modelWithMutationBlock:(void (^)(id mutable))mutationBlock;
 
 /**
  *  returns an mutable object with the supplied JSON or nil if json is nil
@@ -112,7 +113,7 @@
  *
  *  @return a new mutable model instance or nil
  */
-+(instancetype)mutableModelWithJson:(NSDictionary *)json;
++(id)mutableModelWithJson:(NSDictionary *)json;
 
 /**
  *  creates a mutable copy of the sender, executes the mutationBlock with it and returns an immutable copy of sender
