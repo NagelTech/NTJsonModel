@@ -21,7 +21,7 @@
 {
     Class _modelClass;
     NTJsonProp *_property;
-    id _json;
+    NSArray *_json;
     
     NSMutableArray *_valueCache;
 }
@@ -66,7 +66,7 @@
     {
         _modelClass = modelClass;
         _json = [json copy];
-        _valueCache = nil;
+        _valueCache = [NSMutableArray arrayWithCapacity:_json.count];
     }
     
     return self;
@@ -81,7 +81,7 @@
     {
         _property = property;
         _json = [json copy];
-        _valueCache = nil;
+        _valueCache = [NSMutableArray arrayWithCapacity:_json.count];
     }
     
     return self;
@@ -126,25 +126,27 @@
 
 -(id)cachedObjectAtIndex:(NSUInteger)index
 {
-    if ( !_valueCache )
-        return nil; // nothing in the cache here
-    
-    if ( index >= _valueCache.count )
-        return nil; //past the end of what we have cached
-    
-    id value = _valueCache[index];
-    
-    return (value == [NTJsonModelArrayEmptyElement emptyElement] ? nil : value);
+    @synchronized(_valueCache)
+    {
+        if ( index >= _valueCache.count )
+            return nil; //past the end of what we have cached
+        
+        id value = _valueCache[index];
+        
+        return (value == [NTJsonModelArrayEmptyElement emptyElement] ? nil : value);
+    }
 }
 
 
--(void)ensureCacheSize:(NSUInteger)size
+-(void)setCachedValue:(id)value atIndex:(NSUInteger)index
 {
-    if ( !_valueCache )
-        _valueCache = [NSMutableArray arrayWithCapacity:size];
-    
-    while ( _valueCache.count < size )
-        [_valueCache addObject:[NTJsonModelArrayEmptyElement emptyElement]];
+    @synchronized(_valueCache)
+    {
+        while ( _valueCache.count < index )
+            [_valueCache addObject:[NTJsonModelArrayEmptyElement emptyElement]];
+
+        _valueCache[index] = value;
+    }
 }
 
 
@@ -168,7 +170,7 @@
 
 -(NSUInteger)count
 {
-    return [_json count];
+    return _json.count;
 }
 
 
@@ -181,7 +183,7 @@
     if ( value )
         return value;
     
-    id jsonValue = [_json objectAtIndex:index];
+    id jsonValue = _json[index];
     
     if ( self.isModel )
     {
@@ -202,8 +204,7 @@
     
     if ( value )
     {
-        [self ensureCacheSize:index];
-        _valueCache[index] = value;
+        [self setCachedValue:value atIndex:index];
     }
     
     return value;
