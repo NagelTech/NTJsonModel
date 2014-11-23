@@ -263,7 +263,10 @@
 {
     if ( model == self )
         return YES;
-    
+
+    if ( !model )
+        return NO;
+
     return [self->_json isEqualToDictionary:model->_json];
 }
 
