@@ -24,7 +24,7 @@
 @end
 
 
-@interface NTJsonModel : NSObject <NSCopying, NSMutableCopying>
+@interface NTJsonModel : NSObject <NSCopying, NSMutableCopying, NSCoding>
 
 /**
  *  returns YES if this is a mutable instance

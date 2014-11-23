@@ -286,6 +286,28 @@
 }
 
 
+#pragma mark - NSCoding
+
+
+-(id)initWithCoder:(NSCoder *)aDecoder
+{
+    if ( (self=[super init]) )
+    {
+        _isMutable = [aDecoder decodeBoolForKey:@"isMutable"];
+        _json = [aDecoder decodeObjectForKey:@"json"];
+    }
+
+    return self;
+}
+
+
+-(void)encodeWithCoder:(NSCoder *)aCoder
+{
+    [aCoder encodeBool:_isMutable forKey:@"isMutable"];
+    [aCoder encodeObject:_json forKey:@"json"];
+}
+
+
 #pragma mark - description
 
 
