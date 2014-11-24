@@ -4,24 +4,23 @@ NTJsonModel provides and easy-to-use and high-performance wrapper for JSON objec
 
 NTJsonModel is unique in that it supports both immutable and mutable states for objects and gives you the tools to make this practical for model objects. If you take advantage of these features you can have immutable model objects, only "mutating" them in specific contexts, similar to the approach you would see in functional languages.
 
-## Features
 
-----
+## Overview
 
- * Lightweight wrapper over an existing JSON object. Creating objects is very effecient. All properties and arrays are lazy-loaded the first time they are requested.
- * Conversion
- * Supports both mutable and immutable flavors of Model objects. Immutable versions are thread-safe.
+ * A lightweight wrapper over an existing JSON object. Creating objects is very effecient. All properties and arrays are lazy-loaded the first time they are requested.
+ * Properties are declared using a combination of `@property` declarations and a macro, `NTJsonProperty`
+ * Objects are created as either immutable or mutable. (Immutable is the default; mutable objects may be created using mutable initializers or with `mutableCopy`.) With a little extra work you use immutable objects throught your application, making changes only in controlled 'mutation' blocks.
  * Maintains the original JSON, including any json values that aren't mapped into the model.
- * Properties are declared using a combination of the @property declaration and a single line in the @implementation for each property (NTJsonProperty macro)
- * Supports converted properties (transparently converrting a string to a UIColor for instance), working in both directions.
- * Object caching is supported as well, allowing an Id to be returned as an object loaded from a data store, for instance.
- 
+ * Properties are declared using a combination of the @property declaration and a single line in the @implementation for each property (`NTJsonProperty` macro)
+ * Supports converted properties (transparently converting a string to a `UIColor` for instance), working in both directions.
+ * Object caching is supported as well, allowing an object ID in the JSON to be returned as an object loaded from a data store, for instance. 
+
 
 ## Declaring properties
 
 ----
 
-Properties are declared using a combination of the standard @property which gives us the data type and and a macro (NTJsonProperty	) which adds meta-data such as the jsonPath. 
+Properties are declared using a combination of the standard @property which gives us the data type and and a macro (`NTJsonProperty`) which adds meta-data such as the jsonPath. 
 
 	@interface User : NTJsonModel
 	
@@ -58,7 +57,7 @@ NTJsonProperty is a fancy macro that requires the property name as the first par
  * `elementType=class` - Allows you to set the element type for an Array. The protocol syntax may also be used, which is a bit more elegant. See [Declaring typed arrays](#Declaring typed arrays), below.
  
 
-### Declaring typed arrays
+### [Declaring typed arrays](id:Declaring typed arrays)
 
 NTJsonModel supports typed arrays which will automatically be converted into child NTJsonModels or other native types the first time they are accessed. This can be done using the `NTJsonProperty` `elementType=` parameter or using prococols. To use protocols, simply declare a protocol with the same name as the class and make the array conform to the protocol. (Thanks to [JsonModel](http://www.jsonmodel.com/) for poineering this approach.) Here's an example:
  
@@ -87,7 +86,7 @@ NTJsonModel supports typed arrays which will automatically be converted into chi
 	
 	-- or, without protocols --
 	
-	NTJsonProperty(addres, elementType=[Address class])
+	NTJsonProperty(address, elementType=[Address class])
 	
 	@end
 	
@@ -128,7 +127,123 @@ NTJsonModel supports string-based enumerations using the `enumValues=` NTJsonPro
 		...
 
 
-## Converting Properties
+## Immutable and Mutable objects
+
+----
+
+Each model object may be created as mutable or immutable. Immutable objects are thread-safe, and very effecient. calling `-initWithJson:` or `+mutableModelWithJson:` creates an immutable model. Additionally, you may call `copy` on any object to get an immutable version. (Calling `copy` on an immutable object simply returns the sender.) You may check if a model is mutable or immutable using the `isMutable` property. **Attempting to set property value on an immutable instance wil throw an exception.**
+
+This is similar to the approach that we see with objects like `NSMutableArray` and `NSArray`, but we have only a single object to work with which can be created in either a mutable or immutable state. (With a little more work, there is a way to get the compiler to enforce mutable and immutable properties, see [])
+
+Mutable objects are not thread-safe and you must enforce this yourself. You may create a mutable instance using `initMutable` (Which creates an empty mutable instance), `initMutableWithJson` or `mutableModelWithJson:`. Additionally, you can get a mutable version calling `mutableCopy` on any model.
+
+When setting properties, the system will try to keep the JSON as consistent with the current data as possible. For instance, If you have a property you have exposed as an int but it is stored as a string in the JSON, setting it will cause the system to set a string to the JSON (it will always be exposed as an int property.) If the underlying JSON was an int already then it would store an int.
+
+Immutable objects are designed to be high-perfomance and thread-safe. It's good practice to use immutable objects whenever possible and create mutable copies when changes are needed. 
+
+
+### Updating properties
+
+Using immutable objects can create suprising results when you have mutable properties since there is only a single object. You might expect the following to work, but it would throw an exception:
+
+	User *user = [User modelWithJson:userJson];
+	user.age = 21;	// Fails with an exception, user is immutable!
+	
+You can always create mutable objects instead, so this would work:
+
+	User *user = [User mutableModelWithJson:userJson];
+	user.age = 21;	// succeeds
+	
+Things can get complex if you are mixing immutable and mutable objects in your code too much. Ideally, you should use immutable objects and only "mutate" them in very controlled situations. You can get the same effect as the above by creating a mutable copy, updating that then storing an immutable version:
+	
+	User *user = [User modelWithJson:userJson];
+	User *mutableUser = [user mutableCopy];
+	mutableUser.age = 21;	// allowed, this is a mutable object
+	user = [mutableUser copy];
+	
+Of course this a lot of boilerplate to change a single property; the `mutate:` method is here to simplify things for you - see the next section.
+
+
+## Using the `mutate:` method
+
+The mutate method encapsulates the common pattern of creating a mutable copy of an object, making changes then getting an immutable copy of the result:
+
+`-(id)mutate:(void (^)(id mutable))mutationBlock;`
+
+This method creates a mutable copy of the sender, passes that to the mutation block and returns an immutable copy of the result.  As you can see, the above code is _much_ cleaner using mutate:
+
+	User *user = [User modelWithJson:userJson];
+	
+	user = [user mutate:^(User *mutable) {
+		mutable.age = 21;
+	}];
+
+This makes things your code much safer and clearer.
+
+Unfortunately, the compiler won't warn you if you attempt to set a property on an immutable object (you _will_ get an exception at runtime, however.) The next section shows how you, with a little more work, can get the compiler to enforce mutablility for you model objects.
+
+
+### Mutable protocols
+
+With a little more work in declaring your models, it's possible to get the compiler to help enforce mutability for your objects. This involves decalring all roperties as readonly in your class and creating a "paired" protocol with readwrite versions of the updatable properties. You can then use the class under normal (immutable) conditions and apply the protocol when you explicity create a mutable instance (or copy) of an object. This is easiest to see in code - here is an updated version of our `User` model:
+
+	@interface User : NTJsonModel
+	
+	@property (nonatomic,readonly) NSString *firstName;
+	@property (nonatomic,readonly) NSString *lastName;
+	@property (nonatomic,readonly) int age;
+
+	@end
+	
+	@protocol MutableUser <NTJsonMutableModel>
+
+	@property (nonatomic) NSString *firstName;
+	@property (nonatomic) NSString *lastName;
+	@property (nonatomic) int age;
+
+	@end
+	
+	typedef User<MutableUser> MutableUser;
+	
+	...
+	
+	@implementation User
+	
+	NTJsonMutable(MutableUser)	// this is required!
+	
+	NTJsonProperty(firstName)
+	NTJsonProperty(lastName)
+	NTJsonProperty(age)
+	
+	@end
+	
+Here's an example:
+	
+	User *user = [User modelWithJson:userJson];
+	
+this will cause a compiler error:
+	
+	user.age = 21;	// compiler error
+	
+but this will work just fine:
+	
+	user = [user mutate:^(MutableUser *mutable) {
+		mutable.age = 21;	// all good!
+	}];
+
+This is a little more work in declaring the properties (and there is some extra work when creating methods that change properties), but having the compiler help you avoid mistakes with mutability is very (very) helpful, especially with larger applications.
+
+Here are some additional details:
+
+ - Under the hood we actually implement the setters in the protocol in the class, they just aren't exposed. The `NTJsonMutable` macro is what binds the protocol to the class and allows ths setters to be created. If you omit this step, you will get a 'method not found' exception when attempting to set properties.
+ - The protocol should inherit from the paired classes' protocol. If we subclassed user with a new class, say `AdminUser` we could create a protocol `MutableAdminUser` which would implement `MutableUser`.
+ - You may find it very tempting to actually implement the protocol in the class -- _don't_! While this seems perfectly reasonable, it will change the meta-data for the properties and create issues with the dynamic nature of NTJson properties. Take my word for it here, it may seem to work, but you will have problems.
+ - Declaring a `typedef` as an instance of the class that implements the mutable protocol is optional but will simplify the syntax when using the mutable protocol later. The basic format for this with class 'XXX' is `typedef XXX<MutableXXX> *MutableXXX;` Which translates to create a type named `MutableXXX` that is a class `XXX` which implements protocol `MutableXXX`.
+ - All NTJson properties in the class _must_ be declared `readonly` if you have a mutable protocol (declared with the `NTJsonMutable` macro.) Any `readwrite` NTJson properties will reqult in an exception the first time the type is accessed.
+ - If you create methods that modify the object (mutable), declare the method in the mutable protocol. Since the properties are declared as `readonly` in the class, any attempt to modify the properties -- even in a method you intend to be mutable -- will result in a compiler error. A special property `mutableSelf` will allow you to explicitly access the setters for your properties. ()This is actually your `self` pointer cast to the mutable protocol.)
+ 
+
+## Property Conversion
 
 ----
 
@@ -195,6 +310,51 @@ The same machinery that allows conversion of primitives such as `NSDate`s, `UICo
 
 ----
 
+It's not unusual to have "plymorphic" objects in JSON, where a base class has several descendent classes that vary based on some field (the object type.) NTJsonModel can automatically create the correct descendent class, all you need to do is declare the following method in the base class:
+
+	+(Class)modelClassForJson:(NSDictionary *)json;
+	
+This method should inspect the json and return the descendent class to create an instance of.
+
+Let's say we have an array of 'Shapes' which may be rectangles or squares. the json might look something like this:
+
+	[
+		{"type": "rectangle", "x": 8, "y": 16, "width": 64, "height": 32},
+		{"type": "circle", "x": 32, "y": 32, "radius": 16}
+	]
+
+Resulting in the following interfaces (excluding mutable protocols here for brevity)
+
+	@interface Shape : NTJsonModel
+	@property (nonatomic,readonly) NSString *type;
+	@property (nonatomic,readonly) double x;
+	@property (nonatomic,readonly) double y;
+	@end
+	
+	@interface Rectangle: Shape
+	@property (nonatomic,readonly) double width;
+	@property (nonatomic,readonly) double height;
+	@end
+	
+	@interface Circle: Shape
+	@property (nonatomic,readonly) double radius;
+	@end
+	
+The Shape implemenation would declare the following:
+
+	+(Class)modelClassForJson:(NSDictionary *)json
+	{
+		if ( [json[@"type"] isEqualToString:@"rectangle"] )
+			return [Rectangle class];
+			
+		else if ( []json[@"type"] isEqualToString:@"circle"] )
+			return [Circle class];
+		
+		return [Shape class];	// default
+	}
+	
+Now, creating an instance of Shape will actually create the correct type (Rectangle or Circle), depending on the JSON.	
+	
 Objects may be created based on the JSON content by overriding `+modelClassForJson:`
 
 
@@ -202,108 +362,18 @@ Objects may be created based on the JSON content by overriding `+modelClassForJs
 
 ----
 
-Sample converting arrays...
+NTJsonModel includes helper methods (and classes) that convert an entire array of JSON objects to model objects. These methods return a special implementation of NSArray that is lazy-loaded - the actual NTJsonModel objects are only created as they are referenced. Using our shapes example above, you could write something like:
 
-
-## Immutable and Mutable objects
-
-----
-
-Each model object may be created as mutable or immutable. Immutable objects are thread-safe, and very effecient. calling `-initWithJson:` or `+mutableModelWithJson:` creates an immutable model. Additionally, you may call `copy` on any object to get an immutable version. (Calling `copy` on an immutable object simply returns the sender.) You may check if a model is mutable or immutable using the `isMutable` property. **Attempting to set property value on an immutable instance wil throw an exception.**
-
-This is similar to the approach that we see with objects like `NSMutableArray` and `NSArray`, but we have only a single object to work with which can be created in either a mutable or immutable state. (With a little more work, there is a way to get the compiler to enforce mutable and immutable properties, see [])
-
-Mutable objects are not thread-safe and you must enforce this yourself. You may create a mutable instance using `initMutable` (Which creates an empty mutable instance), `initMutableWithJson` or `mutableModelWithJson:`. Additionally, you can get a mutable version calling `mutableCopy` on any Model.
-
-When setting properties, the system will try to keep the JSON as consistent with the current data as possible. For instance, If you have a property you have exposed as an int but it is stored as a string in the JSON, setting it will cause the system to set a string to the JSON (it will always be exposed as an int property.) If the underlying JSON was an int already then it would store an int.
-
-Immutable objects are designed to be high-perfomance and thread-safe. It's good practice to use immutable objects whenever possible and create mutable copies when changes are needed. 
-
-### Updating properties
-
-Using immutable objects can create suprising results when you have mutable properties since there is only a single object. You might expect the following to work, but it would throw an exception:
-
-	User *user = [User modelWithJson:userJson];
-	user.age = 21;	// Fails with an exception, user is immutable!
+	NSArray *shapesJson = (get array of JSON objects from somewhere)
+	NSArray *shapes = [Shape arayWithJsonArray:shapesJson];
 	
-Instead, you should create a mutable copy of the user and then update that:
+	for (Shape *shape in shapes)
+	{
+		// do something cool
+	}
 	
-	User *user = [User modelWithJson:userJson];
-	User *mutableUser = [user mutableCopy];
-	mutableUser.age = 21;	// allowed, this is a mutable object
-	user = [mutableUser copy];
+In the above example each Shape object will be instantiated as it is used in the loop.
 
-### Minimizing mutability with `mutate:`
-	
-Things can get complex if you are mixing immutable and mutable objects in your code too much. Ideally, you should use immutable objects and only "mutate" them in very controlled situations. The mutate method makes this much easier:
-
-`-(id)mutate:(void (^)(id mutable))mutationBlock;`
-
-The above code is much cleaner using mutate:
-
-	User *user = [User modelWithJson:userJson];
-	
-	user = [user mutate:^(User *mutable) {
-		mutable.age = 21;
-	}];
-	
-THis makes things much safer and clearer, but the compiler won't warn you if you are attempting to set a property on an immutable object (you will get an exception.) The next section shows how you, with a little more work, can get the compiler to enforce mutablility for you model objects.	
-### Mutable protocols
-
-Outline:
-
- - Get the compiler to help
- - Under the hood we actually implement the setters in the protocol in the class, they just aren't exposed.
- - do NOT implement the protocol
- - typedef is optional but makes the syntax easier for mutable objects
- - all NTJson properties in the class must be declared read only
- - `NTJsonMutable()` macro is required but will not generate an error if you don't include it.
- - `mutableSelf` propery to set properties in the class implementation. (This is actually just self with the mutable protocole applied.)
- 
-Sample:
- 
-	@interface User : NTJsonModel
-	
-	@property (nonatomic,readonly) NSString *firstName;
-	@property (nonatomic,readonly) NSString *lastName;
-	@property (nonatomic,readonly) int age;
-
-	@end
-	
-	@protocol MutableUser <NTJsonMutableModel>
-
-	@property (nonatomic) NSString *firstName;
-	@property (nonatomic) NSString *lastName;
-	@property (nonatomic) int age;
-
-	@end
-	
-	typedef User<MutableUser> MutableUser;
-	
-	...
-	
-	@implementation User
-	
-	NTJsonMutable(MutableUser)
-	NTJsonProperty(firstName)
-	NTJsonProperty(lastName)
-	NTJsonProperty(age)
-	
-	@end
-	
-Here's an example:
-	
-	User *user = [User modelWithJson:userJson];
-	
-this will cause a compiler error:
-	
-	user.age = 21;	// compiler error
-	
-this will work just fine:
-	
-	user = [user mutate:^(MutableUser *mutable) {
-		mutable.age = 21;	// all good!
-	}];
 
 ## Odds and Ends
 
@@ -312,7 +382,4 @@ this will work just fine:
 * `isEqual:` and `hash` work as expected.
 * `description` will output non-default properties and tries hard to output something that is useful. Additionally, `fullDescription` will out a more detailed version, recursing into nested objects and showing the contents of arrays.
 
- 
-
- 
 
