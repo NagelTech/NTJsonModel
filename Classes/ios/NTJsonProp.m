@@ -15,12 +15,15 @@
     
     id _defaultValue;
 
-    id _convertValueToJsonTarget;
-    SEL _convertValueToJsonSelector;
-
-    id _convertJsonToValueTarget;
-    SEL _convertJsonToValueSelector;
+    id (^_convertJsonToValue)(id json);
+    id (^_convertValueToJson)(id json);
+    BOOL (^_validateCachedValue)(id value, id json);
 }
+
+
+@property (nonatomic,readonly) id (^convertJsonToValue)(id json);
+@property (nonatomic,readonly) id (^convertValueToJson)(id json);
+@property (nonatomic,readonly) BOOL (^validateCachedValue)(id value, id json);
 
 @end
 
@@ -286,6 +289,12 @@ static NSString *ObjcAttributeIvar = @"V";
 }
 
 
+-(BOOL)supportsCacheValidation
+{
+    return ((self.type == NTJsonPropTypeObject || self.type == NTJsonPropTypeObjectArray) && self.validateCachedValue) ? YES : NO;
+}
+
+
 +(id)defaultValueForType:(NTJsonPropType)type
 {
     switch (type)
@@ -344,24 +353,73 @@ static NSString *ObjcAttributeIvar = @"V";
 #pragma mark - Conversion support
 
 
--(BOOL)probeConverterToValue:(BOOL)toValue Target:(id)target selector:(SEL)selector
++(id (^)(id obj))probeConverterWithTarget:(id)target selectorName:(NSString *)selectorFormat, ... NS_FORMAT_FUNCTION(2, 3)
 {
+    va_list args;
+    va_start(args, selectorFormat);
+    NSString *selectorName = [[NSString alloc] initWithFormat:selectorFormat arguments:args];
+    va_end(args);
+
+    SEL selector = NSSelectorFromString(selectorName);
+
     if ( ![target respondsToSelector:selector] )
-        return NO;
-    
-    if ( toValue )
+        return nil;
+
+    id (*method)(id self, SEL _cmd, id obj) = (void *)[target methodForSelector:selector];
+
+    return ^id (id obj)
     {
-        _convertJsonToValueTarget = target;
-        _convertJsonToValueSelector = selector;
-    }
-    
-    else // toJson
+        return method(target, selector, obj);
+    };
+}
+
+
++(BOOL (^)(id obj1, id obj2))probeValidatorWithTarget:(id)target selectorName:(NSString *)selectorFormat, ... NS_FORMAT_FUNCTION(2, 3)
+{
+    va_list args;
+    va_start(args, selectorFormat);
+    NSString *selectorName = [[NSString alloc] initWithFormat:selectorFormat arguments:args];
+    va_end(args);
+
+    SEL selector = NSSelectorFromString(selectorName);
+
+    if ( ![target respondsToSelector:selector] )
+        return nil;
+
+    id (*method)(id self, SEL _cmd, id obj1, id obj2) = (void *)[target methodForSelector:selector];
+
+    return ^BOOL (id obj1, id obj2)
     {
-        _convertValueToJsonTarget = target;
-        _convertValueToJsonSelector = selector;
+        return [method(target, selector, obj1, obj2) boolValue];
+    };
+}
+
+
+-(id (^)(id))convertJsonToValue
+{
+    if ( !_convertJsonToValue )
+    {
+        // Ok, this might look a bit tricky. It uses the ?: "operator" to execute each of the probe calls until one of them
+        // returns non-nil or we get to the end of the list.
+
+        // Probes are executed from most specific to least specific order:
+        //      1. convert property name in model class
+        //      2. convert class name in model class
+        //      3. convert in type class (NTJsonPropertyConversion)
+
+        _convertJsonToValue =
+            [self.class probeConverterWithTarget:self.modelClass
+                                    selectorName:@"convertJsonTo%@%@:", [[self.name substringToIndex:1] uppercaseString], [self.name substringFromIndex:1]]
+
+            ?: [self.class probeConverterWithTarget:self.modelClass
+                                       selectorName:@"convertJsonTo%@:", NSStringFromClass(self.typeClass)]
+
+            ?: [self.class probeConverterWithTarget:self.typeClass
+                                       selectorName:@"convertJsonToValue:"]
+            ?: (id (^)(id))[NSNull null];
     }
-    
-    return YES;
+
+    return ((id)_convertJsonToValue == (id)[NSNull null]) ? nil : _convertJsonToValue;
 }
 
 
@@ -369,33 +427,40 @@ static NSString *ObjcAttributeIvar = @"V";
 {
     if ( self.type != NTJsonPropTypeObject && self.type != NTJsonPropTypeObjectArray )
         @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"convertJsonToValue: only supports Objects currently." userInfo:nil];
-    
-    if ( !_convertJsonToValueSelector )
-    {
-        NSString *convertJsonToProperty = [NSString stringWithFormat:@"convertJsonTo%@%@:", [[self.name substringToIndex:1] uppercaseString], [self.name substringFromIndex:1]];
-        
-        BOOL found = [self probeConverterToValue:YES Target:self.modelClass selector:NSSelectorFromString(convertJsonToProperty)];
-        
-        if ( !found )
-        {
-            NSString *convertJsonToClass = [NSString stringWithFormat:@"convertJsonTo%@:", NSStringFromClass(self.typeClass)];
-            
-            found = [self probeConverterToValue:YES Target:self.modelClass selector:NSSelectorFromString(convertJsonToClass)];
-        }
-        
-        if ( !found )
-            found = [self probeConverterToValue:YES Target:self.typeClass selector:@selector(convertJsonToValue:)];
 
-        if ( !found )
+        if ( !self.convertJsonToValue )
             @throw [NSException exceptionWithName:@"UnableToConvert" reason:[NSString stringWithFormat:@"Unable to find a JsonToValue converter for %@.%@ of type %@.",  NSStringFromClass(self.modelClass), self.name, NSStringFromClass(self.typeClass)] userInfo:nil];
+
+    return self.convertJsonToValue(json);
+}
+
+
+-(id (^)(id))convertValueToJson
+{
+    if ( !_convertValueToJson )
+    {
+        // Ok, this might look a bit tricky. It uses the ?: "operator" to execute each of the probe calls until one of them
+        // returns non-nil or we get to the end of the list.
+
+        // Probes are executed from most specific to least specific order:
+        //      1. convert property name in model class
+        //      2. convert class name in model class
+        //      3. convert in type class (NTJsonPropertyConversion)
+
+        _convertValueToJson =
+            [self.class probeConverterWithTarget:self.modelClass
+                                    selectorName:@"convert%@%@ToJson:", [[self.name substringToIndex:1] uppercaseString], [self.name substringFromIndex:1]]
+
+            ?: [self.class probeConverterWithTarget:self.modelClass
+                                       selectorName:@"convert%@ToJson:", NSStringFromClass(self.typeClass)]
+
+            ?: [self.class probeConverterWithTarget:self.typeClass
+                                       selectorName:@"convertValueToJson:"]
+
+            ?: (id (^)(id))[NSNull null];
     }
 
-    // somehow this is the "safe" way to call performSelector using ARC. Ironic? Yep!
-    // http://stackoverflow.com/questions/7017281/performselector-may-cause-a-leak-because-its-selector-is-unknown
-    
-    id (*method)(id self, SEL _cmd, id json) = (void *)[_convertJsonToValueTarget methodForSelector:_convertJsonToValueSelector];
-    
-    return method(_convertJsonToValueTarget, _convertJsonToValueSelector, json);
+    return ((id)_convertValueToJson == (id)[NSNull null]) ? nil : _convertValueToJson;
 }
 
 
@@ -403,33 +468,52 @@ static NSString *ObjcAttributeIvar = @"V";
 {
     if ( self.type != NTJsonPropTypeObject && self.type != NTJsonPropTypeObjectArray )
         @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"convertValueToJson: only supports Objects currently." userInfo:nil];
-    
-    if ( !_convertValueToJsonSelector )
-    {
-        NSString *convertPropertyToJson = [NSString stringWithFormat:@"convert%@%@ToJson:", [[self.name substringToIndex:1] uppercaseString], [self.name substringFromIndex:1]];
-        
-        BOOL found = [self probeConverterToValue:NO Target:self.modelClass selector:NSSelectorFromString(convertPropertyToJson)];
-        
-        if ( !found )
-        {
-            NSString *convertClassToJson = [NSString stringWithFormat:@"convert%@ToJson:", NSStringFromClass(self.typeClass)];
-            
-            found = [self probeConverterToValue:NO Target:self.modelClass selector:NSSelectorFromString(convertClassToJson)];
-        }
-        
-        if ( !found )
-            found = [self probeConverterToValue:NO Target:self.typeClass selector:@selector(convertValueToJson:)];
 
-        if ( !found )
+        if ( !self.convertValueToJson )
             @throw [NSException exceptionWithName:@"UnableToConvert" reason:[NSString stringWithFormat:@"Unable to find a ValueToJson converter for %@.%@ of type %@.",  NSStringFromClass(self.modelClass), self.name, NSStringFromClass(self.typeClass)] userInfo:nil];
+
+    return self.convertValueToJson(value);
+}
+
+
+-(BOOL (^)(id, id))validateCachedValue
+{
+    if ( !_validateCachedValue )
+    {
+        // Ok, this might look a bit tricky. It uses the ?: "operator" to execute each of the probe calls until one of them
+        // returns non-nil or we get to the end of the list.
+
+        // Probes are executed from most specific to least specific order:
+        //      1. convert property name in model class
+        //      2. convert class name in model class
+        //      3. convert in type class (NTJsonPropertyConversion)
+
+        _validateCachedValue =
+            [self.class probeValidatorWithTarget:self.modelClass
+                                    selectorName:@"validateCached%@%@:forJson:", [[self.name substringToIndex:1] uppercaseString], [self.name substringFromIndex:1]]
+
+            ?: [self.class probeValidatorWithTarget:self.modelClass
+                                       selectorName:@"validateCached%@:forJson:", NSStringFromClass(self.typeClass)]
+
+            ?: [self.class probeValidatorWithTarget:self.typeClass
+                                       selectorName:@"validateCachedValue:forJson:"]
+
+            ?: (BOOL (^)(id,id))[NSNull null];
     }
-    
-    // somehow this is the "safe" way to call performSelector using ARC. Ironic? Yep!
-    // http://stackoverflow.com/questions/7017281/performselector-may-cause-a-leak-because-its-selector-is-unknown
-    
-    id (*method)(id self, SEL _cmd, id json) = (void *)[_convertValueToJsonTarget methodForSelector:_convertValueToJsonSelector];
-    
-    return method(_convertValueToJsonTarget, _convertValueToJsonSelector, value);
+
+    return ((id)_validateCachedValue == (id)[NSNull null]) ? nil : _validateCachedValue;
+}
+
+
+-(BOOL)object_validateCachedValue:(id)object forJson:(id)json
+{
+    if ( self.type != NTJsonPropTypeObject && self.type != NTJsonPropTypeObjectArray )
+        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"validateCachedValue:forJson: only supports Objects currently." userInfo:nil];
+
+    if ( !self.supportsCacheValidation )
+        return YES;     // it's always valid if 
+
+    return self.validateCachedValue(object, json);
 }
 
 

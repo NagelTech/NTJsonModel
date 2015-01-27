@@ -48,7 +48,7 @@
     // Test fullDescription...
 
     NSString *fullDescription = model.fullDescription;
-    NSString *expectedFullDescription = @"BasicPropertiesModel(intProp=0, floatProp=0, doubleProp=0, stringProp=\"parent\", boolProp=NO, colorProp=nil, color2Prop=nil, childModel=BasicPropertiesModel(intProp=0, floatProp=0, doubleProp=0, stringProp=\"child\", boolProp=NO, colorProp=nil, color2Prop=nil, childModel=nil, modelArray=nil, objectArray=nil, objectArrayStrings=nil, nestedValue=0), modelArray=nil, objectArray=nil, objectArrayStrings=nil, nestedValue=0)";
+    NSString *expectedFullDescription = @"BasicPropertiesModel(intProp=0, floatProp=0, doubleProp=0, stringProp=\"parent\", boolProp=NO, colorProp=nil, color2Prop=nil, color3Prop=nil, childModel=BasicPropertiesModel(intProp=0, floatProp=0, doubleProp=0, stringProp=\"child\", boolProp=NO, colorProp=nil, color2Prop=nil, color3Prop=nil, childModel=nil, modelArray=nil, objectArray=nil, objectArrayStrings=nil, nestedValue=0), modelArray=nil, objectArray=nil, objectArrayStrings=nil, nestedValue=0)";
     
     XCTAssertTrue([fullDescription isEqualToString:expectedFullDescription], @"fullDescription does not match");
 

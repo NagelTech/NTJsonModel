@@ -61,4 +61,21 @@
 }
 
 
+-(void)testConversionsWithValidation
+{
+    UIColor *red1 = [UIColor colorWithRed:1.0 green:0 blue:0 alpha:1.0];
+    UIColor *red2 = [UIColor colorWithRed:0.75 green:0 blue:0 alpha:1.0];
+
+    BasicPropertiesModel *model = [BasicPropertiesModel modelWithJson:@{@"color3Prop": @"red"}];
+
+    [BasicPropertiesModel setNamedColor:red1 withName:@"red"];
+
+    XCTAssert([model.color3Prop.description isEqualToString:red1.description], @"convertJsonTo<propertyName>:existingValue: failed");
+
+    [BasicPropertiesModel setNamedColor:red2 withName:@"red"];
+
+    XCTAssert([model.color3Prop.description isEqualToString:red2.description], @"convertJsonTo<propertyName>:existingValue: failed");
+}
+
+
 @end

@@ -19,6 +19,7 @@ NTJsonProperty(stringProp)
 NTJsonProperty(boolProp)
 NTJsonProperty(colorProp)
 NTJsonProperty(color2Prop)
+NTJsonProperty(color3Prop)
 NTJsonProperty(childModel)
 NTJsonProperty(modelArray)
 
@@ -42,6 +43,49 @@ NTJsonProperty(nestedValue, jsonPath="nested.value")
         return nil;
     
     return [UIColor colorWithRed:[json[@"r"] floatValue] green:[json[@"g"] floatValue] blue:[json[@"b"] floatValue] alpha:1.0];
+}
+
+
+static NSMutableDictionary *sNamedColors;
+
+
++(void)setNamedColor:(UIColor *)color withName:(NSString *)name
+{
+    if ( !sNamedColors )
+        sNamedColors = [NSMutableDictionary dictionary];
+
+    if ( color )
+        sNamedColors[name] = color;
+    else
+        [sNamedColors removeObjectForKey:name];
+}
+
+
++(id)convertColor3PropToJson:(UIColor *)value
+{
+    __block NSString *json = nil;
+
+    [sNamedColors enumerateKeysAndObjectsUsingBlock:^(NSString *name, UIColor *color, BOOL *stop) {
+        if ([color isEqual:value] )
+        {
+            json = name;
+            *stop = YES;
+        }
+    }];
+
+    return json;
+}
+
+
++(UIColor *)convertJsonToColor3Prop:(NSString *)json
+{
+    return sNamedColors[json];
+}
+
+
++(BOOL)validateCachedColor3Prop:(UIColor *)value forJson:(NSString *)json
+{
+    return NO;  // cache is never valid.
 }
 
 

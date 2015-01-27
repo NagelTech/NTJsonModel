@@ -30,6 +30,7 @@
 
 @property (nonatomic) UIColor *colorProp;
 @property (nonatomic) UIColor *color2Prop;
+@property (nonatomic) UIColor *color3Prop;
 
 @property (nonatomic) BasicPropertiesModel *childModel;
 
@@ -41,6 +42,12 @@
 
 +(id)convertColor2PropToJson:(UIColor *)value;
 +(UIColor *)convertJsonToColor2Prop:(NSDictionary *)json;
+
++(void)setNamedColor:(UIColor *)color withName:(NSString *)name;
+
++(id)convertColor3PropToJson:(UIColor *)value;
++(UIColor *)convertJsonToColor3Prop:(NSString *)json;
++(BOOL)validateCachedColor3Prop:(UIColor *)value forJson:(NSString *)json;
 
 @end
 

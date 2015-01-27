@@ -646,12 +646,14 @@ static id fastDeepCopy(id value)
 
 -(id)getValueForProperty:(NTJsonProp *)property inModel:(NTJsonModel *)model
 {
+    BOOL supportsCacheValidation = (property.type == NTJsonPropTypeObject && property.supportsCacheValidation) ? YES : NO;
+
     // get from cache, if it is present...
     
     id value = [self getCacheValueForProperty:property inModel:model];
     
-    if ( value )
-        return value;
+    if ( value && !supportsCacheValidation )
+        return value;   // short-circuit right here if it's safe
     
     // grab the value from our json...
     
@@ -685,15 +687,31 @@ static id fastDeepCopy(id value)
             jsonValue = [jsonValue objectForKey:key];
         }
     }
-    
-    // transform it, if needed...
 
-    value = [property convertJsonToValue:jsonValue];
+    // perform cache validation if we have an existing value...
+
+    if ( value && supportsCacheValidation )
+    {
+        if ( ![property object_validateCachedValue:value forJson:jsonValue] )
+        {
+            id cachedValue = value;
+            value = [property convertJsonToValue:jsonValue];
+
+            if ( value && value != cachedValue )
+                [self setCacheValue:value forProperty:property inModel:model];
+        }
+    }
+    else
+    {
+        // More normal case, we are returning a value for the first time or no caching is necessary.
+
+        value = [property convertJsonToValue:jsonValue];
     
-    // save in cache, if there was any conversion or we had to parse a path...
-    
-    if ( value != jsonValue || property.remainingJsonKeyPath.length > 0 )
-        [self setCacheValue:value forProperty:property inModel:model];
+        // save in cache, if there was any conversion or we had to parse a path...
+        
+        if ( value != jsonValue || property.remainingJsonKeyPath.length > 0 )
+            [self setCacheValue:value forProperty:property inModel:model];
+    }
     
     return value;
 }
