@@ -83,9 +83,9 @@ static NSMutableDictionary *sNamedColors;
 }
 
 
-+(BOOL)validateCachedColor3Prop:(UIColor *)value forJson:(NSString *)json
++(id)validateCachedColor3Prop:(UIColor *)value forJson:(NSString *)json
 {
-    return NO;  // cache is never valid.
+    return nil;  // cache is never valid.
 }
 
 

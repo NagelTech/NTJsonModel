@@ -207,15 +207,17 @@
         return value;
     }
 
-    // it's an object array - perform validation
+    // it's an object array - perform cache validation
 
-    if ( !value || ![_property object_validateCachedValue:value forJson:jsonValue] )
+    id newValue = (value) ? [_property object_validateCachedValue:value forJson:jsonValue] : nil;
+
+    if ( !newValue )
+        newValue = [_property object_convertJsonToValue:jsonValue];
+
+    if ( newValue && newValue != value  )
     {
-        id cachedValue = value;
-        value = [_property object_convertJsonToValue:jsonValue];
-
-        if ( value && value != cachedValue  )
-            [self setCachedValue:value atIndex:index];
+        value = newValue;
+        [self setCachedValue:value atIndex:index];
     }
 
     return value;

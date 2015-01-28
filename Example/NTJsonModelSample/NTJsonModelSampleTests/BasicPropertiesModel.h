@@ -47,7 +47,7 @@
 
 +(id)convertColor3PropToJson:(UIColor *)value;
 +(UIColor *)convertJsonToColor3Prop:(NSString *)json;
-+(BOOL)validateCachedColor3Prop:(UIColor *)value forJson:(NSString *)json;
++(id)validateCachedColor3Prop:(UIColor *)value forJson:(NSString *)json;
 
 @end
 

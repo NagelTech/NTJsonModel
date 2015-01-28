@@ -692,13 +692,15 @@ static id fastDeepCopy(id value)
 
     if ( value && supportsCacheValidation )
     {
-        if ( ![property object_validateCachedValue:value forJson:jsonValue] )
-        {
-            id cachedValue = value;
-            value = [property convertJsonToValue:jsonValue];
+        id newValue = [property object_validateCachedValue:value forJson:jsonValue];
 
-            if ( value && value != cachedValue )
-                [self setCacheValue:value forProperty:property inModel:model];
+        if ( !newValue )
+            newValue = [property convertJsonToValue:jsonValue];
+
+        if ( newValue && newValue != value )
+        {
+            value = newValue;
+            [self setCacheValue:value forProperty:property inModel:model];
         }
     }
     else

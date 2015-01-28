@@ -17,13 +17,13 @@
 
     id (^_convertJsonToValue)(id json);
     id (^_convertValueToJson)(id json);
-    BOOL (^_validateCachedValue)(id value, id json);
+    id (^_validateCachedValue)(id value, id json);
 }
 
 
 @property (nonatomic,readonly) id (^convertJsonToValue)(id json);
 @property (nonatomic,readonly) id (^convertValueToJson)(id json);
-@property (nonatomic,readonly) BOOL (^validateCachedValue)(id value, id json);
+@property (nonatomic,readonly) id (^validateCachedValue)(id value, id json);
 
 +(id)nilBlock;
 
@@ -387,7 +387,7 @@ static NSString *ObjcAttributeIvar = @"V";
 }
 
 
-+(BOOL (^)(id obj1, id obj2))probeValidatorWithTarget:(id)target selectorName:(NSString *)selectorFormat, ... NS_FORMAT_FUNCTION(2, 3)
++(id (^)(id obj1, id obj2))probeValidatorWithTarget:(id)target selectorName:(NSString *)selectorFormat, ... NS_FORMAT_FUNCTION(2, 3)
 {
     va_list args;
     va_start(args, selectorFormat);
@@ -401,9 +401,9 @@ static NSString *ObjcAttributeIvar = @"V";
 
     id (*method)(id self, SEL _cmd, id obj1, id obj2) = (void *)[target methodForSelector:selector];
 
-    return ^BOOL (id obj1, id obj2)
+    return ^id (id obj1, id obj2)
     {
-        return [method(target, selector, obj1, obj2) boolValue];
+        return method(target, selector, obj1, obj2);
     };
 }
 
@@ -489,7 +489,7 @@ static NSString *ObjcAttributeIvar = @"V";
 }
 
 
--(BOOL (^)(id, id))validateCachedValue
+-(id (^)(id, id))validateCachedValue
 {
     if ( !_validateCachedValue )
     {
@@ -511,20 +511,20 @@ static NSString *ObjcAttributeIvar = @"V";
             ?: [self.class probeValidatorWithTarget:self.typeClass
                                        selectorName:@"validateCachedValue:forJson:"]
 
-            ?: (BOOL (^)(id,id))[NTJsonProp nilBlock];
+            ?: (id (^)(id,id))[NTJsonProp nilBlock];
     }
 
     return ((id)_validateCachedValue == (id)[NTJsonProp nilBlock]) ? nil : _validateCachedValue;
 }
 
 
--(BOOL)object_validateCachedValue:(id)object forJson:(id)json
+-(id)object_validateCachedValue:(id)object forJson:(id)json
 {
     if ( self.type != NTJsonPropTypeObject && self.type != NTJsonPropTypeObjectArray )
         @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"validateCachedValue:forJson: only supports Objects currently." userInfo:nil];
 
     if ( !self.supportsCacheValidation )
-        return YES;     // it's always valid if 
+        return object;     // it's always valid if we don't have a validation method
 
     return self.validateCachedValue(object, json);
 }

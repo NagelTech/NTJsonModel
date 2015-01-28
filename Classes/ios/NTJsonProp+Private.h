@@ -46,7 +46,7 @@ typedef enum
 
 -(id)object_convertValueToJson:(id)object;
 -(id)object_convertJsonToValue:(id)json;
--(BOOL)object_validateCachedValue:(id)object forJson:(id)json;
+-(id)object_validateCachedValue:(id)object forJson:(id)json;
 
 -(id)convertValueToJson:(id)object;
 -(id)convertJsonToValue:(id)json;
