@@ -243,15 +243,15 @@ Here are some additional details:
  - If you create methods that modify the object (mutable), declare the method in the mutable protocol. Since the properties are declared as `readonly` in the class, any attempt to modify the properties -- even in a method you intend to be mutable -- will result in a compiler error. A special property `mutableSelf` will allow you to explicitly access the setters for your properties. ()This is actually your `self` pointer cast to the mutable protocol.)
  
 
-## []Property Conversion
+## [Property Conversion](id:property-conversion)
 
 ----
 
 While JSON is easy to parse and very universal, it does lack richness. NTJsonModel makes it easy to define converters (or transformers) that are automatically called to convert the underlying JSON to rich values. The system will search for a class method that can satisfy the conversion by checking in three places:
 
 1. Looking for a property-name override on the Model class. The signature convention is `+(id)convert<propertyName>ToJson:(id)json` and `+(id)convertJsonTo<propertyName>(id)json.` Additionally, cached value validation may be optionally done with `+(BOOL)validateCached<propertyName>:(id)value forJson:(id)json`
-2. Looking for a class-name override on the value class. The signature convention is `+(id)convert<className>ToJson:(id)json` and `+(id)convertJsonTo<className>:(id)value.` Additionally, cached value validation may be optionally done with `+(BOOL)validateCached<className>:(id)value forJson:(id)json`
-3. Looking for an implementation of the 'NTJsonPropertyConversion' protocol on the value class. The signature convention is `+(id)convertValueToJson:(id)value` and `+(id)convertJsonToValue:(id)value.` Additionally, cached value validation may be optionally done with `+(BOOL)validateCachedValue:(id)value forJson:(id)json`
+2. Looking for a class-name override on the Model class. The signature convention is `+(id)convert<className>ToJson:(id)json` and `+(id)convertJsonTo<className>:(id)value.` Additionally, cached value validation may be optionally done with `+(BOOL)validateCached<className>:(id)value forJson:(id)json`
+3. Looking for an implementation of the 'NTJsonPropertyConversion' protocol on the value class. The signature convention is `+(id)convertValueToJson:(id)value` and `+(id)convertJsonToValue:(id)value.` Additionally, cached value validation may be optionally done with `+(BOOL)validateCachedValue:(id)value forJson:(id)json` These methods conform to the `NTJsonPropertyConversion` protocol.
 
 In the following example:
 
@@ -267,7 +267,7 @@ The system would search for the following selectors:
 2. `+(id)convertNSDateToJson:(id)json`, `+(id)convertJsonToNSDate:(id)value.` or `+(BOOL)validateCachedNSDate:(id)value forJson:(id)json`in class `User`
 3. `+(id)convertValueToJson:(id)value`, `+(id)convertJsonToValue:(id)value.` or `+(BOOL)validateCachedValue:(id)value forJson:(id)json` in class `NSDate`
 
-The system will perform the conversion the first time it reads the value and cache the results, so repeated calls will be effecient. If there is a chance the value could expire, you can implement `-(BOOL)validateCachedValue:(id)value forJson:(id)json`. If implemented, this will be called each time the value is accessed; returning `NO` will cause the system to get the latest value.
+The system will perform the conversion the first time it reads the value and cache the results, so repeated calls will be effecient. If there is a chance the value could expire, you can implement `-(BOOL)validateCachedValue:(id)value forJson:(id)json`. If implemented, this will be called each time the value is accessed; returning `NO` will cause the system to get the latest value. Validation can be particularly useful when working with [caching objects from a datastore](#object-caching).
 
 
 ### [Object Caching](id:object-caching)
@@ -306,7 +306,7 @@ The same machinery that allows conversion of primitives such as `NSDate`s, `UICo
 	}
 	
 
-## Polymorphic Objects
+## [Polymorphic Objects](id:polymorphic-objects)
 
 ----
 
@@ -358,7 +358,7 @@ Now, creating an instance of Shape will actually create the correct type (Rectan
 Objects may be created based on the JSON content by overriding `+modelClassForJson:`
 
 
-## Converting Json Arrays
+## [Converting Json Arrays](id:converting-json-arrays)
 
 ----
 
@@ -375,7 +375,7 @@ NTJsonModel includes helper methods (and classes) that convert an entire array o
 In the above example each Shape object will be instantiated as it is used in the loop.
 
 
-## Odds and Ends
+## [Odds and Ends](id:odds-and-ends)
 
 ----
 
