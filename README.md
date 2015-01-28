@@ -239,8 +239,8 @@ Here are some additional details:
  - The protocol should inherit from the paired classes' protocol. If we subclassed user with a new class, say `AdminUser` we could create a protocol `MutableAdminUser` which would implement `MutableUser`.
  - You may find it very tempting to actually implement the protocol in the class -- _don't_! While this seems perfectly reasonable, it will change the meta-data for the properties and create issues with the dynamic nature of NTJson properties. Take my word for it here, it may seem to work, but you will have problems.
  - Declaring a `typedef` as an instance of the class that implements the mutable protocol is optional but will simplify the syntax when using the mutable protocol later. The basic format for this with class 'XXX' is `typedef XXX<MutableXXX> *MutableXXX;` Which translates to create a type named `MutableXXX` that is a class `XXX` which implements protocol `MutableXXX`.
- - All NTJson properties in the class _must_ be declared `readonly` if you have a mutable protocol (declared with the `NTJsonMutable` macro.) Any `readwrite` NTJson properties will reqult in an exception the first time the type is accessed.
- - If you create methods that modify the object (mutable), declare the method in the mutable protocol. Since the properties are declared as `readonly` in the class, any attempt to modify the properties -- even in a method you intend to be mutable -- will result in a compiler error. A special property `mutableSelf` will allow you to explicitly access the setters for your properties. ()This is actually your `self` pointer cast to the mutable protocol.)
+ - All NTJson properties in the class _must_ be declared `readonly` if you have a mutable protocol (declared with the `NTJsonMutable` macro.) Any `readwrite` NTJson properties will reault in an exception the first time the type is accessed.
+ - If you create methods that modify the object (mutable), declare the method in the mutable protocol. Since the properties are declared as `readonly` in the class, any attempt to modify the properties -- even in a method you intend to be mutable -- will result in a compiler error. A special property `mutableSelf` will allow you to explicitly access the setters for your properties. (This is actually just your `self` pointer cast to the mutable protocol.)
  
 
 ## [Property Conversion](id:property-conversion)
@@ -310,7 +310,7 @@ The same machinery that allows conversion of primitives such as `NSDate`s, `UICo
 
 ----
 
-It's not unusual to have "plymorphic" objects in JSON, where a base class has several descendent classes that vary based on some field (the object type.) NTJsonModel can automatically create the correct descendent class, all you need to do is declare the following method in the base class:
+It's not unusual to have "ploymorphic" objects in JSON, where a base class has several descendent classes that vary based on some field (the object type.) NTJsonModel can automatically create the correct descendent class, all you need to do is declare the following method in the base class:
 
 	+(Class)modelClassForJson:(NSDictionary *)json;
 	
@@ -365,7 +365,7 @@ Objects may be created based on the JSON content by overriding `+modelClassForJs
 NTJsonModel includes helper methods (and classes) that convert an entire array of JSON objects to model objects. These methods return a special implementation of NSArray that is lazy-loaded - the actual NTJsonModel objects are only created as they are referenced. Using our shapes example above, you could write something like:
 
 	NSArray *shapesJson = (get array of JSON objects from somewhere)
-	NSArray *shapes = [Shape arayWithJsonArray:shapesJson];
+	NSArray *shapes = [Shape arrayWithJsonArray:shapesJson];
 	
 	for (Shape *shape in shapes)
 	{
