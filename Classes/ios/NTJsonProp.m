@@ -25,6 +25,8 @@
 @property (nonatomic,readonly) id (^convertValueToJson)(id json);
 @property (nonatomic,readonly) BOOL (^validateCachedValue)(id value, id json);
 
++(id)nilBlock;
+
 @end
 
 
@@ -280,6 +282,17 @@ static NSString *ObjcAttributeIvar = @"V";
 #pragma mark - Properties
 
 
++(id)nilBlock
+{
+    static void (^nilBlock)();
+
+    if ( !nilBlock )
+        nilBlock = [^{} copy];
+
+    return nilBlock;
+}
+
+
 -(BOOL)shouldCache
 {
     return (self.type == NTJsonPropTypeModel
@@ -416,10 +429,10 @@ static NSString *ObjcAttributeIvar = @"V";
 
             ?: [self.class probeConverterWithTarget:self.typeClass
                                        selectorName:@"convertJsonToValue:"]
-            ?: (id (^)(id))[NSNull null];
+            ?: (id (^)(id))[NTJsonProp nilBlock];
     }
 
-    return ((id)_convertJsonToValue == (id)[NSNull null]) ? nil : _convertJsonToValue;
+    return ((id)_convertJsonToValue == (id)[NTJsonProp nilBlock]) ? nil : _convertJsonToValue;
 }
 
 
@@ -457,10 +470,10 @@ static NSString *ObjcAttributeIvar = @"V";
             ?: [self.class probeConverterWithTarget:self.typeClass
                                        selectorName:@"convertValueToJson:"]
 
-            ?: (id (^)(id))[NSNull null];
+            ?: (id (^)(id))[NTJsonProp nilBlock];
     }
 
-    return ((id)_convertValueToJson == (id)[NSNull null]) ? nil : _convertValueToJson;
+    return ((id)_convertValueToJson == (id)[NTJsonProp nilBlock]) ? nil : _convertValueToJson;
 }
 
 
@@ -498,10 +511,10 @@ static NSString *ObjcAttributeIvar = @"V";
             ?: [self.class probeValidatorWithTarget:self.typeClass
                                        selectorName:@"validateCachedValue:forJson:"]
 
-            ?: (BOOL (^)(id,id))[NSNull null];
+            ?: (BOOL (^)(id,id))[NTJsonProp nilBlock];
     }
 
-    return ((id)_validateCachedValue == (id)[NSNull null]) ? nil : _validateCachedValue;
+    return ((id)_validateCachedValue == (id)[NTJsonProp nilBlock]) ? nil : _validateCachedValue;
 }
 
 
