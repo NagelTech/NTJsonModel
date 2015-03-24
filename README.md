@@ -185,7 +185,7 @@ Unfortunately, the compiler won't warn you if you attempt to set a property on a
 
 ### [Mutable protocols](id:mutable-protocols)
 
-With a little more work in declaring your models, it's possible to get the compiler to help enforce mutability for your objects. This involves decalring all roperties as readonly in your class and creating a "paired" protocol with readwrite versions of the updatable properties. You can then use the class under normal (immutable) conditions and apply the protocol when you explicity create a mutable instance (or copy) of an object. This is easiest to see in code - here is an updated version of our `User` model:
+With a little more work in declaring your models, it's possible to get the compiler to help enforce mutability for your objects. This involves declaring all properties as readonly in your class and creating a "paired" protocol with readwrite versions of the updatable properties. You can then use the class under normal (immutable) conditions and apply the protocol when you explicity create a mutable instance (or copy) of an object. This is easiest to see in code - here is an updated version of our `User` model:
 
 	@interface User : NTJsonModel
 	
