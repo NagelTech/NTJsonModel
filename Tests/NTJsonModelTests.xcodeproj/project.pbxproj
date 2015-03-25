@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4ACF6E280B385C26555CC416 /* libPods-NTJsonModelTestsTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F260F0B65B831D584DBF6F3E /* libPods-NTJsonModelTestsTests.a */; };
 		D91CF20E0486E7C29200AFB3 /* libPods-NTJsonModelTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B07E5368288165CC6BB7B149 /* libPods-NTJsonModelTests.a */; };
 		F00438D21AC28180005976E6 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = F00438D11AC28180005976E6 /* Podfile */; };
 		F062848C1909EDC100A93DF7 /* TestBasicProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F062848B1909EDC100A93DF7 /* TestBasicProperties.m */; };
@@ -73,7 +72,6 @@
 				F0A5D23F18F4D410006891E9 /* XCTest.framework in Frameworks */,
 				F0A5D24118F4D410006891E9 /* UIKit.framework in Frameworks */,
 				F0A5D24018F4D410006891E9 /* Foundation.framework in Frameworks */,
-				4ACF6E280B385C26555CC416 /* libPods-NTJsonModelTestsTests.a in Frameworks */,
 				D91CF20E0486E7C29200AFB3 /* libPods-NTJsonModelTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -189,11 +187,6 @@
 			attributes = {
 				LastUpgradeCheck = 0510;
 				ORGANIZATIONNAME = NagelTech;
-				TargetAttributes = {
-					F0A5D23C18F4D410006891E9 = {
-						TestTargetID = F0A5D22118F4D410006891E9;
-					};
-				};
 			};
 			buildConfigurationList = F0A5D21D18F4D410006891E9 /* Build configuration list for PBXProject "NTJsonModelTests" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -367,7 +360,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = DF3BA50C28A5A14A42E39F5E /* Pods-NTJsonModelTests.debug.xcconfig */;
 			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/NTJsonModelTests.app";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -381,7 +373,6 @@
 				);
 				INFOPLIST_FILE = "NTJsonModelTests/NTJsonModelTests-Info.plist";
 				PRODUCT_NAME = NTJsonModelTests;
-				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
 			};
 			name = Debug;
@@ -390,7 +381,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F1971952C124E01EAA1BB1C8 /* Pods-NTJsonModelTests.release.xcconfig */;
 			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/NTJsonModelTests.app";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -400,7 +390,6 @@
 				GCC_PREFIX_HEADER = "NTJsonModelTests/NTJsonModelTests-Prefix.pch";
 				INFOPLIST_FILE = "NTJsonModelTests/NTJsonModelTests-Info.plist";
 				PRODUCT_NAME = NTJsonModelTests;
-				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
 			};
 			name = Release;
